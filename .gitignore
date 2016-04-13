@@ -1,0 +1,9 @@
+/local.properties
+.idea
+.gradle
+build
+classes
+*.iml
+gradle.properties
+*.log
+/.nb-gradle/
