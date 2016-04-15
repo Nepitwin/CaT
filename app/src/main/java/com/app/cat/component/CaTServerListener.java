@@ -3,6 +3,7 @@ package com.app.cat.component;
 import android.util.Log;
 
 import org.linphone.core.LinphoneAddress;
+import org.linphone.core.LinphoneAuthInfo;
 import org.linphone.core.LinphoneCall;
 import org.linphone.core.LinphoneCallStats;
 import org.linphone.core.LinphoneChatMessage;
@@ -119,7 +120,23 @@ public class CaTServerListener implements LinphoneCoreListener {
 
     @Override
     public void registrationState(LinphoneCore linphoneCore, LinphoneProxyConfig linphoneProxyConfig, LinphoneCore.RegistrationState registrationState, String s) {
+        Log.i("Cat_Server", "--------------------------------");
         Log.i("Cat_Server", "registrationState");
+
+        LinphoneAuthInfo[] authInfos = linphoneCore.getAuthInfosList();
+        LinphoneAuthInfo authInfo;
+
+        for(int i = 0; i < authInfos.length; i++) {
+            // Only one auth Info is set in main activity.
+            authInfo = authInfos[i];
+            Log.i("Cat_Server", "Username := " + authInfo.getUsername());
+            Log.i("Cat_Server", "Password := " + authInfo.getPassword());
+            Log.i("Cat_Server", "HA1 := " + authInfo.getHa1());
+            Log.i("Cat_Server", "Domain := " + authInfo.getDomain());
+            Log.i("Cat_Server", "Realm := " + authInfo.getRealm());
+            Log.i("Cat_Server", "UserID := " + authInfo.getUserId());
+        }
+        Log.i("Cat_Server", "--------------------------------");
     }
 
     @Override
