@@ -29,25 +29,40 @@ public class MainActivity extends AppCompatActivity {
         LinphoneCoreListener server;
 
         try {
+            // Create an factory instance
             factory = LinphoneCoreFactory.instance();
+
+            // SIP-Server listener implementation
             server = new CaTServerListener();
+
             core = factory.createLinphoneCore(server, null);
             proxyConfig = core.createProxyConfig();
-            address = factory.createLinphoneAddress("sip:John@10.0.38.151");
+
+            address = factory.createLinphoneAddress("sip:John@192.168.2.186");
             // String username, String userid, String passwd, String ha1, String realm, String domain
-            authInfo = factory.createAuthInfo("John", null, "john", null, null, "10.0.38.151");
+            authInfo = factory.createAuthInfo(
+                    "John@192.168.2.186", // Username
+                    null,  // UserID
+                    "john",  // Password
+                    null,  // Hash password
+                    null, // Realm
+                    "192.168.2.186"); // Domain
+
+            // Method enableRegister returns an new LinphoneProxyConfig back...
+            proxyConfig = proxyConfig.enableRegister(true);
+            proxyConfig.setIdentity("sip:John@192.168.2.186");
+            proxyConfig.setProxy(address.getDomain());
+
             core.addAuthInfo(authInfo);
-
-            proxyConfig.setIdentity("sip:John@10.0.38.151");
-
-            String serverAdress = address.getDomain();
-            proxyConfig.setProxy(serverAdress);
-            proxyConfig.enableRegister(true);
-
             core.addProxyConfig(proxyConfig);
             core.setDefaultProxyConfig(proxyConfig);
+            core.iterate();
 
-            Log.i("CaT", "Finished");
+            if(proxyConfig.isRegistered()) {
+                Log.i("CaT", "Successfully log in to sip server");
+            } else {
+                Log.i("CaT", ":-(");
+            }
 
         } catch (LinphoneCoreException e) {
             e.printStackTrace();
