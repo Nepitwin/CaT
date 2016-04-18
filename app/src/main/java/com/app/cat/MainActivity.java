@@ -13,7 +13,6 @@ import org.linphone.core.LinphoneCoreException;
 import org.linphone.core.LinphoneCoreFactory;
 import org.linphone.core.LinphoneCoreListener;
 import org.linphone.core.LinphoneProxyConfig;
-import org.linphone.core.PayloadType;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -29,6 +28,7 @@ public class MainActivity extends AppCompatActivity {
         LinphoneAuthInfo authInfo;
         LinphoneCoreListener server;
 
+
         try {
             // Create an factory instance
             factory = LinphoneCoreFactory.instance();
@@ -38,18 +38,14 @@ public class MainActivity extends AppCompatActivity {
 
             core = factory.createLinphoneCore(server, null);
 
-            address = factory.createLinphoneAddress("sip:doe@192.168.2.186");
-            address.setTransport(LinphoneAddress.TransportType.LinphoneTransportTcp);
+            // Username, Domain, DisplayName
+            address = factory.createLinphoneAddress("Doe", "192.168.2.186", "Doe");
 
-            // ToDo : HA1 Password will be generated from password
-            // Store password Information from SIP Server as an HA1 password
-            // Information about HA1 := http://www.opensips.org/Documentation/TipsFAQ
+            // Combination from Username, Password and Domain stores password clear.
             authInfo = factory.createAuthInfo(
                     "Doe", // Username
-                    null, // Userid for authetication digest (HA1)
                     "doe",  // Password
-                    null, // HA1 --> md5(concat(username, ':', domain, ':', password)),
-                    "192.168.2.186", // Realm
+                    null, // Realm
                     "192.168.2.186"); // Domain
 
             // Create an proxy configuration class from core.
@@ -61,9 +57,17 @@ public class MainActivity extends AppCompatActivity {
             proxyConfig.setAddress(address);
             proxyConfig.setProxy(address.getDomain());
 
+            // Transports is an static class implementation from core.
+            /*
+            LinphoneCore.Transports transports = core.getSignalingTransportPorts();
+            transports.tls = 0;
+            transports.udp = 0;
+            transports.tcp = 5060;
+            core.setSignalingTransportPorts(transports);
+            */
+
             // Append authentication information to core
             core.addAuthInfo(authInfo);
-            core.addProxyConfig(proxyConfig);
             core.setDefaultProxyConfig(proxyConfig);
             core.iterate();
 
