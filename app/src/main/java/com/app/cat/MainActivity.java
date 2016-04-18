@@ -53,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
 
             // Method enableRegister returns an new LinphoneProxyConfig back...
             proxyConfig = proxyConfig.enableRegister(true);
-            proxyConfig.setIdentity("sip:doe@192.168.2.186");
+            proxyConfig.setIdentity("sip:Doe@192.168.2.186");
             proxyConfig.setAddress(address);
             proxyConfig.setProxy(address.getDomain());
 
@@ -68,6 +68,7 @@ public class MainActivity extends AppCompatActivity {
 
             // Append authentication information to core
             core.addAuthInfo(authInfo);
+            core.addProxyConfig(proxyConfig);
             core.setDefaultProxyConfig(proxyConfig);
             core.iterate();
 
