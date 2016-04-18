@@ -70,14 +70,26 @@ public class MainActivity extends AppCompatActivity {
             core.addAuthInfo(authInfo);
             core.addProxyConfig(proxyConfig);
             core.setDefaultProxyConfig(proxyConfig);
-            core.iterate();
 
-            // Check if authentication was successfully...
-            if(proxyConfig.isRegistered()) {
-                Log.i("CaT", "Successfully log in to sip server");
-            } else {
-                Log.i("CaT", ":-(");
+            boolean isRegistered = proxyConfig.isRegistered();
+
+            // Example Registration
+            while (!isRegistered) {
+                core.iterate();
+                isRegistered = proxyConfig.isRegistered();
             }
+
+            // Example Unregistration
+            proxyConfig.edit(); /*start editing proxy configuration*/
+            proxyConfig.enableRegister(false); /*de-activate registration for this proxy config*/
+            proxyConfig.done(); /*initiate REGISTER with expire = 0*/
+
+            while (isRegistered) {
+                core.iterate();
+                isRegistered = proxyConfig.isRegistered();
+            }
+
+            Log.i("CaT", "Done");
 
         } catch (LinphoneCoreException e) {
             e.printStackTrace();
