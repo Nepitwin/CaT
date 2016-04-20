@@ -9,12 +9,12 @@ import org.linphone.core.LinphoneCore;
  *
  * @author Andreas Sekulski
  */
-public class VoIPHandler implements Runnable {
+public class VoIPHandler implements Runnable, VoIP {
 
     /**
      * Constant interval to call updates from an SIP server in ms.
      */
-    private static final long NOTIFY_INTERVAL = 1000;
+    private static final long NOTIFY_INTERVAL = 100;
 
     /**
      * Handler to call this runnable periodically;
@@ -27,24 +27,36 @@ public class VoIPHandler implements Runnable {
     private LinphoneCore core;
 
     /**
+     * Boolean indicator to loop.
+     */
+    private boolean loop;
+
+    /**
      * Creates an Voice over IP event handler to update periodically an SIP server status.
      */
     public VoIPHandler(LinphoneCore core) {
         super();
         this.core = core;
+        loop = true;
     }
 
     @Override
     public void run() {
         core.iterate();
-        // Call runnable again after an NOTIFY_INTERVAL
-        handler.postDelayed(this, NOTIFY_INTERVAL);
+        if(loop) {
+            // Call runnable again after an NOTIFY_INTERVAL
+            handler.postDelayed(this, NOTIFY_INTERVAL);
+        }
     }
 
-    /**
-     * Method to stop running handler.
-     */
-    public void stopHandler() {
-        handler.removeCallbacks(this);
+    @Override
+    public void stop() {
+        loop = false;
+    }
+
+    @Override
+    public void start() {
+        loop = true;
+        run();
     }
 }

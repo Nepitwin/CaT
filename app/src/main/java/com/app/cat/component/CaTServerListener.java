@@ -30,7 +30,13 @@ public class CaTServerListener implements LinphoneCoreListener {
 
     @Override
     public void authInfoRequested(LinphoneCore linphoneCore, String s, String s1, String s2) {
+        Log.i("Cat_Server", "--------------------------------");
         Log.i("Cat_Server", "authInfoRequested");
+        Log.i("Cat_Server", s);
+        Log.i("Cat_Server", s1);
+        Log.i("Cat_Server", s2);
+        Log.i("Login", "Fuck yeahhh" + linphoneCore.getDefaultProxyConfig().isRegistered());
+        Log.i("Cat_Server", "--------------------------------");
     }
 
     @Override

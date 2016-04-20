@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.Button;
 
 import com.app.cat.component.CaTServerListener;
+import com.app.cat.component.VoIP;
 import com.app.cat.component.VoIPHandler;
 
 import org.linphone.core.LinphoneAddress;
@@ -42,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
     LinphoneCoreFactory factory;
     LinphoneAuthInfo authInfo;
     LinphoneCoreListener server;
-    Runnable runnable;
+    VoIP voIP;
 
     boolean isLoginClicked;
 
@@ -57,6 +58,11 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        final String username = "Doe";
+        final String password = "doe";
+        final String domain = "192.168.117.102";
+        final String sip = "sip:" + username + "@" + domain;
+
         try {
             // Default init
 
@@ -68,8 +74,8 @@ public class MainActivity extends AppCompatActivity {
             // Create an proxy configuration class from core.
             proxyConfig = core.createProxyConfig();
 
-            runnable = new VoIPHandler(core);
-            runnable.run();
+            voIP = new VoIPHandler(core);
+            voIP.start();
 
             buttonLogin.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -79,19 +85,21 @@ public class MainActivity extends AppCompatActivity {
                     try {
                         if(!isLoginClicked) {
 
+                            Log.i("Clicked", "Login motherfucker");
+
                             // Username, Domain, DisplayName
-                            address = factory.createLinphoneAddress("Doe", "192.168.2.186", "Doe");
+                            address = factory.createLinphoneAddress(username, domain, username);
 
                             // Combination from Username, Password and Domain stores password clear.
                             authInfo = factory.createAuthInfo(
-                                    "Doe", // Username
-                                    "doe",  // Password
+                                    username, // Username
+                                    password,  // Password
                                     null, // Realm
-                                    "192.168.2.186"); // Domain
+                                    domain); // Domain
 
                             // Method enableRegister returns an new LinphoneProxyConfig back...
                             proxyConfig = proxyConfig.enableRegister(true);
-                            proxyConfig.setIdentity("sip:Doe@192.168.2.186");
+                            proxyConfig.setIdentity(sip);
                             proxyConfig.setAddress(address);
                             proxyConfig.setProxy(address.getDomain());
 
@@ -110,6 +118,8 @@ public class MainActivity extends AppCompatActivity {
                             core.addProxyConfig(proxyConfig);
                             core.setDefaultProxyConfig(proxyConfig);
 
+                            Log.i("Login", "Fuck yeahhh" + proxyConfig.isRegistered());
+
                             isLoginClicked = true;
 
                         } else {
@@ -126,10 +136,14 @@ public class MainActivity extends AppCompatActivity {
             buttonLogout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
+
+                    Log.i("Clicked", "Logout motherfucker");
+
                     // Example Unregistration
                     proxyConfig.edit(); // Start editing proxy configuration
                     proxyConfig.enableRegister(false); // De-activate registration for this proxy config
                     proxyConfig.done(); // Initiate REGISTER with expire = 0
+
                 }
             });
 
