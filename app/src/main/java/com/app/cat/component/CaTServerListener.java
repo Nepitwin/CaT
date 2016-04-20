@@ -35,7 +35,7 @@ public class CaTServerListener implements LinphoneCoreListener {
         Log.i("Cat_Server", s);
         Log.i("Cat_Server", s1);
         Log.i("Cat_Server", s2);
-        Log.i("Login", "Fuck yeahhh" + linphoneCore.getDefaultProxyConfig().isRegistered());
+        Log.i("Login", "" + linphoneCore.getDefaultProxyConfig().isRegistered());
         Log.i("Cat_Server", "--------------------------------");
     }
 

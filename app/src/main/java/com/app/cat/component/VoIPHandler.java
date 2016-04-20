@@ -1,6 +1,7 @@
 package com.app.cat.component;
 
 import android.os.Handler;
+import android.util.Log;
 
 import org.linphone.core.LinphoneCore;
 
@@ -43,6 +44,7 @@ public class VoIPHandler implements Runnable, VoIP {
     @Override
     public void run() {
         core.iterate();
+
         if(loop) {
             // Call runnable again after an NOTIFY_INTERVAL
             handler.postDelayed(this, NOTIFY_INTERVAL);

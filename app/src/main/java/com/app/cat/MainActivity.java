@@ -45,8 +45,6 @@ public class MainActivity extends AppCompatActivity {
     LinphoneCoreListener server;
     VoIP voIP;
 
-    boolean isLoginClicked;
-
     @Override
     public void setContentView(@LayoutRes int layoutResID) {
         super.setContentView(layoutResID);
@@ -59,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         final String username = "Doe";
-        final String password = "doe";
+        final String password = "04e90e0459a663cbfb02320d8c472f49";
         final String domain = "192.168.117.102";
         final String sip = "sip:" + username + "@" + domain;
 
@@ -83,50 +81,41 @@ public class MainActivity extends AppCompatActivity {
                     // ToDo: Class implementation
                     // Example Registration
                     try {
-                        if(!isLoginClicked) {
+                        core.clearProxyConfigs();
 
-                            Log.i("Clicked", "Login motherfucker");
+                        Log.i("Clicked", "Login motherfucker");
 
-                            // Username, Domain, DisplayName
-                            address = factory.createLinphoneAddress(username, domain, username);
+                        // Username, Domain, DisplayName
+                        address = factory.createLinphoneAddress(username, domain, username);
 
-                            // Combination from Username, Password and Domain stores password clear.
-                            authInfo = factory.createAuthInfo(
-                                    username, // Username
-                                    password,  // Password
-                                    null, // Realm
-                                    domain); // Domain
+                        // Combination from Username, Password and Domain stores password clear.
+                        authInfo = factory.createAuthInfo(
+                                username, // Username
+                                password,  // Password
+                                null, // Realm
+                                domain); // Domain
 
-                            // Method enableRegister returns an new LinphoneProxyConfig back...
-                            proxyConfig = proxyConfig.enableRegister(true);
-                            proxyConfig.setIdentity(sip);
-                            proxyConfig.setAddress(address);
-                            proxyConfig.setProxy(address.getDomain());
+                        // Method enableRegister returns an new LinphoneProxyConfig back...
+                        proxyConfig = proxyConfig.enableRegister(true);
+                        proxyConfig.setIdentity(sip);
+                        proxyConfig.setAddress(address);
+                        proxyConfig.setProxy(address.getDomain());
 
-                            // Transports is an static class implementation from core.
-                            /*
-                            LinphoneCore.Transports transports = core.getSignalingTransportPorts();
-                            transports.tls = 0;
-                            transports.udp = 0;
-                            transports.tcp = 5060;
-                            core.setSignalingTransportPorts(transports);
-                            */
+                        // Transports is an static class implementation from core.
+                        /*
+                        LinphoneCore.Transports transports = core.getSignalingTransportPorts();
+                        transports.tls = 0;
+                        transports.udp = 0;
+                        transports.tcp = 5060;
+                        core.setSignalingTransportPorts(transports);
+                        */
 
-                            // ToDo : Check if addAuthInfo and ProxyConfig must be deleted.
-                            // Append authentication information to core
-                            core.addAuthInfo(authInfo);
-                            core.addProxyConfig(proxyConfig);
-                            core.setDefaultProxyConfig(proxyConfig);
+                        // ToDo : Check if addAuthInfo and ProxyConfig must be deleted.
+                        // Append authentication information to core
+                        core.addAuthInfo(authInfo);
+                        core.addProxyConfig(proxyConfig);
+                        core.setDefaultProxyConfig(proxyConfig);
 
-                            Log.i("Login", "Fuck yeahhh" + proxyConfig.isRegistered());
-
-                            isLoginClicked = true;
-
-                        } else {
-                            proxyConfig.edit(); // Start editing proxy configuration
-                            proxyConfig.enableRegister(true); // Activate registration for this proxy config
-                            proxyConfig.done(); // Initiate REGISTER with expire = 0
-                        }
                     } catch (LinphoneCoreException e) {
                         e.printStackTrace();
                     }
