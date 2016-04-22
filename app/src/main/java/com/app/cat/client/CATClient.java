@@ -3,7 +3,7 @@ package com.app.cat.client;
 /**
  * Voice over IP CAT client interface, to handle all supported features like an audio or video call.
  *
- * @author Andreas Sekulski
+ * @author Andreas Sekulski, Dimitry Kotlovsky
  */
 public interface CATClient {
 

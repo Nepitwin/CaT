@@ -15,14 +15,12 @@ import org.linphone.core.LinphoneFriend;
 import org.linphone.core.LinphoneFriendList;
 import org.linphone.core.LinphoneProxyConfig;
 import org.linphone.core.PresenceActivityType;
-import org.linphone.core.PresenceBasicStatus;
 import org.linphone.core.PresenceModel;
-import org.linphone.core.PresenceService;
 
 /**
  * Singleton LinphoneCATClient implementation to handle all SIP Client <-> Server communication.
  *
- * @author Andreas Sekulski
+ * @author Andreas Sekulski, Dimitry Kotlovsky
  */
 public class LinphoneCATClient implements CATClient {
 

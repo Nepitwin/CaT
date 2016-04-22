@@ -25,7 +25,7 @@ import java.nio.ByteBuffer;
 /**
  * CaT communication server listener to respond on server messages.
  *
- * @author Andreas Sekulski
+ * @author Andreas Sekulski, Dimitry Kotlovsky
  */
 public class LinphoneCATServerListener implements LinphoneCoreListener {
 
