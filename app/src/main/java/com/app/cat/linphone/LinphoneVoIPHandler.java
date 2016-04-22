@@ -1,7 +1,8 @@
-package com.app.cat.component;
+package com.app.cat.linphone;
 
 import android.os.Handler;
-import android.util.Log;
+
+import com.app.cat.client.VoIP;
 
 import org.linphone.core.LinphoneCore;
 
@@ -10,7 +11,7 @@ import org.linphone.core.LinphoneCore;
  *
  * @author Andreas Sekulski
  */
-public class VoIPHandler implements Runnable, VoIP {
+public class LinphoneVoIPHandler implements Runnable, VoIP {
 
     /**
      * Constant interval to call updates from an SIP server in ms.
@@ -23,29 +24,28 @@ public class VoIPHandler implements Runnable, VoIP {
     private Handler handler = new Handler();
 
     /**
-     * ToDo : Class implementation from Linphone to call updates.
+     * Corresponding core object to handle Client Server communication.
      */
     private LinphoneCore core;
 
     /**
      * Boolean indicator to loop.
      */
-    private boolean loop;
+    private boolean isRunning;
 
     /**
      * Creates an Voice over IP event handler to update periodically an SIP server status.
      */
-    public VoIPHandler(LinphoneCore core) {
+    public LinphoneVoIPHandler(LinphoneCore core) {
         super();
         this.core = core;
-        loop = true;
+        isRunning = false;
     }
 
     @Override
     public void run() {
         core.iterate();
-
-        if(loop) {
+        if(isRunning) {
             // Call runnable again after an NOTIFY_INTERVAL
             handler.postDelayed(this, NOTIFY_INTERVAL);
         }
@@ -53,12 +53,19 @@ public class VoIPHandler implements Runnable, VoIP {
 
     @Override
     public void stop() {
-        loop = false;
+        isRunning = false;
     }
 
     @Override
     public void start() {
-        loop = true;
-        run();
+        if(!isRunning()) {
+            isRunning = true;
+            run();
+        }
+    }
+
+    @Override
+    public boolean isRunning() {
+        return isRunning;
     }
 }
