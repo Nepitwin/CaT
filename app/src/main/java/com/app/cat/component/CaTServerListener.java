@@ -16,6 +16,7 @@ import org.linphone.core.LinphoneFriend;
 import org.linphone.core.LinphoneFriendList;
 import org.linphone.core.LinphoneInfoMessage;
 import org.linphone.core.LinphoneProxyConfig;
+import org.linphone.core.PresenceModel;
 import org.linphone.core.PublishState;
 import org.linphone.core.SubscriptionState;
 
@@ -51,7 +52,17 @@ public class CaTServerListener implements LinphoneCoreListener {
 
     @Override
     public void notifyPresenceReceived(LinphoneCore linphoneCore, LinphoneFriend linphoneFriend) {
+        Log.i("Cat_Server", "--------------------------------");
         Log.i("Cat_Server", "notifyPresenceReceived");
+
+        PresenceModel model = linphoneFriend.getPresenceModel();
+        Log.i("Buddy basic status", "" + linphoneFriend.getAddress() + "  ==>  " + model.getBasicStatus().name());
+        Log.i("Buddy status", "" + linphoneFriend.getAddress() + "  ==>  " + model.getActivity().getType().name());
+        Log.i("Buddy statustext", "" + linphoneFriend.getAddress() + "  ==>  " + model.getActivity().getDescription());
+        if (model.getNote("en") != null) {
+            Log.i("Buddy note", "" + linphoneFriend.getAddress() + "  ==>  " + model.getNote("en").getContent());
+        }
+        Log.i("Cat_Server", "--------------------------------");
     }
 
     @Override
@@ -130,11 +141,7 @@ public class CaTServerListener implements LinphoneCoreListener {
         Log.i("Cat_Server", "registrationState");
 
         LinphoneAuthInfo[] authInfos = linphoneCore.getAuthInfosList();
-        LinphoneAuthInfo authInfo;
-
-        for(int i = 0; i < authInfos.length; i++) {
-            // Only one auth Info is set in main activity.
-            authInfo = authInfos[i];
+        for (LinphoneAuthInfo authInfo : authInfos) {
             Log.i("Cat_Server", "Username := " + authInfo.getUsername());
             Log.i("Cat_Server", "Password := " + authInfo.getPassword());
             Log.i("Cat_Server", "HA1 := " + authInfo.getHa1());

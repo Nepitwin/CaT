@@ -17,7 +17,12 @@ import org.linphone.core.LinphoneCore;
 import org.linphone.core.LinphoneCoreException;
 import org.linphone.core.LinphoneCoreFactory;
 import org.linphone.core.LinphoneCoreListener;
+import org.linphone.core.LinphoneFriend;
+import org.linphone.core.LinphoneFriendList;
 import org.linphone.core.LinphoneProxyConfig;
+import org.linphone.core.PresenceActivityType;
+import org.linphone.core.PresenceBasicStatus;
+import org.linphone.core.PresenceModel;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -56,10 +61,12 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        final String username = "Doe";
-        final String password = "04e90e0459a663cbfb02320d8c472f49";
-        final String domain = "192.168.117.102";
+        final String username = "John";
+        final String password = "84e893b3153b5124a61f5bafedc450b6";
+        final String domain = "192.168.117.102"; // dimi: 192.168.1.137   andy: 192.168.117.102
         final String sip = "sip:" + username + "@" + domain;
+        final String friendUsername = "Doe";
+        final String friendSIP = "sip:" + friendUsername + "@" + domain;
 
         try {
             // Default init
@@ -82,6 +89,7 @@ public class MainActivity extends AppCompatActivity {
                     // Example Registration
                     try {
                         core.clearProxyConfigs();
+                        core.clearAuthInfos();
 
                         Log.i("Clicked", "Login motherfucker");
 
@@ -115,6 +123,21 @@ public class MainActivity extends AppCompatActivity {
                         core.addAuthInfo(authInfo);
                         core.addProxyConfig(proxyConfig);
                         core.setDefaultProxyConfig(proxyConfig);
+
+                        // Buddy list
+                        LinphoneFriend friend = factory.createLinphoneFriend(friendSIP); /* creates friend object for buddy joe */
+                        friend.enableSubscribes(true); /* configure this friend to emit SUBSCRIBE message after being added to LinphoneCore */
+                        friend.setIncSubscribePolicy(LinphoneFriend.SubscribePolicy.SPAccept); /* accept Incoming subscription request for this friend */
+                        core.addFriend(friend);
+
+                        LinphoneFriendList friendList = core.createLinphoneFriendList();
+                        friendList.addFriend(friend);
+
+                        // Set own state
+                        PresenceModel model = factory.createPresenceModel();
+                        model.setBasicStatus(PresenceBasicStatus.Open);
+                        model.setActivity(PresenceActivityType.Busy, "I'm busy asshole.");
+                        core.setPresenceModel(model);
 
                     } catch (LinphoneCoreException e) {
                         e.printStackTrace();
