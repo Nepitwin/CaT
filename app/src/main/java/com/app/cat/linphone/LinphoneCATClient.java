@@ -11,7 +11,13 @@ import org.linphone.core.LinphoneAuthInfo;
 import org.linphone.core.LinphoneCore;
 import org.linphone.core.LinphoneCoreException;
 import org.linphone.core.LinphoneCoreFactory;
+import org.linphone.core.LinphoneFriend;
+import org.linphone.core.LinphoneFriendList;
 import org.linphone.core.LinphoneProxyConfig;
+import org.linphone.core.PresenceActivityType;
+import org.linphone.core.PresenceBasicStatus;
+import org.linphone.core.PresenceModel;
+import org.linphone.core.PresenceService;
 
 /**
  * Singleton LinphoneCATClient implementation to handle all SIP Client <-> Server communication.
@@ -152,5 +158,60 @@ public class LinphoneCATClient implements CATClient {
         */
 
         throw new UnsupportedOperationException("Not implemented yet");
+    }
+
+    @Override
+    public void addFriend(String username, String domain) throws CATException {
+
+        // Generate sip URL from username and domain.
+        String friendSIP = "sip:" + username + "@" + domain;
+
+        try {
+            for (LinphoneFriend friend : core.getFriendList()) {
+                friend.edit(); // start editing friend
+                friend.enableSubscribes(false); // disable subscription for this friend
+                friend.done(); // commit changes triggering an UNSUBSCRIBE message
+                core.removeFriend(friend);
+                Log.i("Clear friends", "Friend is deleted ==> " + friend.getName());
+            }/*
+            for (LinphoneFriendList list : core.getFriendLists()) {
+                Log.i("Clear friend lists", "List is deleted ==> " + list.toString());
+                core.removeFriendList(list);
+            }*/
+
+            // Buddy list
+            LinphoneFriend friend = coreFactory.createLinphoneFriend(friendSIP); /* creates friend object for buddy joe */
+            friend.enableSubscribes(true); /* configure this friend to emit SUBSCRIBE message after being added to LinphoneCore */
+            friend.setIncSubscribePolicy(LinphoneFriend.SubscribePolicy.SPAccept); /* accept Incoming subscription request for this friend */
+            core.addFriend(friend);
+
+            // ToDo : Check what "LinphoneFriendList" is doing exactly. Probably saving a buddy list on the server.
+            LinphoneFriendList friendList = core.createLinphoneFriendList();
+            friendList.addFriend(friend);
+
+        } catch (LinphoneCoreException e) {
+            throw new CATException(e.getMessage());
+        }
+    }
+
+    @Override
+    public void enablePresenceStatus() {
+        PresenceModel model = coreFactory.createPresenceModel();
+        //model.setBasicStatus(PresenceBasicStatus.Open); // doesn't fuckig work ??!!!?
+        model.setActivity(PresenceActivityType.Busy, "I'm busy asshole."); // Zoiper doesn't understand activities !!!
+        model.addNote("Away", "en"); // But Zoiper is able to read notes ;)
+        core.setPresenceModel(model);
+        proxyConfig.edit();
+        proxyConfig.enablePublish(true);
+        proxyConfig.done();
+    }
+
+    @Override
+    public void disablePresenceStatus() {
+        PresenceModel model = core.getPresenceModel();
+        model.clearNotes();
+        model.clearActivities();
+        model.setActivity(PresenceActivityType.Offline, "offline");
+        core.setPresenceModel(model);
     }
 }

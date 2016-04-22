@@ -8,12 +8,12 @@ package com.app.cat.client;
 public interface CATClient {
 
     /**
-     * Register an given user to an SIP Server
+     * Register a given user to an SIP Server
      * @param username Username to register.
      * @param ha1 HA1 password.
      * @param realm If realm unequal domain set realm ip otherwise null.
      * @param domain Domain URL to an corresponding SIP-Server
-     * @throws CATException Throws an CATException if settings invalid.
+     * @throws CATException Throws an CATException if settings are invalid.
      */
     public void register(String username, String ha1, String realm, String domain) throws CATException;
 
@@ -30,4 +30,22 @@ public interface CATClient {
      * @param tls TLS transport port.
      */
     public void setTransportType(int udp, int tcp, int tls);
+
+    /**
+     * Adds a friend with the given username and domain.
+     * @param username      The friend's username.
+     * @param domain        The friend's domain.
+     * @throws CATException Throws an CATException if settings are invalid.
+     */
+    public void addFriend(String username, String domain) throws CATException;
+
+    /**
+     * Enables the presence status.
+     */
+    public void enablePresenceStatus();
+
+    /**
+     * Disables the presence status.
+     */
+    public void disablePresenceStatus();
 }

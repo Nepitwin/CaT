@@ -32,14 +32,14 @@ public class MainActivity extends AppCompatActivity {
     @Bind(R.id.buttonLogout)
     public Button buttonLogout;
 
-    // SIP mockup user informations
+    // SIP mockup user information
     private static final String username = "Doe";
     private static final String password = "doe";
-    private static final String domain = "192.168.2.186"; // dimi: 192.168.1.137   andy: [192.168.117.102; 192.168.2.186]
+    private static final String domain = "192.168.1.137";
+    //private static final String domain = "192.168.2.186"; // dimi: 192.168.1.137   andy: [192.168.117.102; 192.168.2.186]
 
-    // SIP mockup friend informations
-    private static final String friendUsername = "Doe";
-    private static final String friendSIP = "sip:" + friendUsername + "@" + domain;
+    // SIP mockup friend information
+    private static final String friendUsername = "John";
 
     /**
      * Cat client instance.
@@ -62,6 +62,9 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 try {
                     client.register(username, HashGenerator.ha1(username, domain, password), null, domain);
+                    client.addFriend(friendUsername, domain);
+                    // ToDo := Presence should wait until adding friends is done !!!
+                    client.enablePresenceStatus();
                 } catch (CATException e) {
                     // ToDo := Error handling in Android UI... Everytime the same... Donuts...
                     e.printStackTrace();
@@ -72,6 +75,8 @@ public class MainActivity extends AppCompatActivity {
         buttonLogout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                client.disablePresenceStatus();
+                // ToDo := Unregister should wait until presence is done !!!
                 client.unregister();
             }
         });
@@ -83,24 +88,5 @@ public class MainActivity extends AppCompatActivity {
             // ToDo := Exception handling in Android UI
             Log.e("Init failed", e.getMessage());
         }
-
-        /*
-        // ToDo := Buddy list implementation in CATClient interface and corresponding LinphoneCATClient
-        // ToDO := Dimi work for you ;-)
-        // Buddy list
-        LinphoneFriend friend = factory.createLinphoneFriend(friendSIP); // creates friend object for buddy joe
-        friend.enableSubscribes(true); // configure this friend to emit SUBSCRIBE message after being added to LinphoneCore
-        friend.setIncSubscribePolicy(LinphoneFriend.SubscribePolicy.SPAccept); // accept Incoming subscription request for this friend
-        core.addFriend(friend);
-
-        LinphoneFriendList friendList = core.createLinphoneFriendList();
-        friendList.addFriend(friend);
-
-        // Set own state
-        PresenceModel model = factory.createPresenceModel();
-        model.setBasicStatus(PresenceBasicStatus.Open);
-        model.setActivity(PresenceActivityType.Busy, "I'm busy asshole.");
-        core.setPresenceModel(model);
-        */
     }
 }
