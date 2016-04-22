@@ -17,8 +17,14 @@ import com.app.cat.util.HashGenerator;
 
 import org.linphone.core.LinphoneCoreException;
 
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -37,18 +43,13 @@ public class MainActivity extends AppCompatActivity {
     @Bind(R.id.buttonLogout)
     public Button buttonLogout;
 
-    /**
-     * Spinner entity to store IP's.
-     */
-    @Bind(R.id.spinnerIP)
-    public Spinner spinnerIP;
-
     // SIP mockup user information
-    private static final String username = "Doe";
-    private static final String password = "doe";
+    private String username;
+    private String password;
+    private String domain;
 
     // SIP mockup friend information
-    private static final String friendUsername = "John";
+    private String friendUsername;
 
     /**
      * Cat client instance.
@@ -66,19 +67,36 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        List<String> list = new ArrayList<String>();
-        list.add("192.168.1.137");
-        list.add("192.168.117.102");
-        list.add("192.168.2.186");
-        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, list);
-        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerIP.setAdapter(dataAdapter);
+        Properties prop = new Properties();
+        InputStream input = null;
+
+        try {
+            // Mockup user...
+            input = this.getAssets().open("config.properties");
+            // load a properties file
+            prop.load(input);
+
+            // get the property value and print it out
+            username = prop.getProperty("username");
+            password = prop.getProperty("password");
+            domain = prop.getProperty("domain");
+            friendUsername = prop.getProperty("friendUsername");
+        } catch (IOException io) {
+            io.printStackTrace();
+        } finally {
+            if (input != null) {
+                try {
+                    input.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
 
         buttonLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 try {
-                    String domain = spinnerIP.getSelectedItem().toString();
                     client.register(username, HashGenerator.ha1(username, domain, password), null, domain);
                     client.addFriend(friendUsername, domain);
                     // ToDo := Presence should wait until adding friends is done !!!
