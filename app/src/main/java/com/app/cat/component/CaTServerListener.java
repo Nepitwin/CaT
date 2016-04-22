@@ -56,11 +56,11 @@ public class CaTServerListener implements LinphoneCoreListener {
         Log.i("Cat_Server", "notifyPresenceReceived");
 
         PresenceModel model = linphoneFriend.getPresenceModel();
-        Log.i("Buddy basic status", "" + linphoneFriend.getAddress() + "  ==>  " + model.getBasicStatus().name());
-        Log.i("Buddy status", "" + linphoneFriend.getAddress() + "  ==>  " + model.getActivity().getType().name());
-        Log.i("Buddy statustext", "" + linphoneFriend.getAddress() + "  ==>  " + model.getActivity().getDescription());
+        Log.i("Buddy basic status", linphoneFriend.getAddress() + "  ==>  " + model.getBasicStatus().name());
+        Log.i("Buddy status", linphoneFriend.getAddress() + "  ==>  " + model.getActivity().getType().name());
+        Log.i("Buddy statustext", linphoneFriend.getAddress() + "  ==>  " + model.getActivity().getDescription());
         if (model.getNote("en") != null) {
-            Log.i("Buddy note", "" + linphoneFriend.getAddress() + "  ==>  " + model.getNote("en").getContent());
+            Log.i("Buddy note", linphoneFriend.getAddress() + "  ==>  " + model.getNote("en").getContent());
         }
         Log.i("Cat_Server", "--------------------------------");
     }
@@ -92,7 +92,11 @@ public class CaTServerListener implements LinphoneCoreListener {
 
     @Override
     public void publishStateChanged(LinphoneCore linphoneCore, LinphoneEvent linphoneEvent, PublishState publishState) {
+        Log.i("Cat_Server", "--------------------------------");
         Log.i("Cat_Server", "publishStateChanged");
+        Log.i("PublishStateChanged", linphoneEvent.getEventName());
+        Log.i("Cat_Server", publishState.name());
+        Log.i("Cat_Server", "--------------------------------");
     }
 
     @Override
@@ -102,7 +106,10 @@ public class CaTServerListener implements LinphoneCoreListener {
 
     @Override
     public void displayStatus(LinphoneCore linphoneCore, String s) {
+        Log.i("Cat_Server", "--------------------------------");
         Log.i("Cat_Server", "displayStatus");
+        Log.i("Cat_Server", s);
+        Log.i("Cat_Server", "--------------------------------");
     }
 
     @Override
@@ -199,11 +206,22 @@ public class CaTServerListener implements LinphoneCoreListener {
 
     @Override
     public void friendListCreated(LinphoneCore linphoneCore, LinphoneFriendList linphoneFriendList) {
+        Log.i("Cat_Server", "--------------------------------");
         Log.i("Cat_Server", "friendListCreated");
+        for (LinphoneFriend friend : linphoneFriendList.getFriendList()) {
+            Log.i("Cat_Server", "added buddy" + friend.getAddress());
+        }
+        Log.i("Cat_Server", "--------------------------------");
     }
 
     @Override
     public void friendListRemoved(LinphoneCore linphoneCore, LinphoneFriendList linphoneFriendList) {
         Log.i("Cat_Server", "friendListRemoved");
+        Log.i("Cat_Server", "--------------------------------");
+        Log.i("Cat_Server", "friendListRemoved");
+        for (LinphoneFriend friend : linphoneFriendList.getFriendList()) {
+            Log.i("Cat_Server", "removed buddy" + friend.getAddress());
+        }
+        Log.i("Cat_Server", "--------------------------------");
     }
 }

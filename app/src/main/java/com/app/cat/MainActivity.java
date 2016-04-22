@@ -63,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
 
         final String username = "John";
         final String password = "84e893b3153b5124a61f5bafedc450b6";
-        final String domain = "192.168.117.102"; // dimi: 192.168.1.137   andy: 192.168.117.102
+        final String domain = "192.168.1.137"; // dimi: 192.168.1.137   andy: 192.168.117.102
         final String sip = "sip:" + username + "@" + domain;
         final String friendUsername = "Doe";
         final String friendSIP = "sip:" + friendUsername + "@" + domain;
@@ -90,6 +90,14 @@ public class MainActivity extends AppCompatActivity {
                     try {
                         core.clearProxyConfigs();
                         core.clearAuthInfos();
+//                        for (LinphoneFriend friend : core.getFriendList()) {
+//                            Log.i("Clear friends", "Friend is deleted ==> " + friend.getName());
+//                            core.removeFriend(friend);
+//                        }
+//                        for (LinphoneFriendList list : core.getFriendLists()) {
+//                            Log.i("Clear friend lists", "List is deleted ==> " + list.toString());
+//                            core.removeFriendList(list);
+//                        }
 
                         Log.i("Clicked", "Login motherfucker");
 
@@ -130,14 +138,19 @@ public class MainActivity extends AppCompatActivity {
                         friend.setIncSubscribePolicy(LinphoneFriend.SubscribePolicy.SPAccept); /* accept Incoming subscription request for this friend */
                         core.addFriend(friend);
 
+                        // ToDo : Check what "LinphoneFriendList" is doing exactly. Probably saving a buddy list on the server.
                         LinphoneFriendList friendList = core.createLinphoneFriendList();
                         friendList.addFriend(friend);
 
                         // Set own state
                         PresenceModel model = factory.createPresenceModel();
                         model.setBasicStatus(PresenceBasicStatus.Open);
-                        model.setActivity(PresenceActivityType.Busy, "I'm busy asshole.");
+                        model.setActivity(PresenceActivityType.Busy, "I'm busy asshole."); // Zoiper doesn't understand activities !!!
+                        model.addNote("Away", "en"); // Zoiper is able to read notes
                         core.setPresenceModel(model);
+                        proxyConfig.edit();
+                        proxyConfig.enablePublish(true);
+                        proxyConfig.done();
 
                     } catch (LinphoneCoreException e) {
                         e.printStackTrace();
@@ -150,6 +163,14 @@ public class MainActivity extends AppCompatActivity {
                 public void onClick(View v) {
 
                     Log.i("Clicked", "Logout motherfucker");
+
+                    // Unsubscribe from buddy notifications
+                    LinphoneFriend[] friends = core.getFriendList();
+                    for (LinphoneFriend friend : friends) {
+                        friend.edit(); /* start editing friend */
+                        friend.enableSubscribes(false); /* disable subscription for this friend */
+                        friend.done(); /* commit changes triggering an UNSUBSCRIBE message */
+                    }
 
                     // Example Unregistration
                     proxyConfig.edit(); // Start editing proxy configuration
