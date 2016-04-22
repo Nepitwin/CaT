@@ -1,4 +1,4 @@
-package com.app.cat.component;
+package com.app.cat.linphone;
 
 import android.util.Log;
 
@@ -27,7 +27,7 @@ import java.nio.ByteBuffer;
  *
  * @author Andreas Sekulski
  */
-public class CaTServerListener implements LinphoneCoreListener {
+public class LinphoneCATServerListener implements LinphoneCoreListener {
 
     @Override
     public void authInfoRequested(LinphoneCore linphoneCore, String s, String s1, String s2) {
