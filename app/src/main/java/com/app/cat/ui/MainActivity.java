@@ -5,9 +5,7 @@ import android.support.annotation.LayoutRes;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.Spinner;
 
 import com.app.cat.R;
 import com.app.cat.client.CATClient;
@@ -18,16 +16,9 @@ import com.app.cat.util.PropertiesLoader;
 
 import org.linphone.core.LinphoneCoreException;
 
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
