@@ -14,6 +14,7 @@ import com.app.cat.client.CATClient;
 import com.app.cat.client.CATException;
 import com.app.cat.linphone.LinphoneCATClient;
 import com.app.cat.util.HashGenerator;
+import com.app.cat.util.PropertiesLoader;
 
 import org.linphone.core.LinphoneCoreException;
 
@@ -23,7 +24,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import butterknife.Bind;
@@ -52,6 +55,11 @@ public class MainActivity extends AppCompatActivity {
     private String friendUsername;
 
     /**
+     * Configuration file to mockup user data from assets file.
+     */
+    private Map<String, String> configuration;
+
+    /**
      * Cat client instance.
      */
     private CATClient client;
@@ -67,30 +75,20 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Properties prop = new Properties();
-        InputStream input = null;
-
         try {
-            // Mockup user...
-            input = this.getAssets().open("config.properties");
-            // load a properties file
-            prop.load(input);
+            configuration =  PropertiesLoader.loadProperty(
+                    this.getAssets().open("config.properties"),
+                    Arrays.asList("username", "password", "domain", "friendUsername"));
 
-            // get the property value and print it out
-            username = prop.getProperty("username");
-            password = prop.getProperty("password");
-            domain = prop.getProperty("domain");
-            friendUsername = prop.getProperty("friendUsername");
+            // get configuration value and print it out
+            username = configuration.get("username");
+            password = configuration.get("password");
+            domain = configuration.get("domain");
+            friendUsername = configuration.get("friendUsername");
+
         } catch (IOException io) {
-            io.printStackTrace();
-        } finally {
-            if (input != null) {
-                try {
-                    input.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
+            // ToDo := Error handling in Android UI... Everytime the same... Donuts...
+            Log.e("MainActivity", io.getMessage());
         }
 
         buttonLogin.setOnClickListener(new View.OnClickListener() {
