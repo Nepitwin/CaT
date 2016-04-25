@@ -10,20 +10,18 @@ import java.security.NoSuchAlgorithmException;
  */
 public class HashGenerator {
 
+    private static final String MD5 = "MD5";
+
     /**
      * Creates an ha1 hash from given input.
      * @param username Username
      * @param domain Domain
      * @param password Password
      * @return An ha1 if operation successfully otherwise null.
+     * @throws NoSuchAlgorithmException If algo not supported.
      */
-    public static String ha1(String username, String domain, String password) {
-        try {
-            return md5(username + ":" + domain + ":" + password);
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        }
-        return null;
+    public static String ha1(String username, String domain, String password) throws NoSuchAlgorithmException {
+        return md5(username + ":" + domain + ":" + password);
     }
 
     /**
@@ -32,14 +30,10 @@ public class HashGenerator {
      * @param domain Domain
      * @param password Password
      * @return An ha1b if operation successfully otherwise null.
+     * @throws NoSuchAlgorithmException If algo not supported.
      */
-    public static String ha1b(String username, String domain, String password) {
-        try {
-            return md5(username + "@" + domain +  ":" + domain + ":" + password);
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        }
-        return null;
+    public static String ha1b(String username, String domain, String password) throws NoSuchAlgorithmException {
+        return md5(username + "@" + domain +  ":" + domain + ":" + password);
     }
 
     /**
@@ -51,7 +45,7 @@ public class HashGenerator {
     private static String md5(String input) throws NoSuchAlgorithmException {
         byte[] digest;
         StringBuffer sb = new StringBuffer();
-        MessageDigest md5 = MessageDigest.getInstance("MD5");
+        MessageDigest md5 = MessageDigest.getInstance(MD5);
 
         md5.reset();
         md5.update(input.getBytes());

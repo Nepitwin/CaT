@@ -10,13 +10,15 @@ import android.widget.Button;
 import com.app.cat.R;
 import com.app.cat.client.CATClient;
 import com.app.cat.client.CATException;
+import com.app.cat.model.CATFriend;
 import com.app.cat.linphone.LinphoneCATClient;
-import com.app.cat.util.HashGenerator;
+import com.app.cat.model.CATOwner;
 import com.app.cat.util.PropertiesLoader;
 
 import org.linphone.core.LinphoneCoreException;
 
 import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.Map;
 
@@ -37,13 +39,12 @@ public class MainActivity extends AppCompatActivity {
     @Bind(R.id.buttonLogout)
     public Button buttonLogout;
 
-    // SIP mockup user information
-    private String username;
-    private String password;
-    private String domain;
+    /**
+     * CATOwner model from an SIP-User.
+     */
+    private CATOwner catOwner;
 
-    // SIP mockup friend information
-    private String friendUsername;
+    private CATFriend catFriend;
 
     /**
      * Configuration file to mockup user data from assets file.
@@ -67,51 +68,59 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         try {
-            configuration =  PropertiesLoader.loadProperty(
+            // Get singleton object.
+            int udp = 0;
+            int tcp = 5060;
+            int tls = 0;
+
+            client = LinphoneCATClient.getInstance();
+            client.setTransportType(udp, tcp, tls);
+
+            configuration = PropertiesLoader.loadProperty(
                     this.getAssets().open("config.properties"),
                     Arrays.asList("username", "password", "domain", "friendUsername"));
 
-            // get configuration value and print it out
-            username = configuration.get("username");
-            password = configuration.get("password");
-            domain = configuration.get("domain");
-            friendUsername = configuration.get("friendUsername");
+            catOwner = new CATOwner(
+                    configuration.get("username"),
+                    configuration.get("password"),
+                    configuration.get("domain"));
+
+            catFriend = new CATFriend(configuration.get("friendUsername"),
+                    configuration.get("domain"));
 
         } catch (IOException io) {
             // ToDo := Error handling in Android UI... Everytime the same... Donuts...
             Log.e("MainActivity", io.getMessage());
+        } catch (LinphoneCoreException e) {
+            // ToDo := Error handling in Android UI... Everytime the same... Donuts...
+            Log.e("Init failed", e.getMessage());
+        } catch (NoSuchAlgorithmException e) {
+            // ToDo := Error handling in Android UI... Everytime the same... Donuts...
+            e.printStackTrace();
         }
 
         buttonLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                try {
-                    client.register(username, HashGenerator.ha1(username, domain, password), null, domain);
-                    client.addFriend(friendUsername, domain);
-                    // ToDo := Presence should wait until adding friends is done !!!
-                    client.enablePresenceStatus();
-                } catch (CATException e) {
-                    // ToDo := Error handling in Android UI... Everytime the same... Donuts...
-                    e.printStackTrace();
-                }
+            try {
+                client.register(catOwner);
+                client.addFriend(catFriend);
+                // ToDo := Presence should wait until adding friends is done !!!
+                client.enablePresenceStatus();
+            } catch (CATException e) {
+                // ToDo := Error handling in Android UI... Everytime the same... Donuts...
+                e.printStackTrace();
+            }
             }
         });
 
         buttonLogout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                client.disablePresenceStatus();
-                // ToDo := Unregister should wait until presence is done !!!
-                client.unregister();
+            client.disablePresenceStatus();
+            // ToDo := Unregister should wait until presence is done !!!
+            client.unregister();
             }
         });
-
-        try {
-            // Get singleton object.
-            client = LinphoneCATClient.getInstance();
-        } catch (LinphoneCoreException e) {
-            // ToDo := Exception handling in Android UI
-            Log.e("Init failed", e.getMessage());
-        }
     }
 }

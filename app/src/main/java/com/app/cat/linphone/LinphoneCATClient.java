@@ -4,7 +4,9 @@ import android.util.Log;
 
 import com.app.cat.client.CATClient;
 import com.app.cat.client.CATException;
+import com.app.cat.model.CATFriend;
 import com.app.cat.client.VoIP;
+import com.app.cat.model.CATOwner;
 
 import org.linphone.core.LinphoneAddress;
 import org.linphone.core.LinphoneAuthInfo;
@@ -45,7 +47,7 @@ public class LinphoneCATClient implements CATClient {
     private LinphoneAddress address;
 
     /**
-     * Authentication information from user which contains registered SIP username, ha1 etc.
+     * CATOwner information from user which contains registered SIP username, ha1 etc.
      */
     private LinphoneAuthInfo authInfo;
 
@@ -53,6 +55,11 @@ public class LinphoneCATClient implements CATClient {
      * Voice over IP event handler to create an periodically update status from an SIP server.
      */
     private VoIP voIP;
+
+    /**
+     * Cat server listener implementation to handle client server communication.
+     */
+    private LinphoneCATServerListener catServerListener;
 
     /**
      * Static instance from LinphoneCATClient
@@ -81,10 +88,9 @@ public class LinphoneCATClient implements CATClient {
 
         // Create an factory instance
         coreFactory = LinphoneCoreFactory.instance();
+        catServerListener = new LinphoneCATServerListener();
 
-        core = coreFactory.createLinphoneCore(
-                new LinphoneCATServerListener(),
-                null);
+        core = coreFactory.createLinphoneCore(catServerListener, null);
 
         // Create an proxy configuration class from core.
         proxyConfig = core.createProxyConfig();
@@ -94,23 +100,25 @@ public class LinphoneCATClient implements CATClient {
     }
 
     @Override
-    public void register(String username, String ha1, String realm, String domain) throws CATException {
+    public void register(CATOwner catOwner) throws CATException {
 
         Log.i("Clicked", "Login motherfucker");
 
-        // Generate sip URL from username and domain.
-        String sip = "sip:" + username + "@" + domain;
+        String username = catOwner.getUsername();
+        String domain = catOwner.getDomain();
+        String password = catOwner.getPassword();
+        String sip = catOwner.getSIPAccount();
 
         try {
             core.clearProxyConfigs();
             core.clearAuthInfos();
             core.enableKeepAlive(true);
 
-            address = coreFactory.createLinphoneAddress(username, domain, username);
+            address = coreFactory.createLinphoneAddress(username, domain, password);
 
             authInfo = coreFactory.createAuthInfo(
                     username, // Username
-                    ha1,  // Password
+                    password,  // Password
                     null, // Realm
                     domain); // Domain
 
@@ -122,7 +130,7 @@ public class LinphoneCATClient implements CATClient {
             proxyConfig.setProxy(address.getDomain());
 
             // ToDo : Check if addAuthInfo and ProxyConfig must be deleted.
-            // Append authentication information to core
+            // Append CATOwner information to core
             core.addAuthInfo(authInfo);
             core.addProxyConfig(proxyConfig);
             core.setDefaultProxyConfig(proxyConfig);
@@ -143,26 +151,19 @@ public class LinphoneCATClient implements CATClient {
 
     @Override
     public void setTransportType(int udp, int tcp, int tls) {
-        // ToDo : Implement me :_( But KB (Denglisch FTW)...
-        // ToDo := Currently not so important
-
         // Transports is an static class implementation from core.
-        /*
         LinphoneCore.Transports transports = core.getSignalingTransportPorts();
-        transports.tls = 0;
-        transports.udp = 0;
-        transports.tcp = 5060;
+        transports.tls = tls;
+        transports.udp = udp;
+        transports.tcp = tcp;
         core.setSignalingTransportPorts(transports);
-        */
-
-        throw new UnsupportedOperationException("Not implemented yet");
     }
 
     @Override
-    public void addFriend(String username, String domain) throws CATException {
+    public void addFriend(CATFriend catFriend) throws CATException {
 
         // Generate sip URL from username and domain.
-        String friendSIP = "sip:" + username + "@" + domain;
+        String friendSIP = catFriend.getSIPAccount();
 
         try {
             for (LinphoneFriend friend : core.getFriendList()) {

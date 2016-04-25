@@ -1,5 +1,8 @@
 package com.app.cat.client;
 
+import com.app.cat.model.CATFriend;
+import com.app.cat.model.CATOwner;
+
 /**
  * Voice over IP CAT client interface, to handle all supported features like an audio or video call.
  *
@@ -8,14 +11,11 @@ package com.app.cat.client;
 public interface CATClient {
 
     /**
-     * Register a given user to an SIP Server
-     * @param username Username to register.
-     * @param ha1 HA1 password.
-     * @param realm If realm unequal domain set realm ip otherwise null.
-     * @param domain Domain URL to an corresponding SIP-Server
-     * @throws CATException Throws an CATException if settings are invalid.
+     * Register a given user to an SIP Server.
+     * @param catOwner CATOwner model from an client to register to an sip server.
+     * @throws CATException
      */
-    public void register(String username, String ha1, String realm, String domain) throws CATException;
+    public void register(CATOwner catOwner) throws CATException;
 
     /**
      * Unregister an user on an registered SIP-Server
@@ -33,11 +33,10 @@ public interface CATClient {
 
     /**
      * Adds a friend with the given username and domain.
-     * @param username      The friend's username.
-     * @param domain        The friend's domain.
+     * @param catFriend An friend to add.
      * @throws CATException Throws an CATException if settings are invalid.
      */
-    public void addFriend(String username, String domain) throws CATException;
+    public void addFriend(CATFriend catFriend) throws CATException;
 
     /**
      * Enables the presence status.
