@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <FrameLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/activity_tbook_default_padding"
+        android:background="@drawable/rounded_shape">
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center">
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="@dimen/activity_tbook_default_padding">
+
+                <ImageView
+                    android:layout_width="@dimen/activity_tbook_default_image_size"
+                    android:layout_height="@dimen/activity_tbook_default_image_size"
+                    android:id="@+id/imageViewProfile"
+                    android:src="@drawable/ic_default_profile"
+                    android:contentDescription="@string/default_profile_image_description" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/rectangle_border">
+
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/rectangle_border">
+
+                    <TextView
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="?android:attr/textAppearanceLarge"
+                        android:text="John Doe"
+                        android:id="@+id/textView"
+                        android:gravity="center"
+                        android:layout_marginTop="5dp"
+                        android:layout_marginBottom="5dp" />
+                </LinearLayout>
+
+                <LinearLayout android:orientation="horizontal" android:layout_height="fill_parent" android:layout_width="fill_parent"
+                    android:baselineAligned="false">
+                    <LinearLayout android:layout_weight="1" android:layout_height="fill_parent" android:layout_width="fill_parent"
+                        android:background="@drawable/rectangle_left_bottom_right_border">
+
+                        <Button
+                            android:layout_width="fill_parent"
+                            android:layout_height="match_parent"
+                            android:drawableLeft="@drawable/ic_video_call"
+                            android:gravity="left|center_vertical"
+                            android:text="Video"
+                            android:id="@+id/buttonVideoCall" />
+
+                    </LinearLayout>
+                    <LinearLayout android:layout_weight="1" android:layout_height="fill_parent" android:layout_width="fill_parent">
+
+                        <Button
+                            android:layout_width="fill_parent"
+                            android:layout_height="match_parent"
+                            android:drawableLeft="@drawable/ic_audio_call"
+                            android:gravity="left|center_vertical"
+                            android:text="Audio"
+                            android:id="@+id/buttonAudioCall" />
+
+                    </LinearLayout>
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </LinearLayout>
+    </FrameLayout>
+
+</LinearLayout>

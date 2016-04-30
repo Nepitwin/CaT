@@ -6,6 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ListView;
 
 import com.app.cat.R;
 import com.app.cat.client.CATClient;
@@ -13,13 +14,17 @@ import com.app.cat.client.CATException;
 import com.app.cat.model.CATFriend;
 import com.app.cat.linphone.LinphoneCATClient;
 import com.app.cat.model.CATOwner;
+import com.app.cat.model.CATUser;
+import com.app.cat.ui.component.TelephoneBookAdapter;
 import com.app.cat.util.PropertiesLoader;
 
 import org.linphone.core.LinphoneCoreException;
 
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 import butterknife.Bind;
@@ -38,6 +43,17 @@ public class MainActivity extends AppCompatActivity {
      */
     @Bind(R.id.buttonLogout)
     public Button buttonLogout;
+
+    /**
+     * List view ui element for an telephone book.
+     */
+    @Bind(R.id.listViewTBook)
+    public ListView listTBook;
+
+    /**
+     * Adapter which handles telephone book ui with corresponding user models.
+     */
+    private TelephoneBookAdapter telephoneBookAdapter;
 
     /**
      * CATOwner model from an SIP-User.
@@ -66,6 +82,14 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // Mockup telephone book ui data.
+        List<CATUser> catUsers = new ArrayList<CATUser>();
+        for(int i = 0; i < 10; i++) {
+            catUsers.add(new CATFriend("Mockup " + i, "Mockup Domain"));
+        }
+        telephoneBookAdapter = new TelephoneBookAdapter(this, catUsers);
+        listTBook.setAdapter(telephoneBookAdapter);
 
         try {
             // Get singleton object.

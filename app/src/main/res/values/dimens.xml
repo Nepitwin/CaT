@@ -2,4 +2,15 @@
     <!-- Default screen margins, per the Android Design guidelines. -->
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
+
+    <!-- Dimesions for layout_list_telephone_book -->
+    <dimen name="activity_tbook_default_padding">10dp</dimen>
+    <dimen name="activity_tbook_default_image_size">100dp</dimen>
+
+
+    <!-- Dimensions for rounded_shape.xml. -->
+    <dimen name="rounded_shape_padding">15dp</dimen>
+    <dimen name="rounded_shape_border">2dp</dimen>
+    <dimen name="rounded_shape_border_radius">5dp</dimen>
+
 </resources>

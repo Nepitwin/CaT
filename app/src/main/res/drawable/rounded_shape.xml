@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <!-- we define background color -->
+    <solid android:color="@color/colorTelephoneBookElement" />
+
+    <!-- we define border color and thick -->
+    <stroke
+        android:width="@dimen/rounded_shape_border"
+        android:color="@color/colorPrimaryDark" />
+
+    <!-- add some padding for text inside -->
+    <padding
+        android:bottom="@dimen/rounded_shape_padding"
+        android:left="@dimen/rounded_shape_padding"
+        android:right="@dimen/rounded_shape_padding"
+        android:top="@dimen/rounded_shape_padding" />
+
+    <!-- we define corner radius, note that radius can be different for each corner -->
+    <corners android:radius="@dimen/rounded_shape_border_radius" />
+
+</shape>

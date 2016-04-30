@@ -26,5 +26,17 @@
             android:text="Logout"
             android:id="@+id/buttonLogout" />
 
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="Mockup sample telephone book"
+            android:gravity="center" />
+
+        <ListView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/listViewTBook" />
+
     </LinearLayout>
 </RelativeLayout>
