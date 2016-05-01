@@ -1,11 +1,11 @@
-package com.app.cat.client;
+package com.app.cat.service;
 
 /**
  * Voice over IP interface to handle server communication.
  *
  * @author Andreas Sekulski
  */
-public interface VoIP {
+public interface VoIPService {
 
     /**
      * Stops an Voice over IP server communication.
@@ -18,7 +18,7 @@ public interface VoIP {
     void start();
 
     /**
-     * Checks if VoIP handler is currently running or not.
+     * Checks if VoIPService handler is currently running or not.
      * @return true if is running otherwise false.
      */
     boolean isRunning();

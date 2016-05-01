@@ -2,16 +2,16 @@ package com.app.cat.linphone;
 
 import android.os.Handler;
 
-import com.app.cat.client.VoIP;
+import com.app.cat.service.VoIPService;
 
 import org.linphone.core.LinphoneCore;
 
 /**
- * Class to create an background service on an android device to update VoIP calls.
+ * Class to create an background service on an android device to update VoIPService calls.
  *
  * @author Andreas Sekulski
  */
-public class LinphoneVoIPHandler implements Runnable, VoIP {
+public class LinphoneCATVoIPService implements Runnable, VoIPService {
 
     /**
      * Constant interval to call updates from an SIP server in ms.
@@ -36,7 +36,7 @@ public class LinphoneVoIPHandler implements Runnable, VoIP {
     /**
      * Creates an Voice over IP event handler to update periodically an SIP server status.
      */
-    public LinphoneVoIPHandler(LinphoneCore core) {
+    public LinphoneCATVoIPService(LinphoneCore core) {
         super();
         this.core = core;
         isRunning = false;

@@ -21,6 +21,8 @@
             </intent-filter>
         </activity>
 
+        <service android:name=".service.CATService" ></service>
+
     </application>
 
 </manifest>

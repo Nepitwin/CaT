@@ -5,7 +5,7 @@ import android.util.Log;
 import com.app.cat.client.CATClient;
 import com.app.cat.client.CATException;
 import com.app.cat.model.CATFriend;
-import com.app.cat.client.VoIP;
+import com.app.cat.service.VoIPService;
 import com.app.cat.model.CATOwner;
 
 import org.linphone.core.LinphoneAddress;
@@ -13,6 +13,7 @@ import org.linphone.core.LinphoneAuthInfo;
 import org.linphone.core.LinphoneCore;
 import org.linphone.core.LinphoneCoreException;
 import org.linphone.core.LinphoneCoreFactory;
+import org.linphone.core.LinphoneCoreListener;
 import org.linphone.core.LinphoneFriend;
 import org.linphone.core.LinphoneFriendList;
 import org.linphone.core.LinphoneProxyConfig;
@@ -52,14 +53,9 @@ public class LinphoneCATClient implements CATClient {
     private LinphoneAuthInfo authInfo;
 
     /**
-     * Voice over IP event handler to create an periodically update status from an SIP server.
-     */
-    private VoIP voIP;
-
-    /**
      * Cat server listener implementation to handle client server communication.
      */
-    private LinphoneCATServerListener catServerListener;
+    private LinphoneCoreListener catServerListener;
 
     /**
      * Static instance from LinphoneCATClient
@@ -94,9 +90,6 @@ public class LinphoneCATClient implements CATClient {
 
         // Create an proxy configuration class from core.
         proxyConfig = core.createProxyConfig();
-        // Create an Voice over IP handler.
-        voIP = new LinphoneVoIPHandler(core);
-        voIP.start();
     }
 
     @Override
@@ -212,5 +205,13 @@ public class LinphoneCATClient implements CATClient {
         model.clearActivities();
         model.setActivity(PresenceActivityType.Offline, "offline");
         core.setPresenceModel(model);
+    }
+
+    /**
+     * Gets core from linphone.
+     * @return Null if core not initialized otherwise an linphone core will be returned.
+     */
+    public LinphoneCore getCore() {
+        return core;
     }
 }
