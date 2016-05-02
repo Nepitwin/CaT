@@ -5,7 +5,7 @@ package com.app.cat.model;
  *
  * @author Andreas Sekulski
  */
-public class CATFriend extends CATUser {
+public class CATFriend extends CATAccount {
 
     /**
      * Constructor to create an cat friend.

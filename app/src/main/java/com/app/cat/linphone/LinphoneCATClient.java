@@ -5,8 +5,7 @@ import android.util.Log;
 import com.app.cat.client.CATClient;
 import com.app.cat.client.CATException;
 import com.app.cat.model.CATFriend;
-import com.app.cat.service.VoIPService;
-import com.app.cat.model.CATOwner;
+import com.app.cat.model.CATUser;
 
 import org.linphone.core.LinphoneAddress;
 import org.linphone.core.LinphoneAuthInfo;
@@ -48,7 +47,7 @@ public class LinphoneCATClient implements CATClient {
     private LinphoneAddress address;
 
     /**
-     * CATOwner information from user which contains registered SIP username, ha1 etc.
+     * CATUser information from user which contains registered SIP username, ha1 etc.
      */
     private LinphoneAuthInfo authInfo;
 
@@ -93,14 +92,14 @@ public class LinphoneCATClient implements CATClient {
     }
 
     @Override
-    public void register(CATOwner catOwner) throws CATException {
+    public void register(CATUser catUser) throws CATException {
 
         Log.i("Clicked", "Login motherfucker");
 
-        String username = catOwner.getUsername();
-        String domain = catOwner.getDomain();
-        String password = catOwner.getPassword();
-        String sip = catOwner.getSIPAccount();
+        String username = catUser.getUsername();
+        String domain = catUser.getDomain();
+        String password = catUser.getPassword();
+        String sip = catUser.getSIPAccount();
 
         try {
             core.clearProxyConfigs();
@@ -123,7 +122,7 @@ public class LinphoneCATClient implements CATClient {
             proxyConfig.setProxy(address.getDomain());
 
             // ToDo : Check if addAuthInfo and ProxyConfig must be deleted.
-            // Append CATOwner information to core
+            // Append CATUser information to core
             core.addAuthInfo(authInfo);
             core.addProxyConfig(proxyConfig);
             core.setDefaultProxyConfig(proxyConfig);

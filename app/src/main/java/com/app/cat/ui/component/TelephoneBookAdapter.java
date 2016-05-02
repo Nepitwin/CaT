@@ -8,7 +8,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 
 import com.app.cat.R;
-import com.app.cat.model.CATUser;
+import com.app.cat.model.CATAccount;
 
 import java.util.List;
 
@@ -17,7 +17,7 @@ import java.util.List;
  *
  * @author Andreas Sekulski
  */
-public class TelephoneBookAdapter extends ArrayAdapter<CATUser> {
+public class TelephoneBookAdapter extends ArrayAdapter<CATAccount> {
 
     /**
      * Corresponding layout from adapter
@@ -30,7 +30,7 @@ public class TelephoneBookAdapter extends ArrayAdapter<CATUser> {
      * @param context Application context from adapter.
      * @param users List from all users to show.
      */
-    public TelephoneBookAdapter(Context context, List<CATUser> users) {
+    public TelephoneBookAdapter(Context context, List<CATAccount> users) {
         super(context, 0, users);
     }
 
@@ -40,7 +40,7 @@ public class TelephoneBookAdapter extends ArrayAdapter<CATUser> {
         LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View rowView = inflater.inflate(LAYOUT, parent, false);
 
-        CATUser user = getItem(position);
+        CATAccount user = getItem(position);
 
         // ToDo : Button interaction handling for audio and video calls
         Button audio = (Button) rowView.findViewById(R.id.buttonAudioCall);

@@ -1,7 +1,7 @@
 package com.app.cat.client;
 
 import com.app.cat.model.CATFriend;
-import com.app.cat.model.CATOwner;
+import com.app.cat.model.CATUser;
 
 /**
  * Voice over IP CAT client interface, to handle all supported features like an audio or video call.
@@ -12,10 +12,10 @@ public interface CATClient {
 
     /**
      * Register a given user to an SIP Server.
-     * @param catOwner CATOwner model from an client to register to an sip server.
+     * @param catUser CATUser model from an client to register to an sip server.
      * @throws CATException
      */
-    public void register(CATOwner catOwner) throws CATException;
+    public void register(CATUser catUser) throws CATException;
 
     /**
      * Unregister an user on an registered SIP-Server

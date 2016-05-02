@@ -14,8 +14,8 @@ import com.app.cat.client.CATClient;
 import com.app.cat.client.CATException;
 import com.app.cat.model.CATFriend;
 import com.app.cat.linphone.LinphoneCATClient;
-import com.app.cat.model.CATOwner;
 import com.app.cat.model.CATUser;
+import com.app.cat.model.CATAccount;
 import com.app.cat.service.CATService;
 import com.app.cat.ui.component.TelephoneBookAdapter;
 import com.app.cat.util.PropertiesLoader;
@@ -58,9 +58,9 @@ public class MainActivity extends AppCompatActivity {
     private TelephoneBookAdapter telephoneBookAdapter;
 
     /**
-     * CATOwner model from an SIP-User.
+     * CATUser model from an SIP-User.
      */
-    private CATOwner catOwner;
+    private CATUser catUser;
 
     private CATFriend catFriend;
 
@@ -95,11 +95,11 @@ public class MainActivity extends AppCompatActivity {
         startService(service);
 
         // Mockup telephone book ui data.
-        List<CATUser> catUsers = new ArrayList<CATUser>();
+        List<CATAccount> catAccounts = new ArrayList<CATAccount>();
         for(int i = 0; i < 10; i++) {
-            catUsers.add(new CATFriend("Mockup " + i, "Mockup Domain"));
+            catAccounts.add(new CATFriend("Mockup " + i, "Mockup Domain"));
         }
-        telephoneBookAdapter = new TelephoneBookAdapter(this, catUsers);
+        telephoneBookAdapter = new TelephoneBookAdapter(this, catAccounts);
         listTBook.setAdapter(telephoneBookAdapter);
 
         try {
@@ -115,7 +115,7 @@ public class MainActivity extends AppCompatActivity {
                     this.getAssets().open("config.properties"),
                     Arrays.asList("username", "password", "domain", "friendUsername"));
 
-            catOwner = new CATOwner(
+            catUser = new CATUser(
                     configuration.get("username"),
                     configuration.get("password"),
                     configuration.get("domain"));
@@ -138,7 +138,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
             try {
-                client.register(catOwner);
+                client.register(catUser);
                 client.addFriend(catFriend);
                 // ToDo := Presence should wait until adding friends is done !!!
                 client.enablePresenceStatus();

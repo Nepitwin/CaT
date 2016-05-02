@@ -1,67 +1,48 @@
 package com.app.cat.model;
 
+import com.app.cat.util.HashGenerator;
+
+import java.security.NoSuchAlgorithmException;
+
 /**
- * Abstract class from an default user.
+ * CATUser model class represents an user model.
+ *
+ * @author Andreas Sekulski
  */
-public abstract class CATUser {
+public class CATUser extends CATAccount {
 
     /**
-     * Username from client.
+     * Stored password from client.
      */
-    private String username;
+    private String password;
 
     /**
-     * SIP domain url.
+     * Create an cat owner class model. Password will be stored as an ha1.
+     *
+     * @param username Username from owner.
+     * @param password Password from owner.
+     * @param domain Domain url from owner.
+     * @throws NoSuchAlgorithmException Throws an NoSuchAlgorithmException if password hash operation not supported.
      */
-    private String domain;
-
-    /**
-     * Constructor to create an default cat user.
-     * @param username Username from user.
-     * @param domain Domain url from user.
-     */
-    public CATUser(String username, String domain) {
-        this.username = username;
-        this.domain = domain;
+    public CATUser(String username, String password, String domain) throws NoSuchAlgorithmException {
+        super(username, domain);
+        this.password = HashGenerator.ha1(username, domain, password);
     }
 
     /**
-     * Gets username from user.
-     * @return String from username.
+     * Returns an ha1 password.
+     * @return Ha1 password.
      */
-    public String getUsername() {
-        return username;
+    public String getPassword() {
+        return password;
     }
 
     /**
-     * Sets username from user.
-     * @param username Username to set.
+     * Sets an password to this user and stores it as an ha1 hash.
+     * @param password Password to store.
+     * @throws NoSuchAlgorithmException Throws an NoSuchAlgorithmException if password hash operation not supported.
      */
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    /**
-     * Gets domain from user sip url.
-     * @return Domain from sip url.
-     */
-    public String getDomain() {
-        return domain;
-    }
-
-    /**
-     * Sets domain from sip user.
-     * @param domain Domain to set.
-     */
-    public void setDomain(String domain) {
-        this.domain = domain;
-    }
-
-    /**
-     * Get SIP account name with domain syntax.
-     * @return SIP account url.
-     */
-    public String getSIPAccount() {
-        return "sip:" + getUsername() + "@" + getDomain();
+    public void setPassword(String password) throws NoSuchAlgorithmException {
+        this.password = HashGenerator.ha1(getUsername(), getDomain(), password);
     }
 }
