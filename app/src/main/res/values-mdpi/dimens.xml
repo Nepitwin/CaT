@@ -1,0 +1,5 @@
+<resources>
+    <!-- Dimesions for layout_list_telephone_book -->
+    <dimen name="activity_tbook_default_text_size">12sp</dimen>
+
+</resources>

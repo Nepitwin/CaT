@@ -6,7 +6,8 @@
     <!-- Dimesions for layout_list_telephone_book -->
     <dimen name="activity_tbook_default_padding">10dp</dimen>
     <dimen name="activity_tbook_default_image_size">100dp</dimen>
-
+    <dimen name="activity_tbook_default_text_size">20sp</dimen>
+    <dimen name="activity_tbook_default_padding_button">4dp</dimen>
 
     <!-- Dimensions for rounded_shape.xml. -->
     <dimen name="rounded_shape_padding">15dp</dimen>

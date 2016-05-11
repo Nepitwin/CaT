@@ -52,29 +52,44 @@
                         android:layout_marginBottom="5dp" />
                 </LinearLayout>
 
-                <LinearLayout android:orientation="horizontal" android:layout_height="fill_parent" android:layout_width="fill_parent"
+                <LinearLayout android:orientation="horizontal"
+                    android:layout_height="fill_parent"
+                    android:layout_width="fill_parent"
                     android:baselineAligned="false">
-                    <LinearLayout android:layout_weight="1" android:layout_height="fill_parent" android:layout_width="fill_parent"
-                        android:background="@drawable/rectangle_left_bottom_right_border">
-
-                        <Button
-                            android:layout_width="fill_parent"
-                            android:layout_height="match_parent"
-                            android:drawableLeft="@drawable/ic_video_call"
-                            android:gravity="left|center_vertical"
-                            android:text="Video"
-                            android:id="@+id/buttonVideoCall" />
-
-                    </LinearLayout>
                     <LinearLayout android:layout_weight="1" android:layout_height="fill_parent" android:layout_width="fill_parent">
 
                         <Button
+                            android:id="@+id/buttonVideoCall"
                             android:layout_width="fill_parent"
-                            android:layout_height="match_parent"
+                            android:layout_height="fill_parent"
+                            android:padding="@dimen/activity_tbook_default_padding_button"
+                            android:text="@string/video"
+                            android:drawableLeft="@drawable/ic_video_call"
+                            android:textSize="@dimen/activity_tbook_default_text_size"
+                            android:gravity="left|center"
+                            android:layout_marginTop="2dp"
+                            android:layout_marginBottom="4dp"
+                            android:layout_marginLeft="4dp"
+                            android:layout_marginRight="2dp" />
+
+                    </LinearLayout>
+                    <LinearLayout android:layout_weight="1"
+                        android:layout_height="fill_parent"
+                        android:layout_width="fill_parent">
+
+                        <Button
+                            android:id="@+id/buttonAudioCall"
+                            android:layout_width="fill_parent"
+                            android:layout_height="fill_parent"
+                            android:padding="@dimen/activity_tbook_default_padding_button"
+                            android:text="@string/audio"
                             android:drawableLeft="@drawable/ic_audio_call"
-                            android:gravity="left|center_vertical"
-                            android:text="Audio"
-                            android:id="@+id/buttonAudioCall" />
+                            android:textSize="@dimen/activity_tbook_default_text_size"
+                            android:gravity="left|center"
+                            android:layout_marginRight="4dp"
+                            android:layout_marginTop="2dp"
+                            android:layout_marginBottom="4dp"
+                            android:layout_marginLeft="2dp" />
 
                     </LinearLayout>
                 </LinearLayout>

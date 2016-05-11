@@ -3,8 +3,10 @@
     package="com.app.cat">
 
     <uses-permission android:name="android.permission.CAMERA" />
+
     <uses-feature android:name="android.hardware.camera" />
     <uses-feature android:name="android.hardware.camera.autofocus" />
+
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
@@ -21,8 +23,10 @@
             </intent-filter>
         </activity>
 
-        <service android:name=".service.CATService" ></service>
+        <service android:name=".service.CATService" />
 
+        <activity android:name=".ui.CallActivity" />
+        <activity android:name=".ui.TalkActivity"></activity>
     </application>
 
 </manifest>

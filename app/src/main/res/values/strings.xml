@@ -3,4 +3,6 @@
 
     <!-- Activity_telephone_book -->
     <string name="default_profile_image_description">Default Profile Image</string>
+    <string name="video">Video</string>
+    <string name="audio">Audio</string>
 </resources>

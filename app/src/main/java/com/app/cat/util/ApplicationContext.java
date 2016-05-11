@@ -2,6 +2,11 @@ package com.app.cat.util;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+
+import com.app.cat.ui.CallActivity;
+import com.app.cat.ui.MainActivity;
+import com.app.cat.ui.TalkActivity;
 
 /**
  * @author Andreas Sekulski
@@ -9,6 +14,21 @@ import android.content.Context;
  * Singleton utility class to get context from active activity.
  */
 public class ApplicationContext {
+
+    /**
+     * Main activity class.
+     */
+    public static Class ACTIVITY_MAIN = MainActivity.class;
+
+    /**
+     * Call activity class.
+     */
+    public static Class ACTIVITY_CALL = CallActivity.class;
+
+    /**
+     * Talk activity class.
+     */
+    public static Class ACTIVITY_TALK = TalkActivity.class;
 
     /**
      * Activity which is currently active.
@@ -37,5 +57,14 @@ public class ApplicationContext {
      */
     public static Context getContext() {
         return gContext;
+    }
+
+    /**
+     * Call an new intent to show up on screen.
+     * @param aClass Class to shown from application context.
+     */
+    public static void runIntent(Class aClass) {
+        Intent i = new Intent(gContext.getApplicationContext(), aClass);
+        gContext.startActivity(i);
     }
 }

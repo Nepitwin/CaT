@@ -18,6 +18,7 @@ import com.app.cat.model.CATUser;
 import com.app.cat.model.CATAccount;
 import com.app.cat.service.CATService;
 import com.app.cat.ui.component.TelephoneBookAdapter;
+import com.app.cat.util.ApplicationContext;
 import com.app.cat.util.PropertiesLoader;
 
 import org.linphone.core.LinphoneCoreException;
@@ -89,6 +90,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // Set UI application context
+        ApplicationContext.setContext(this);
 
         // Starts an service in background
         service = new Intent(MainActivity.this, CATService.class);
