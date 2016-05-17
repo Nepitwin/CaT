@@ -50,6 +50,11 @@ import java.util.Map;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
+/**
+ * The Main Activity represents the main user interface.
+ *
+ * @author Andreas Sekulski, Dimitry Kotlovsky
+ */
 public class MainActivity extends AppCompatActivity {
 
     /**

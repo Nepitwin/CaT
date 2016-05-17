@@ -26,6 +26,7 @@ import com.app.cat.util.ApplicationContext;
 
 import butterknife.ButterKnife;
 
+@Deprecated
 public class TalkActivity extends AppCompatActivity {
 
     @Override
