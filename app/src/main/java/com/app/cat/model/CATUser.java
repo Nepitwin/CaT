@@ -44,6 +44,7 @@ public class CATUser extends CATAccount {
     public CATUser(String username, String password, String domain) throws NoSuchAlgorithmException {
         super(username, domain);
         this.password = HashGenerator.ha1(username, domain, password);
+        HashGenerator.ha1b(username, domain, password);
     }
 
     /**

@@ -29,12 +29,12 @@ import android.widget.ListView;
 import com.app.cat.R;
 import com.app.cat.client.CATClient;
 import com.app.cat.client.CATException;
-import com.app.cat.model.CATFriend;
 import com.app.cat.linphone.LinphoneCATClient;
-import com.app.cat.model.CATUser;
 import com.app.cat.model.CATAccount;
+import com.app.cat.model.CATFriend;
+import com.app.cat.model.CATUser;
 import com.app.cat.service.CATService;
-import com.app.cat.ui.component.TelephoneBookAdapter;
+import com.app.cat.ui.adapter.TelephoneBookAdapter;
 import com.app.cat.util.ApplicationContext;
 import com.app.cat.util.PropertiesLoader;
 

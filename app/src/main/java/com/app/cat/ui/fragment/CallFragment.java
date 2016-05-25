@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.app.cat.ui.component;
+package com.app.cat.ui.fragment;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -26,8 +26,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 
 import com.app.cat.R;
+import com.app.cat.ui.component.ClockTimer;
+import com.app.cat.ui.listener.CallFragmentListener;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -53,6 +56,9 @@ public class CallFragment extends Fragment {
      */
     @Bind(R.id.buttonHangUp)
     Button hangUp;
+
+    @Bind(R.id.clockTimer)
+    ClockTimer timer;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the fragment.
@@ -90,9 +96,12 @@ public class CallFragment extends Fragment {
         hangUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                timer.stopTimer();
                 mListener.onHangUp();
             }
         });
+
+        timer.runTimer();
 
         return view;
     }

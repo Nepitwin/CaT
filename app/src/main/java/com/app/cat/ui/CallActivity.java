@@ -23,10 +23,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
 import com.app.cat.R;
-import com.app.cat.ui.component.CallFragment;
-import com.app.cat.ui.component.CallFragmentListener;
-import com.app.cat.ui.component.IncomingCallFragment;
-import com.app.cat.ui.component.IncomingCallFragmentListener;
+import com.app.cat.ui.fragment.CallFragment;
+import com.app.cat.ui.listener.CallFragmentListener;
+import com.app.cat.ui.fragment.IncomingCallFragment;
+import com.app.cat.ui.listener.IncomingCallFragmentListener;
 import com.app.cat.util.ApplicationContext;
 
 import butterknife.ButterKnife;

@@ -26,7 +26,7 @@
     android:layout_marginRight="20dp"
     android:layout_marginBottom="60dp"
     android:background="@drawable/rounded_shape"
-    tools:context="com.app.cat.ui.component.CallFragment">
+    tools:context="com.app.cat.ui.fragment.CallFragment">
 
     <LinearLayout
         android:orientation="horizontal"
@@ -67,14 +67,19 @@
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="20dp">
+        android:background="#ffffff">
 
-        <TextView
+        <com.app.cat.ui.component.ClockTimer
+            android:id="@+id/clockTimer"
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:text="ToDo Timer"
-            android:textStyle="bold"
-            android:textColor="#ffffff" />
+            android:layout_height="fill_parent"
+            android:scrollbars="vertical"
+            android:fadingEdge="vertical"
+            android:text="00:00:00"
+            android:gravity="center"
+            android:layout_margin="10dp"
+            android:textSize="20sp" />
+
     </LinearLayout>
 
     <LinearLayout
@@ -83,7 +88,7 @@
         android:layout_height="match_parent">
 
         <Button
-            android:layout_width="fill_parent"
+            android:layout_width="match_parent"
             android:layout_height="fill_parent"
             android:text="Hang up"
             android:id="@+id/buttonHangUp" />

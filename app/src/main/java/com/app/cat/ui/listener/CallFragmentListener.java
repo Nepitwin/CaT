@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.app.cat.ui.component;
+package com.app.cat.ui.listener;
 
 /**
  * Listener for interactions with the Call Fragment.

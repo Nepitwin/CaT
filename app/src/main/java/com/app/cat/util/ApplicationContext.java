@@ -23,7 +23,6 @@ import android.content.Intent;
 
 import com.app.cat.ui.CallActivity;
 import com.app.cat.ui.MainActivity;
-import com.app.cat.ui.TalkActivity;
 
 /**
  * @author Andreas Sekulski
@@ -41,11 +40,6 @@ public class ApplicationContext {
      * Call activity class.
      */
     public static Class ACTIVITY_CALL = CallActivity.class;
-
-    /**
-     * Talk activity class.
-     */
-    public static Class ACTIVITY_TALK = TalkActivity.class;
 
     /**
      * Activity which is currently active.

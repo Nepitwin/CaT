@@ -17,6 +17,8 @@
 
 package com.app.cat.util;
 
+import android.util.Log;
+
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
@@ -38,6 +40,7 @@ public class HashGenerator {
      * @throws NoSuchAlgorithmException If algo not supported.
      */
     public static String ha1(String username, String domain, String password) throws NoSuchAlgorithmException {
+        Log.d("HA1", md5(username + ":" + domain + ":" + password));
         return md5(username + ":" + domain + ":" + password);
     }
 
@@ -50,6 +53,7 @@ public class HashGenerator {
      * @throws NoSuchAlgorithmException If algo not supported.
      */
     public static String ha1b(String username, String domain, String password) throws NoSuchAlgorithmException {
+        Log.d("HA1B", md5(username + "@" + domain +  ":" + domain + ":" + password));
         return md5(username + "@" + domain +  ":" + domain + ":" + password);
     }
 
