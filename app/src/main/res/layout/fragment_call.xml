@@ -76,7 +76,7 @@
         android:background="#ffffff"
         android:weightSum="1">
 
-        <android.custom.widget.Counter
+        <com.android.widget.Counter
             android:id="@+id/clockTimer"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
