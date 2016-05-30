@@ -1,6 +1,6 @@
 /*
  * This program is an Voice over IP client for Android devices.
- * Copyright (C) 2016 Andreas Sekulski, Dimitry Kotlovsky
+ * Copyright (C) 2016 Andreas Sekulski, Dimitri Kotlovsky
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,7 +24,6 @@
 package com.app.cat.ui.fragment;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -46,7 +45,7 @@ import butterknife.ButterKnife;
  * Activities containing this fragment MUST implement the {@link IncomingCallFragmentListener}
  * interface.
  *
- * @author Dimitry Kotlovsky
+ * @author Dimitri Kotlovsky
  */
 public class IncomingCallFragment extends Fragment {
 

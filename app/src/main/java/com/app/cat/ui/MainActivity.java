@@ -1,6 +1,6 @@
 /*
  * This program is an Voice over IP client for Android devices.
- * Copyright (C) 2016 Andreas Sekulski, Dimitry Kotlovsky
+ * Copyright (C) 2016 Andreas Sekulski, Dimitri Kotlovsky
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -59,7 +59,7 @@ import butterknife.ButterKnife;
 /**
  * The Main Activity represents the main user interface.
  *
- * @author Andreas Sekulski, Dimitry Kotlovsky
+ * @author Andreas Sekulski, Dimitri Kotlovsky
  */
 public class MainActivity extends AppCompatActivity {
 

@@ -1,6 +1,6 @@
 /*
  * This program is an Voice over IP client for Android devices.
- * Copyright (C) 2016 Andreas Sekulski, Dimitry Kotlovsky
+ * Copyright (C) 2016 Andreas Sekulski, Dimitri Kotlovsky
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -45,7 +45,7 @@ import org.linphone.core.PresenceModel;
 /**
  * Singleton LinphoneCATClient implementation to handle all SIP Client <-> Server communication.
  *
- * @author Andreas Sekulski, Dimitry Kotlovsky
+ * @author Andreas Sekulski, Dimitri Kotlovsky
  */
 public class LinphoneCATClient implements CATClient {
 

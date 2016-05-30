@@ -1,6 +1,6 @@
 /*
  * This program is an Voice over IP client for Android devices.
- * Copyright (C) 2016 Andreas Sekulski, Dimitry Kotlovsky
+ * Copyright (C) 2016 Andreas Sekulski, Dimitri Kotlovsky
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -56,7 +56,7 @@ public class ApplicationContext {
      * Sets context from activity.
      * @param activity Activitiy which is currently showing.
      */
-    public static void setContext( Activity activity) {
+    public static void setContext(Activity activity) {
         gContext = activity;
     }
 
