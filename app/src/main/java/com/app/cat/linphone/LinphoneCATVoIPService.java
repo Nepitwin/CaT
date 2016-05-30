@@ -33,7 +33,7 @@ public class LinphoneCATVoIPService implements Runnable, VoIPService {
     /**
      * Constant interval to call updates from an SIP server in ms.
      */
-    private static final long NOTIFY_INTERVAL = 100;
+    private static final long NOTIFY_INTERVAL = 50;
 
     /**
      * Handler to call this runnable periodically;

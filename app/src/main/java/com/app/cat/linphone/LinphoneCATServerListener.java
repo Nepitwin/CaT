@@ -27,6 +27,7 @@ import org.linphone.core.LinphoneChatMessage;
 import org.linphone.core.LinphoneChatRoom;
 import org.linphone.core.LinphoneContent;
 import org.linphone.core.LinphoneCore;
+import org.linphone.core.LinphoneCoreException;
 import org.linphone.core.LinphoneCoreListener;
 import org.linphone.core.LinphoneEvent;
 import org.linphone.core.LinphoneFriend;
@@ -64,7 +65,19 @@ public class LinphoneCATServerListener implements LinphoneCoreListener {
 
     @Override
     public void newSubscriptionRequest(LinphoneCore linphoneCore, LinphoneFriend linphoneFriend, String s) {
+        Log.i("Cat_Server", "--------------------------------");
         Log.i("Cat_Server", "newSubscriptionRequest");
+
+        Log.i("Buddy status request", "[" + linphoneFriend.getAddress().getUserName() + "] wants to see your status, accepting...");
+        linphoneFriend.edit(); // start editing friend
+        linphoneFriend.setIncSubscribePolicy(LinphoneFriend.SubscribePolicy.SPAccept); // accept incoming subscription request for this friend
+        linphoneFriend.done(); // commit change
+        try {
+            linphoneCore.addFriend(linphoneFriend); // add this new friend to the buddy list
+        } catch (LinphoneCoreException e) {
+            Log.i("ERROR", "Error while adding friend [" + linphoneFriend.getAddress().getUserName() + "] to linphone.");
+        }
+        Log.i("Cat_Server", "--------------------------------");
     }
 
     @Override

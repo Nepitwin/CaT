@@ -20,6 +20,8 @@ package com.app.cat.client;
 import com.app.cat.model.CATFriend;
 import com.app.cat.model.CATUser;
 
+import org.linphone.core.LinphoneFriend;
+
 /**
  * Voice over IP CAT client interface, to handle all supported features like an audio or video call.
  *
@@ -64,4 +66,11 @@ public interface CATClient {
      * Disables the presence status.
      */
     public void disablePresenceStatus();
+
+    /**
+     * Returns the corresponding LinphoneFriend to the given CATFriend if he exists.
+     * @param catFriend CATFriend
+     * @return LinphoneFriend corresponding to the given CATFriend
+     */
+    public LinphoneFriend getLinphoneFriend(CATFriend catFriend);
 }

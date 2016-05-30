@@ -44,6 +44,11 @@ import org.linphone.core.PresenceModel;
 public class LinphoneCATClient implements CATClient {
 
     /**
+     * Registration expiration time.
+     */
+    private static final int REGISTRATION_EXPIRATION_TIME = 2000;
+
+    /**
      * Linphone core implementation.
      */
     private LinphoneCore core;
@@ -106,6 +111,7 @@ public class LinphoneCATClient implements CATClient {
 
         // Create an proxy configuration class from core.
         proxyConfig = core.createProxyConfig();
+        proxyConfig.setExpires(REGISTRATION_EXPIRATION_TIME); // sets the registration expiration time
     }
 
     @Override
@@ -119,6 +125,7 @@ public class LinphoneCATClient implements CATClient {
         String sip = catUser.getSIPAccount();
 
         try {
+            // ToDo : Check if addAuthInfo and ProxyConfig must be deleted.
             core.clearProxyConfigs();
             core.clearAuthInfos();
             core.enableKeepAlive(true);
@@ -138,11 +145,18 @@ public class LinphoneCATClient implements CATClient {
             proxyConfig.setAddress(address);
             proxyConfig.setProxy(address.getDomain());
 
-            // ToDo : Check if addAuthInfo and ProxyConfig must be deleted.
             // Append CATUser information to core
             core.addAuthInfo(authInfo);
             core.addProxyConfig(proxyConfig);
             core.setDefaultProxyConfig(proxyConfig);
+
+            // Wait until registration is finished.
+            while(proxyConfig.getState() != LinphoneCore.RegistrationState.RegistrationOk
+                    && proxyConfig.getState() != LinphoneCore.RegistrationState.RegistrationFailed) {
+                // ToDO: overthink LinphoneCATVoIPService architecture (should be running in a separate thread)
+                core.iterate();
+            }
+
         } catch (LinphoneCoreException e) {
             throw new CATException(e.getMessage());
         }
@@ -156,6 +170,13 @@ public class LinphoneCATClient implements CATClient {
         proxyConfig.edit(); // Start editing proxy configuration
         proxyConfig.enableRegister(false); // De-activate registration for this proxy config
         proxyConfig.done(); // Initiate REGISTER with expire = 0
+
+        // Wait until unregistration is finished.
+        while(proxyConfig.getState() != LinphoneCore.RegistrationState.RegistrationCleared
+                && proxyConfig.getState() != LinphoneCore.RegistrationState.RegistrationNone) {
+            // ToDO: overthink LinphoneCATVoIPService architecture (should be running in a separate thread)
+            core.iterate();
+        }
     }
 
     @Override
@@ -175,6 +196,8 @@ public class LinphoneCATClient implements CATClient {
         String friendSIP = catFriend.getSIPAccount();
 
         try {
+
+            // Debug-mode: clearing all friends
             for (LinphoneFriend friend : core.getFriendList()) {
                 friend.edit(); // start editing friend
                 friend.enableSubscribes(false); // disable subscription for this friend
@@ -191,11 +214,11 @@ public class LinphoneCATClient implements CATClient {
             LinphoneFriend friend = coreFactory.createLinphoneFriend(friendSIP); /* creates friend object for buddy joe */
             friend.enableSubscribes(true); /* configure this friend to emit SUBSCRIBE message after being added to LinphoneCore */
             friend.setIncSubscribePolicy(LinphoneFriend.SubscribePolicy.SPAccept); /* accept Incoming subscription request for this friend */
-            core.addFriend(friend);
+            core.addFriend(friend); /* add my friend to the buddy list, initiate SUBSCRIBE message */
 
             // ToDo : Check what "LinphoneFriendList" is doing exactly. Probably saving a buddy list on the server.
-            LinphoneFriendList friendList = core.createLinphoneFriendList();
-            friendList.addFriend(friend);
+            //LinphoneFriendList friendList = core.createLinphoneFriendList();
+            //friendList.addFriend(friend);
 
         } catch (LinphoneCoreException e) {
             throw new CATException(e.getMessage());
@@ -221,6 +244,11 @@ public class LinphoneCATClient implements CATClient {
         model.clearActivities();
         model.setActivity(PresenceActivityType.Offline, "offline");
         core.setPresenceModel(model);
+    }
+
+    @Override
+    public LinphoneFriend getLinphoneFriend(CATFriend catFriend) {
+        return core.findFriendByAddress(catFriend.getSIPAccount());
     }
 
     /**

@@ -18,25 +18,33 @@
 package com.app.cat.ui.component;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.graphics.PorterDuff;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.TextView;
 
 import com.app.cat.R;
+import com.app.cat.client.CATClient;
+import com.app.cat.linphone.LinphoneCATClient;
 import com.app.cat.model.CATAccount;
+import com.app.cat.model.CATFriend;
 import com.app.cat.util.ApplicationContext;
 import com.app.cat.util.CatSettings;
+
+import org.linphone.core.LinphoneCoreException;
+import org.linphone.core.LinphoneFriend;
+import org.linphone.core.PresenceModel;
 
 import java.util.List;
 
 /**
  * Class to create an list adapter for an telephone book list view.
  *
- * @author Andreas Sekulski
+ * @author Andreas Sekulski, Dimitri Kotlovsky
  */
 public class TelephoneBookAdapter extends ArrayAdapter<CATAccount> {
 
@@ -44,6 +52,11 @@ public class TelephoneBookAdapter extends ArrayAdapter<CATAccount> {
      * Corresponding layout from adapter
      */
     private static final int LAYOUT = R.layout.layout_list_telephone_book;
+
+    /**
+     * Cat client instance.
+     */
+    private CATClient client;
 
     /**
      * Constructor to create an list key adapter.
@@ -77,6 +90,29 @@ public class TelephoneBookAdapter extends ArrayAdapter<CATAccount> {
 
         audio.getBackground().setColorFilter(CatSettings.DEFAULT_BUTTON_COLOR, PorterDuff.Mode.MULTIPLY);
         video.getBackground().setColorFilter(CatSettings.DEFAULT_BUTTON_COLOR, PorterDuff.Mode.MULTIPLY);
+
+        // Set name of the user
+        TextView textview = (TextView) rowView.findViewById(R.id.textView);
+        textview.setText(user.getUsername());
+
+        // ToDo: Consider changing the list items to LinphoneFriends instead of CATAccounts (would make things easier)
+        // ToDo: Implement notifyDataSetChanged, so this is redrawn on changes
+        // Analyse presence status
+        if (user instanceof CATFriend) {
+            try {
+                client = LinphoneCATClient.getInstance();
+                LinphoneFriend linphoneFriend = client.getLinphoneFriend((CATFriend) user);
+
+                // Display status
+                if (linphoneFriend != null) {
+                    PresenceModel model = linphoneFriend.getPresenceModel();
+                    textview.setText(user.getUsername() + " [" + model.getActivity().getType().name() + "]");
+                }
+            } catch (LinphoneCoreException e) {
+                // ToDo := Error handling in Android UI... Everytime the same... Donuts...
+                Log.e("TelephoneBookAdapter", e.getMessage());
+            }
+        }
 
         return rowView;
     }

@@ -122,7 +122,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Mockup telephone book ui data.
         List<CATAccount> catAccounts = new ArrayList<CATAccount>();
-        for(int i = 0; i < 10; i++) {
+        for(int i = 0; i < 3; i++) {
             catAccounts.add(new CATFriend("Mockup " + i, "Mockup Domain"));
         }
         telephoneBookAdapter = new TelephoneBookAdapter(this, catAccounts);
@@ -148,6 +148,7 @@ public class MainActivity extends AppCompatActivity {
 
             catFriend = new CATFriend(configuration.get("friendUsername"),
                     configuration.get("domain"));
+            catAccounts.add(catFriend);
 
         } catch (IOException io) {
             // ToDo := Error handling in Android UI... Everytime the same... Donuts...
@@ -164,6 +165,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
             try {
+                client.unregister();
                 client.register(catUser);
                 client.addFriend(catFriend);
                 // ToDo := Presence should wait until adding friends is done !!!
