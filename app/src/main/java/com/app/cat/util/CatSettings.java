@@ -23,6 +23,8 @@
 
 package com.app.cat.util;
 
+import android.graphics.Color;
+
 /**
  * Default settings class for constants.
  *
@@ -31,7 +33,22 @@ package com.app.cat.util;
 public class CatSettings {
 
     /**
-     * Color type for an default button color.
+     * Color type for a default button color.
      */
     public static final int DEFAULT_BUTTON_COLOR = 0xFFE2FFD3;
+
+    /**
+     * Color type for the "hang up" button.
+     */
+    public static final int HANGUP_BUTTON_COLOR = Color.RED;
+
+    /**
+     * Color type for the "accept call" button.
+     */
+    public static final int ACCEPT_CALL_BUTTON_COLOR = Color.GREEN;
+
+    /**
+     * Color type for the "decline call" button.
+     */
+    public static final int DECLINE_CALL_BUTTON_COLOR = Color.RED;
 }

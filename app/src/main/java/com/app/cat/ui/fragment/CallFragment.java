@@ -36,6 +36,7 @@ import android.widget.Button;
 import com.android.widget.Counter;
 import com.app.cat.R;
 import com.app.cat.ui.listener.CallFragmentListener;
+import com.app.cat.util.CatSettings;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -96,7 +97,7 @@ public class CallFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_call, container, false);
         ButterKnife.bind(this, view);
 
-        hangUp.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.MULTIPLY);
+        hangUp.getBackground().setColorFilter(CatSettings.HANGUP_BUTTON_COLOR, PorterDuff.Mode.MULTIPLY);
 
         hangUp.setOnClickListener(new View.OnClickListener() {
             @Override

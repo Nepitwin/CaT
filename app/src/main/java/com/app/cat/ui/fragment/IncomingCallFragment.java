@@ -35,6 +35,7 @@ import android.widget.Button;
 
 import com.app.cat.R;
 import com.app.cat.ui.listener.IncomingCallFragmentListener;
+import com.app.cat.util.CatSettings;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -98,8 +99,8 @@ public class IncomingCallFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_incoming_call, container, false);
         ButterKnife.bind(this, view);
 
-        accept.getBackground().setColorFilter(Color.GREEN, PorterDuff.Mode.MULTIPLY);
-        decline.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.MULTIPLY);
+        accept.getBackground().setColorFilter(CatSettings.ACCEPT_CALL_BUTTON_COLOR, PorterDuff.Mode.MULTIPLY);
+        decline.getBackground().setColorFilter(CatSettings.DECLINE_CALL_BUTTON_COLOR, PorterDuff.Mode.MULTIPLY);
 
         accept.setOnClickListener(new View.OnClickListener() {
             @Override
