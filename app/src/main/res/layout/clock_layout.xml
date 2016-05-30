@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <!--
   ~ This program is an Voice over IP client for Android devices.
   ~ Copyright (C) 2016 Andreas Sekulski, Dimitry Kotlovsky
@@ -21,8 +22,19 @@
   ~ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   -->
 
-<resources>
-    <!-- Dimesions for layout_list_telephone_book -->
-    <dimen name="activity_tbook_default_text_size">10sp</dimen>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="wrap_content">
 
-</resources>
+    <TextView
+        android:id="@+id/clockValue"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scrollbars="vertical"
+        android:fadingEdge="vertical"
+        android:text="00:00:00"
+        android:gravity="center"
+        android:layout_margin="10dp"
+        android:textSize="20sp" />
+
+</LinearLayout>

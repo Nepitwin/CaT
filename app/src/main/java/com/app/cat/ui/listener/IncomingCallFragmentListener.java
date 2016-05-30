@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2016.
+ * This program is an Voice over IP client for Android devices.
+ * Copyright (C) 2016 Andreas Sekulski, Dimitry Kotlovsky
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -11,26 +12,36 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.app.cat.ui.component;
+package com.app.cat.ui.listener;
 
 /**
- * Listener for interactions with the Call Fragment.
+ * Listener for interactions with the Incoming Call Fragment.
  * <p/>
- * This interface must be implemented by activities that contain the "Call Fragment"
+ * This interface must be implemented by activities that contain the "Incoming Call Fragment"
  * fragment to allow an interaction in this fragment to be communicated
  * to the activity and potentially other fragments contained in that
  * activity.
  *
  * @author Dimitry Kotlovsky
  */
-public interface CallFragmentListener {
+public interface IncomingCallFragmentListener {
 
     /**
-     * Is invoked when user hangs up the call.
+     * Is invoked when user accepts an incoming call.
      */
-    void onHangUp();
+    void onAcceptCall();
+
+    /**
+     * Is invoked when user declines an incoming call.
+     */
+    void onDeclineCall();
 }

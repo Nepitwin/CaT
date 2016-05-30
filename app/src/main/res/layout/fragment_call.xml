@@ -1,11 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-  ~ Copyright (c) 2016.
+  ~ This program is an Voice over IP client for Android devices.
+  ~ Copyright (C) 2016 Andreas Sekulski, Dimitry Kotlovsky
   ~
   ~ This program is free software: you can redistribute it and/or modify
   ~ it under the terms of the GNU General Public License as published by
   ~ the Free Software Foundation, either version 3 of the License, or
   ~ (at your option) any later version.
+  ~
+  ~ This program is distributed in the hope that it will be useful,
+  ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
+  ~ MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  ~ GNU General Public License for more details.
   ~
   ~ This program is distributed in the hope that it will be useful,
   ~ but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -26,7 +32,7 @@
     android:layout_marginRight="20dp"
     android:layout_marginBottom="60dp"
     android:background="@drawable/rounded_shape"
-    tools:context="com.app.cat.ui.component.CallFragment">
+    tools:context="com.app.cat.ui.fragment.CallFragment">
 
     <LinearLayout
         android:orientation="horizontal"
@@ -67,14 +73,15 @@
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="20dp">
+        android:background="#ffffff"
+        android:weightSum="1">
 
-        <TextView
+        <com.android.widget.Counter
+            android:id="@+id/clockTimer"
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:text="ToDo Timer"
-            android:textStyle="bold"
-            android:textColor="#ffffff" />
+            android:layout_height="fill_parent"
+            android:layout_margin="10dp" />
+
     </LinearLayout>
 
     <LinearLayout
@@ -83,7 +90,7 @@
         android:layout_height="match_parent">
 
         <Button
-            android:layout_width="fill_parent"
+            android:layout_width="match_parent"
             android:layout_height="fill_parent"
             android:text="Hang up"
             android:id="@+id/buttonHangUp" />

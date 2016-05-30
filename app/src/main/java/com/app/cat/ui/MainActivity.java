@@ -1,10 +1,16 @@
 /*
- * Copyright (c) 2016.
+ * This program is an Voice over IP client for Android devices.
+ * Copyright (C) 2016 Andreas Sekulski, Dimitry Kotlovsky
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -29,12 +35,12 @@ import android.widget.ListView;
 import com.app.cat.R;
 import com.app.cat.client.CATClient;
 import com.app.cat.client.CATException;
-import com.app.cat.model.CATFriend;
 import com.app.cat.linphone.LinphoneCATClient;
-import com.app.cat.model.CATUser;
 import com.app.cat.model.CATAccount;
+import com.app.cat.model.CATFriend;
+import com.app.cat.model.CATUser;
 import com.app.cat.service.CATService;
-import com.app.cat.ui.component.TelephoneBookAdapter;
+import com.app.cat.ui.adapter.TelephoneBookAdapter;
 import com.app.cat.util.ApplicationContext;
 import com.app.cat.util.PropertiesLoader;
 

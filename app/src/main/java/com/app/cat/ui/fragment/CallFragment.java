@@ -1,5 +1,6 @@
 /*
- * Copyright (c) 2016.
+ * This program is an Voice over IP client for Android devices.
+ * Copyright (C) 2016 Andreas Sekulski, Dimitry Kotlovsky
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -11,11 +12,16 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.app.cat.ui.component;
+package com.app.cat.ui.fragment;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -27,43 +33,42 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import com.android.widget.Counter;
 import com.app.cat.R;
+import com.app.cat.ui.listener.CallFragmentListener;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
 /**
- * The Incoming Call Fragment represents the user interface for accepting or declining calls.
+ * The Call Fragment represents the user interface for outgoing calls or current talks.
  * <p/>
- * Activities containing this fragment MUST implement the {@link IncomingCallFragmentListener}
+ * Activities containing this fragment MUST implement the {@link CallFragmentListener}
  * interface.
  *
  * @author Dimitry Kotlovsky
  */
-public class IncomingCallFragment extends Fragment {
+public class CallFragment extends Fragment {
 
     // TODO: Customize parameter argument names
     private static final String ARG_COLUMN_COUNT = "column-count";
     // TODO: Customize parameters
     private int mColumnCount = 1;
-    private IncomingCallFragmentListener mListener;
+    private CallFragmentListener mListener;
 
     /**
-     * Accept button.
+     * Hang Up button.
      */
-    @Bind(R.id.buttonCallAccept)
-    Button accept;
+    @Bind(R.id.buttonHangUp)
+    Button hangUp;
 
-    /**
-     * Decline button.
-     */
-    @Bind(R.id.buttonCallDecline)
-    Button decline;
+    @Bind(R.id.clockTimer)
+    Counter timer;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the fragment.
      */
-    public IncomingCallFragment() {
+    public CallFragment() {
     }
 
     // TODO: Customize parameter initialization
@@ -88,25 +93,20 @@ public class IncomingCallFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_incoming_call, container, false);
+        View view = inflater.inflate(R.layout.fragment_call, container, false);
         ButterKnife.bind(this, view);
 
-        accept.getBackground().setColorFilter(Color.GREEN, PorterDuff.Mode.MULTIPLY);
-        decline.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.MULTIPLY);
+        hangUp.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.MULTIPLY);
 
-        accept.setOnClickListener(new View.OnClickListener() {
+        hangUp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mListener.onAcceptCall();
+                timer.stopTimer();
+                mListener.onHangUp();
             }
         });
 
-        decline.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mListener.onDeclineCall();
-            }
-        });
+        timer.runTimer();
 
         return view;
     }
@@ -114,10 +114,10 @@ public class IncomingCallFragment extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof IncomingCallFragmentListener) {
-            mListener = (IncomingCallFragmentListener) context;
+        if (context instanceof CallFragmentListener) {
+            mListener = (CallFragmentListener) context;
         } else {
-            throw new RuntimeException(context.toString() + " must implement IncomingCallFragmentListener");
+            throw new RuntimeException(context.toString() + " must implement CallFragmentListener");
         }
     }
 

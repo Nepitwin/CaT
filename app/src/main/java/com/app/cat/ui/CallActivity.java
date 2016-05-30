@@ -1,10 +1,16 @@
 /*
- * Copyright (c) 2016.
+ * This program is an Voice over IP client for Android devices.
+ * Copyright (C) 2016 Andreas Sekulski, Dimitry Kotlovsky
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -23,10 +29,10 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
 import com.app.cat.R;
-import com.app.cat.ui.component.CallFragment;
-import com.app.cat.ui.component.CallFragmentListener;
-import com.app.cat.ui.component.IncomingCallFragment;
-import com.app.cat.ui.component.IncomingCallFragmentListener;
+import com.app.cat.ui.fragment.CallFragment;
+import com.app.cat.ui.listener.CallFragmentListener;
+import com.app.cat.ui.fragment.IncomingCallFragment;
+import com.app.cat.ui.listener.IncomingCallFragmentListener;
 import com.app.cat.util.ApplicationContext;
 
 import butterknife.ButterKnife;

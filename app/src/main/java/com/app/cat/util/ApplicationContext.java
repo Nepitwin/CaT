@@ -1,10 +1,16 @@
 /*
- * Copyright (c) 2016.
+ * This program is an Voice over IP client for Android devices.
+ * Copyright (C) 2016 Andreas Sekulski, Dimitry Kotlovsky
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -23,7 +29,6 @@ import android.content.Intent;
 
 import com.app.cat.ui.CallActivity;
 import com.app.cat.ui.MainActivity;
-import com.app.cat.ui.TalkActivity;
 
 /**
  * @author Andreas Sekulski
@@ -41,11 +46,6 @@ public class ApplicationContext {
      * Call activity class.
      */
     public static Class ACTIVITY_CALL = CallActivity.class;
-
-    /**
-     * Talk activity class.
-     */
-    public static Class ACTIVITY_TALK = TalkActivity.class;
 
     /**
      * Activity which is currently active.
