@@ -25,6 +25,7 @@ package com.app.cat.ui.adapter;
 
 import android.content.Context;
 import android.graphics.PorterDuff;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -35,15 +36,14 @@ import android.widget.TextView;
 
 import com.app.cat.R;
 import com.app.cat.client.CATClient;
+import com.app.cat.client.CATException;
 import com.app.cat.linphone.LinphoneCATClient;
-import com.app.cat.model.CATAccount;
 import com.app.cat.model.CATFriend;
+import com.app.cat.ui.CallActivity;
 import com.app.cat.util.ApplicationContext;
 import com.app.cat.util.CatSettings;
 
 import org.linphone.core.LinphoneCoreException;
-import org.linphone.core.LinphoneFriend;
-import org.linphone.core.PresenceModel;
 
 import java.util.List;
 
@@ -52,7 +52,7 @@ import java.util.List;
  *
  * @author Andreas Sekulski, Dimitri Kotlovsky
  */
-public class TelephoneBookAdapter extends ArrayAdapter<CATAccount> {
+public class TelephoneBookAdapter extends ArrayAdapter<CATFriend> {
 
     /**
      * Corresponding layout from adapter
@@ -68,9 +68,9 @@ public class TelephoneBookAdapter extends ArrayAdapter<CATAccount> {
      * Constructor to create an list key adapter.
      *
      * @param context Application context from adapter.
-     * @param users List from all users to show.
+     * @param users List from all friends to show.
      */
-    public TelephoneBookAdapter(Context context, List<CATAccount> users) {
+    public TelephoneBookAdapter(Context context, List<CATFriend> users) {
         super(context, 0, users);
     }
 
@@ -80,7 +80,14 @@ public class TelephoneBookAdapter extends ArrayAdapter<CATAccount> {
         LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View rowView = inflater.inflate(LAYOUT, parent, false);
 
-        CATAccount user = getItem(position);
+        try {
+            client = LinphoneCATClient.getInstance();
+        } catch (LinphoneCoreException e) {
+            // ToDo := Error handling in Android UI... Everytime the same... Donuts...
+            Log.e("TelephoneBookAdapter", e.getMessage());
+        }
+
+        final CATFriend catFriend = getItem(position);
 
         // ToDo : Button interaction handling for audio and video calls
         Button audio = (Button) rowView.findViewById(R.id.buttonAudioCall);
@@ -88,7 +95,16 @@ public class TelephoneBookAdapter extends ArrayAdapter<CATAccount> {
         audio.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ApplicationContext.runIntent(ApplicationContext.ACTIVITY_CALL);
+                // Try to call an cool friend!
+                try {
+                    client.callFriend(catFriend);
+                    Bundle bundle = new Bundle();
+                    bundle.putInt(CallActivity.KEY_FRAGMENT_ID, CallActivity.FRAGMENT_CALL);
+                    ApplicationContext.runIntentWithParams(ApplicationContext.ACTIVITY_CALL, bundle);
+                } catch (CATException e) {
+                    // ToDo := Error handling in Android UI... Everytime the same... Donuts...
+                    e.printStackTrace();
+                }
             }
         });
 
@@ -99,12 +115,12 @@ public class TelephoneBookAdapter extends ArrayAdapter<CATAccount> {
 
         // Set name of the user
         TextView textview = (TextView) rowView.findViewById(R.id.textView);
-        textview.setText(user.getUsername());
+        textview.setText(catFriend.getUsername());
 
         // ToDo: Consider changing the list items to LinphoneFriends instead of CATAccounts (would make things easier)
         // ToDo: Implement notifyDataSetChanged, so this is redrawn on changes
         // Analyse presence status
-        if (user instanceof CATFriend) {
+   /*     if (user instanceof CATFriend) {
             try {
                 client = LinphoneCATClient.getInstance();
                 LinphoneFriend linphoneFriend = client.getLinphoneFriend((CATFriend) user);
@@ -118,7 +134,7 @@ public class TelephoneBookAdapter extends ArrayAdapter<CATAccount> {
                 // ToDo := Error handling in Android UI... Everytime the same... Donuts...
                 Log.e("TelephoneBookAdapter", e.getMessage());
             }
-        }
+        }*/
 
         return rowView;
     }

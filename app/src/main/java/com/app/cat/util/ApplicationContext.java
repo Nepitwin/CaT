@@ -26,9 +26,13 @@ package com.app.cat.util;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
+import android.widget.Toast;
 
 import com.app.cat.ui.CallActivity;
 import com.app.cat.ui.MainActivity;
+
+import java.util.Map;
 
 /**
  * @author Andreas Sekulski
@@ -83,5 +87,25 @@ public class ApplicationContext {
     public static void runIntent(Class aClass) {
         Intent i = new Intent(gContext.getApplicationContext(), aClass);
         gContext.startActivity(i);
+    }
+
+    /**
+     * Call an new intent to show up on screen with an given bundle.
+     * @param aClass Class to shown from application context.
+     * @param bundle Bundle to set init params.
+     */
+    public static void runIntentWithParams(Class aClass, Bundle bundle) {
+        Intent i = new Intent(gContext.getApplicationContext(), aClass);
+        i.putExtras(bundle);
+        gContext.startActivity(i);
+    }
+
+    /**
+     * Shows an toast with an given message.
+     * @param message Message to show in an toast.
+     */
+    public static void showToast(String message) {
+        Toast toast = Toast.makeText(getContext(), message, Toast.LENGTH_LONG);
+        toast.show();
     }
 }

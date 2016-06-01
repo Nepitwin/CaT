@@ -29,11 +29,15 @@ import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 
 import com.app.cat.R;
+import com.app.cat.client.CATException;
+import com.app.cat.linphone.LinphoneCATClient;
 import com.app.cat.ui.fragment.CallFragment;
 import com.app.cat.ui.fragment.IncomingCallFragment;
 import com.app.cat.ui.listener.CallFragmentListener;
 import com.app.cat.ui.listener.IncomingCallFragmentListener;
 import com.app.cat.util.ApplicationContext;
+
+import org.linphone.core.LinphoneCoreException;
 
 import butterknife.ButterKnife;
 
@@ -49,6 +53,13 @@ public class CallActivity extends AppCompatActivity implements CallFragmentListe
      */
     FragmentTransaction fragmentTransaction;
 
+    public static final int FRAGMENT_CALL = 1;
+
+    public static final int FRAGMENT_INCOMING_CALL = 2;
+
+    public static final String KEY_FRAGMENT_ID = "FRAGMENT";
+
+
     @Override
     public void setContentView(@LayoutRes int layoutResID) {
         super.setContentView(layoutResID);
@@ -60,8 +71,17 @@ public class CallActivity extends AppCompatActivity implements CallFragmentListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_call);
 
+        Bundle bundle = getIntent().getExtras();
+        int fragment = bundle.getInt(KEY_FRAGMENT_ID);
+
         if (savedInstanceState == null) {
-            fragmentTransaction = getSupportFragmentManager().beginTransaction().add(R.id.callUIContainer, new IncomingCallFragment());
+            if(fragment == FRAGMENT_CALL) {
+                fragmentTransaction = getSupportFragmentManager().beginTransaction().add(R.id.callUIContainer, new CallFragment());
+            } else if(fragment == FRAGMENT_INCOMING_CALL) {
+                fragmentTransaction = getSupportFragmentManager().beginTransaction().add(R.id.callUIContainer, new IncomingCallFragment());
+            } else {
+                // ToDo : WTF Error
+            }
             fragmentTransaction.commit();
         }
 
@@ -71,17 +91,31 @@ public class CallActivity extends AppCompatActivity implements CallFragmentListe
 
     @Override
     public void onAcceptCall() {
-        fragmentTransaction = getSupportFragmentManager().beginTransaction().replace(R.id.callUIContainer, new CallFragment());
-        fragmentTransaction.commit();
+        try {
+            LinphoneCATClient.getInstance().acceptCall();
+            fragmentTransaction = getSupportFragmentManager().beginTransaction().replace(R.id.callUIContainer, new CallFragment());
+            fragmentTransaction.commit();
+        } catch (LinphoneCoreException e) {
+            // ToDo := Error handling in Android UI... Everytime the same... Donuts...
+            e.printStackTrace();
+        } catch (CATException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
     public void onDeclineCall() {
-        ApplicationContext.runIntent(ApplicationContext.ACTIVITY_MAIN);
+        try {
+            LinphoneCATClient.getInstance().declineCall();
+        } catch (LinphoneCoreException e) {
+            // ToDo := Error handling in Android UI... Everytime the same... Donuts...
+            e.printStackTrace();
+        }
     }
 
     @Override
     public void onHangUp() {
+        onDeclineCall();
         ApplicationContext.runIntent(ApplicationContext.ACTIVITY_MAIN);
     }
 }

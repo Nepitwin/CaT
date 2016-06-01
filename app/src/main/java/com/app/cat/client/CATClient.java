@@ -36,11 +36,22 @@ import org.linphone.core.LinphoneFriend;
 public interface CATClient {
 
     /**
+     * Adds an cat friend from contact book.
+     * @param catFriend Friend from contact book to call.
+     */
+    public void addCATFriend(CATFriend catFriend);
+
+    /**
+     * Sets mobile cat user to client.
+     * @param catUser User to set from device.
+     */
+    public void setCATUser(CATUser catUser);
+
+    /**
      * Register a given user to an SIP Server.
-     * @param catUser CATUser model from an client to register to an sip server.
      * @throws CATException
      */
-    public void register(CATUser catUser) throws CATException;
+    public void register() throws CATException;
 
     /**
      * Unregister an user on an registered SIP-Server
@@ -72,6 +83,29 @@ public interface CATClient {
      * Disables the presence status.
      */
     public void disablePresenceStatus();
+
+    /**
+     * Try to call an friend.
+     * @param catFriend Friend to call.
+     * @throws CATException If an error occurred an CATException with an given error message will be thrown.
+     */
+    public void callFriend(CATFriend catFriend) throws CATException;
+
+    /**
+     * Accepts an incoming call if exists.
+     * @throws CATException If call could not be accept from an unknown error.
+     */
+    public void acceptCall() throws CATException;
+
+    /**
+     * Decline an incoming call if exists.
+     */
+    public void declineCall();
+
+    /**
+     * Request to update server information.
+     */
+    public void updateServerInformation();
 
     /**
      * Returns the corresponding LinphoneFriend to the given CATFriend if he exists.

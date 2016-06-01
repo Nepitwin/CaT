@@ -37,24 +37,12 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <Button
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:text="Login"
-            android:id="@+id/buttonLogin" />
-
-        <Button
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:text="Logout"
-            android:id="@+id/buttonLogout" />
-
         <TextView
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceSmall"
-            android:text="Mockup sample telephone book"
-            android:gravity="center" />
+            android:text="Small Text"
+            android:id="@+id/testViewInfo" />
 
         <ListView
             android:layout_width="match_parent"

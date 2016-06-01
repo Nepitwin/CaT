@@ -23,15 +23,20 @@
 
 package com.app.cat.linphone;
 
+import android.os.Bundle;
 import android.util.Log;
 
 import com.app.cat.client.CATClient;
 import com.app.cat.client.CATException;
 import com.app.cat.model.CATFriend;
 import com.app.cat.model.CATUser;
+import com.app.cat.ui.CallActivity;
+import com.app.cat.util.ApplicationContext;
 
 import org.linphone.core.LinphoneAddress;
 import org.linphone.core.LinphoneAuthInfo;
+import org.linphone.core.LinphoneCall;
+import org.linphone.core.LinphoneCallParams;
 import org.linphone.core.LinphoneCore;
 import org.linphone.core.LinphoneCoreException;
 import org.linphone.core.LinphoneCoreFactory;
@@ -41,6 +46,9 @@ import org.linphone.core.LinphoneFriendList;
 import org.linphone.core.LinphoneProxyConfig;
 import org.linphone.core.PresenceActivityType;
 import org.linphone.core.PresenceModel;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Singleton LinphoneCATClient implementation to handle all SIP Client <-> Server communication.
@@ -80,9 +88,24 @@ public class LinphoneCATClient implements CATClient {
     private LinphoneAuthInfo authInfo;
 
     /**
+     * LinphoneCall variable to indicate if an call is set.
+     */
+    private LinphoneCall linphoneCall;
+
+    /**
      * Cat server listener implementation to handle client server communication.
      */
     private LinphoneCoreListener catServerListener;
+
+    /**
+     * List from all friends to call.
+     */
+    private List<CATFriend> friendList;
+
+    /**
+     * Cat user from device.
+     */
+    private CATUser catUser;
 
     /**
      * Static instance from LinphoneCATClient
@@ -121,50 +144,67 @@ public class LinphoneCATClient implements CATClient {
     }
 
     @Override
-    public void register(CATUser catUser) throws CATException {
+    public void addCATFriend(CATFriend catFriend) {
+        if(friendList == null) {
+            friendList = new ArrayList<CATFriend>();
+        }
 
+        friendList.add(catFriend);
+    }
+
+    @Override
+    public void setCATUser(CATUser catUser) {
+        this.catUser = catUser;
+    }
+
+    @Override
+    public void register() throws CATException {
         Log.i("Clicked", "Login motherfucker");
 
-        String username = catUser.getUsername();
-        String domain = catUser.getDomain();
-        String password = catUser.getPassword();
-        String sip = catUser.getSIPAccount();
+        if(catUser != null) {
+            String username = catUser.getUsername();
+            String domain = catUser.getDomain();
+            String password = catUser.getPassword();
+            String sip = catUser.getSIPAccount();
 
-        try {
-            // ToDo : Check if addAuthInfo and ProxyConfig must be deleted.
-            core.clearProxyConfigs();
-            core.clearAuthInfos();
-            core.enableKeepAlive(true);
+            try {
+                // ToDo : Check if addAuthInfo and ProxyConfig must be deleted.
+                core.clearProxyConfigs();
+                core.clearAuthInfos();
+                core.enableKeepAlive(true);
 
-            address = coreFactory.createLinphoneAddress(username, domain, password);
+                address = coreFactory.createLinphoneAddress(username, domain, password);
 
-            authInfo = coreFactory.createAuthInfo(
-                    username, // Username
-                    password,  // Password
-                    null, // Realm
-                    domain); // Domain
+                authInfo = coreFactory.createAuthInfo(
+                        username, // Username
+                        password,  // Password
+                        null, // Realm
+                        domain); // Domain
 
-            // Enable config to register.
-            proxyConfig = proxyConfig.enableRegister(true);
+                // Enable config to register.
+                proxyConfig = proxyConfig.enableRegister(true);
 
-            proxyConfig.setIdentity(sip);
-            proxyConfig.setAddress(address);
-            proxyConfig.setProxy(address.getDomain());
+                proxyConfig.setIdentity(sip);
+                proxyConfig.setAddress(address);
+                proxyConfig.setProxy(address.getDomain());
 
-            // Append CATUser information to core
-            core.addAuthInfo(authInfo);
-            core.addProxyConfig(proxyConfig);
-            core.setDefaultProxyConfig(proxyConfig);
+                // Append CATUser information to core
+                core.addAuthInfo(authInfo);
+                core.addProxyConfig(proxyConfig);
+                core.setDefaultProxyConfig(proxyConfig);
 
-            // Wait until registration is finished.
-            while(proxyConfig.getState() != LinphoneCore.RegistrationState.RegistrationOk
-                    && proxyConfig.getState() != LinphoneCore.RegistrationState.RegistrationFailed) {
-                // ToDO: overthink LinphoneCATVoIPService architecture (should be running in a separate thread)
-                core.iterate();
+                // Wait until registration is finished.
+                while(proxyConfig.getState() != LinphoneCore.RegistrationState.RegistrationOk
+                        && proxyConfig.getState() != LinphoneCore.RegistrationState.RegistrationFailed) {
+                    // ToDO: overthink LinphoneCATVoIPService architecture (should be running in a separate thread)
+                    core.iterate();
+                }
+
+            } catch (LinphoneCoreException e) {
+                throw new CATException(e.getMessage());
             }
-
-        } catch (LinphoneCoreException e) {
-            throw new CATException(e.getMessage());
+        } else {
+            // ToDo: Error message if service not working :(
         }
     }
 
@@ -181,7 +221,7 @@ public class LinphoneCATClient implements CATClient {
         while(proxyConfig.getState() != LinphoneCore.RegistrationState.RegistrationCleared
                 && proxyConfig.getState() != LinphoneCore.RegistrationState.RegistrationNone) {
             // ToDO: overthink LinphoneCATVoIPService architecture (should be running in a separate thread)
-            core.iterate();
+            updateServerInformation();
         }
     }
 
@@ -235,7 +275,7 @@ public class LinphoneCATClient implements CATClient {
     public void enablePresenceStatus() {
         PresenceModel model = coreFactory.createPresenceModel();
         //model.setBasicStatus(PresenceBasicStatus.Open); // doesn't fuckig work ??!!!?
-        model.setActivity(PresenceActivityType.Busy, "I'm busy asshole."); // Zoiper doesn't understand activities !!!
+        model.setActivity(PresenceActivityType.Online, "I'm busy asshole."); // Zoiper doesn't understand activities !!!
         model.addNote("Away", "en"); // But Zoiper is able to read notes ;)
         core.setPresenceModel(model);
         proxyConfig.edit();
@@ -253,6 +293,54 @@ public class LinphoneCATClient implements CATClient {
     }
 
     @Override
+    public void callFriend(CATFriend catFriend) throws CATException {
+        try {
+            core.invite(coreFactory.createLinphoneAddress(catFriend.getSIPAccount()));
+        } catch (LinphoneCoreException e) {
+            throw new CATException(e.getMessage());
+        }
+    }
+
+    @Override
+    public void acceptCall() throws CATException {
+        if(linphoneCall != null) {
+            LinphoneCallParams params = core.createCallParams(linphoneCall);
+
+            //boolean isLowBandwidthConnection = !LinphoneUtils.isHighBandwidthConnection(LinphoneService.instance().getApplicationContext());
+
+            if(params != null)  {
+                //Log.i("PARAMS", params.getUsedAudioCodec().toString());
+                //Log.i("PARAMS", params.getUsedAudioCodec().toString());
+                //Log.i("PARAMS", params.getUsedAudioCodec().toString());
+                //Log.i("PARAMS", params.getUsedAudioCodec().toString());
+                params.enableLowBandwidth(false);
+            } else {
+                Log.v("Call", "Params not working");
+            }
+
+            try {
+               core.acceptCallWithParams(linphoneCall, params);
+            } catch (LinphoneCoreException e) {
+                throw new CATException(e.getMessage());
+            }
+        }
+    }
+
+    @Override
+    public void declineCall() {
+        if(linphoneCall != null) {
+            core.terminateCall(linphoneCall);
+            linphoneCall = null;
+        }
+        ApplicationContext.runIntent(ApplicationContext.ACTIVITY_MAIN);
+    }
+
+    @Override
+    public void updateServerInformation() {
+        core.iterate();
+    }
+
+    @Override
     public LinphoneFriend getLinphoneFriend(CATFriend catFriend) {
         return core.findFriendByAddress(catFriend.getSIPAccount());
     }
@@ -263,5 +351,16 @@ public class LinphoneCATClient implements CATClient {
      */
     public LinphoneCore getCore() {
         return core;
+    }
+
+    /**
+     * Sets an linphone call.
+     * @param call Call to set.
+     */
+    public void setLinphoneCall(LinphoneCall call) {
+        linphoneCall = call;
+        Bundle bundle = new Bundle();
+        bundle.putInt(CallActivity.KEY_FRAGMENT_ID, CallActivity.FRAGMENT_INCOMING_CALL);
+        ApplicationContext.runIntentWithParams(ApplicationContext.ACTIVITY_CALL, bundle);
     }
 }

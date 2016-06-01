@@ -72,7 +72,7 @@ public class CATService extends Service {
     public void onCreate() {
         super.onCreate();
         try {
-            voIPService = new LinphoneCATVoIPService(LinphoneCATClient.getInstance().getCore());
+            voIPService = new LinphoneCATVoIPService(LinphoneCATClient.getInstance());
             voIPService.start();
         } catch (LinphoneCoreException e) {
             // ToDo := Error handling in Android UI... Everytime the same... Donuts...

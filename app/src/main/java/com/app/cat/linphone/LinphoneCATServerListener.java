@@ -25,6 +25,9 @@ package com.app.cat.linphone;
 
 import android.util.Log;
 
+import com.app.cat.R;
+import com.app.cat.util.ApplicationContext;
+
 import org.linphone.core.LinphoneAddress;
 import org.linphone.core.LinphoneAuthInfo;
 import org.linphone.core.LinphoneCall;
@@ -42,6 +45,7 @@ import org.linphone.core.LinphoneInfoMessage;
 import org.linphone.core.LinphoneProxyConfig;
 import org.linphone.core.PresenceModel;
 import org.linphone.core.PublishState;
+import org.linphone.core.Reason;
 import org.linphone.core.SubscriptionState;
 
 import java.nio.ByteBuffer;
@@ -206,8 +210,35 @@ public class LinphoneCATServerListener implements LinphoneCoreListener {
     }
 
     @Override
-    public void callState(LinphoneCore linphoneCore, LinphoneCall linphoneCall, LinphoneCall.State state, String s) {
-        Log.i("Cat_Server", "callState");
+    public void callState(LinphoneCore linphoneCore, LinphoneCall linphoneCall, LinphoneCall.State state, String message) {
+        String errorMessage = null;
+
+        if (state == LinphoneCall.State.IncomingReceived) {
+            // If an incoming call will be received from an user
+            try {
+                LinphoneCATClient.getInstance().setLinphoneCall(linphoneCall);
+            } catch (LinphoneCoreException e) {
+                // ToDo := Error handling in Android UI... Everytime the same... Donuts...
+                e.printStackTrace();
+            }
+        } else if (state == LinphoneCall.State.CallEnd
+                || state == LinphoneCall.State.Error
+                || state == LinphoneCall.State.CallReleased) {
+            // If call contains an error or call will be declined or released.
+            if (message != null && linphoneCall.getErrorInfo().getReason() == Reason.Declined) {
+                errorMessage = "Call is declined.";
+            } else if (message != null && linphoneCall.getErrorInfo().getReason() == Reason.NotFound) {
+                errorMessage = "User not found.";
+            } else if (message != null && linphoneCall.getErrorInfo().getReason() == Reason.Media) {
+                errorMessage = "Media error";
+            } else if (message != null && state == LinphoneCall.State.Error) {
+                errorMessage = message;
+            }
+        }
+
+        if(errorMessage != null) {
+            ApplicationContext.showToast(errorMessage);
+        }
     }
 
     @Override

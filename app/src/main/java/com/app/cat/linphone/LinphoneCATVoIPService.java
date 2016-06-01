@@ -25,6 +25,8 @@ package com.app.cat.linphone;
 
 import android.os.Handler;
 
+import com.app.cat.client.CATClient;
+import com.app.cat.client.CATException;
 import com.app.cat.service.VoIPService;
 
 import org.linphone.core.LinphoneCore;
@@ -44,12 +46,12 @@ public class LinphoneCATVoIPService implements Runnable, VoIPService {
     /**
      * Handler to call this runnable periodically;
      */
-    private Handler handler = new Handler();
+    private Handler handler;
 
     /**
-     * Corresponding core object to handle Client Server communication.
+     * Corresponding client object to handle Client Server communication.
      */
-    private LinphoneCore core;
+    private CATClient client;
 
     /**
      * Boolean indicator to loop.
@@ -59,15 +61,16 @@ public class LinphoneCATVoIPService implements Runnable, VoIPService {
     /**
      * Creates an Voice over IP event handler to update periodically an SIP server status.
      */
-    public LinphoneCATVoIPService(LinphoneCore core) {
+    public LinphoneCATVoIPService(CATClient client) {
         super();
-        this.core = core;
+        handler = new Handler();
+        this.client = client;
         isRunning = false;
     }
 
     @Override
     public void run() {
-        core.iterate();
+        client.updateServerInformation();
         if(isRunning) {
             // Call runnable again after an NOTIFY_INTERVAL
             handler.postDelayed(this, NOTIFY_INTERVAL);
@@ -76,6 +79,7 @@ public class LinphoneCATVoIPService implements Runnable, VoIPService {
 
     @Override
     public void stop() {
+        logout();
         isRunning = false;
     }
 
@@ -84,11 +88,36 @@ public class LinphoneCATVoIPService implements Runnable, VoIPService {
         if(!isRunning()) {
             isRunning = true;
             run();
+            login();
         }
     }
 
     @Override
     public boolean isRunning() {
         return isRunning;
+    }
+
+    /**
+     * Login user to sip server.
+     */
+    private void login() {
+        try {
+            client.unregister();
+            client.register();
+            // ToDo := Presence should wait until adding friends is done !!!
+            client.enablePresenceStatus();
+        } catch (CATException e) {
+            // ToDo := Error handling in Android UI... Everytime the same... Donuts...
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Logout from sip server.
+     */
+    private void logout() {
+        client.disablePresenceStatus();
+        // ToDo := Unregister should wait until presence is done !!!
+        client.unregister();
     }
 }
