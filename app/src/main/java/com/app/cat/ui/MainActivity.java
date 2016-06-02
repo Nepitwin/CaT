@@ -27,9 +27,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.LayoutRes;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.app.cat.R;
 import com.app.cat.client.CATClient;
@@ -111,7 +111,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         // Set UI application context
-        ApplicationContext.setContext(this);
+        ApplicationContext.setActivity(this);
 
         // Mockup telephone book ui data.
         List<CATFriend> catAccounts = new ArrayList<CATFriend>();
@@ -149,14 +149,17 @@ public class MainActivity extends AppCompatActivity {
             startService(service);
 
         } catch (IOException io) {
-            // ToDo := Error handling in Android UI... Everytime the same... Donuts...
-            Log.e("MainActivity", io.getMessage());
+            ApplicationContext.showToast(
+                    ApplicationContext.getStringFromRessources(R.string.unknown_error_message),
+                    Toast.LENGTH_SHORT);
         } catch (LinphoneCoreException e) {
-            // ToDo := Error handling in Android UI... Everytime the same... Donuts...
-            Log.e("Init failed", e.getMessage());
+            ApplicationContext.showToast(
+                    ApplicationContext.getStringFromRessources(R.string.unknown_error_message),
+                    Toast.LENGTH_SHORT);
         } catch (NoSuchAlgorithmException e) {
-            // ToDo := Error handling in Android UI... Everytime the same... Donuts...
-            e.printStackTrace();
+            ApplicationContext.showToast(
+                    ApplicationContext.getStringFromRessources(R.string.unknown_error_message),
+                    Toast.LENGTH_SHORT);
         }
     }
 
@@ -168,7 +171,6 @@ public class MainActivity extends AppCompatActivity {
         if(service != null) {
             stopService(service);
             service = null;
-            Log.v("OnStop", "Service Stopped");
         }
     }
 }

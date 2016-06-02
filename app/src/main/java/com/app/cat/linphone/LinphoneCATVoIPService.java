@@ -24,12 +24,13 @@
 package com.app.cat.linphone;
 
 import android.os.Handler;
+import android.widget.Toast;
 
+import com.app.cat.R;
 import com.app.cat.client.CATClient;
 import com.app.cat.client.CATException;
 import com.app.cat.service.VoIPService;
-
-import org.linphone.core.LinphoneCore;
+import com.app.cat.util.ApplicationContext;
 
 /**
  * Class to create an background service on an android device to update VoIPService calls.
@@ -63,15 +64,15 @@ public class LinphoneCATVoIPService implements Runnable, VoIPService {
      */
     public LinphoneCATVoIPService(CATClient client) {
         super();
-        handler = new Handler();
+        this.handler = new Handler();
         this.client = client;
-        isRunning = false;
+        this.isRunning = false;
     }
 
     @Override
     public void run() {
-        client.updateServerInformation();
         if(isRunning) {
+            client.updateServerInformation();
             // Call runnable again after an NOTIFY_INTERVAL
             handler.postDelayed(this, NOTIFY_INTERVAL);
         }
@@ -87,8 +88,8 @@ public class LinphoneCATVoIPService implements Runnable, VoIPService {
     public void start() {
         if(!isRunning()) {
             isRunning = true;
-            run();
             login();
+            run();
         }
     }
 
@@ -107,8 +108,9 @@ public class LinphoneCATVoIPService implements Runnable, VoIPService {
             // ToDo := Presence should wait until adding friends is done !!!
             client.enablePresenceStatus();
         } catch (CATException e) {
-            // ToDo := Error handling in Android UI... Everytime the same... Donuts...
-            e.printStackTrace();
+            ApplicationContext.showToast(
+                    ApplicationContext.getStringFromRessources(R.string.unknown_error_message),
+                    Toast.LENGTH_SHORT);
         }
     }
 

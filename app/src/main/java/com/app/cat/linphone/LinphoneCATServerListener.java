@@ -23,9 +23,12 @@
 
 package com.app.cat.linphone;
 
+import android.os.Bundle;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.app.cat.R;
+import com.app.cat.ui.CallActivity;
 import com.app.cat.util.ApplicationContext;
 
 import org.linphone.core.LinphoneAddress;
@@ -70,7 +73,13 @@ public class LinphoneCATServerListener implements LinphoneCoreListener {
 
     @Override
     public void callStatsUpdated(LinphoneCore linphoneCore, LinphoneCall linphoneCall, LinphoneCallStats linphoneCallStats) {
+        Log.i("Cat_Server", "--------------------------------");
         Log.i("Cat_Server", "callStatsUpdated");
+        Log.i("download bandwidth", "" + linphoneCallStats.getDownloadBandwidth());
+        Log.i("Mediatype", "" + linphoneCallStats.getMediaType());
+        Log.i("upload bandwidth", "" + linphoneCallStats.getUploadBandwidth());
+        Log.i("local loss rate", "" + linphoneCallStats.getLocalLossRate());
+        Log.i("Cat_Server", "--------------------------------");
     }
 
     @Override
@@ -211,33 +220,12 @@ public class LinphoneCATServerListener implements LinphoneCoreListener {
 
     @Override
     public void callState(LinphoneCore linphoneCore, LinphoneCall linphoneCall, LinphoneCall.State state, String message) {
-        String errorMessage = null;
-
         if (state == LinphoneCall.State.IncomingReceived) {
-            // If an incoming call will be received from an user
-            try {
-                LinphoneCATClient.getInstance().setLinphoneCall(linphoneCall);
-            } catch (LinphoneCoreException e) {
-                // ToDo := Error handling in Android UI... Everytime the same... Donuts...
-                e.printStackTrace();
-            }
-        } else if (state == LinphoneCall.State.CallEnd
-                || state == LinphoneCall.State.Error
-                || state == LinphoneCall.State.CallReleased) {
-            // If call contains an error or call will be declined or released.
-            if (message != null && linphoneCall.getErrorInfo().getReason() == Reason.Declined) {
-                errorMessage = "Call is declined.";
-            } else if (message != null && linphoneCall.getErrorInfo().getReason() == Reason.NotFound) {
-                errorMessage = "User not found.";
-            } else if (message != null && linphoneCall.getErrorInfo().getReason() == Reason.Media) {
-                errorMessage = "Media error";
-            } else if (message != null && state == LinphoneCall.State.Error) {
-                errorMessage = message;
-            }
-        }
-
-        if(errorMessage != null) {
-            ApplicationContext.showToast(errorMessage);
+            incomingCall(linphoneCall);
+        } else if(state == LinphoneCall.State.CallEnd) {
+            callEnded(linphoneCall, message);
+        } else if (state == LinphoneCall.State.Error) {
+            unknownCallError(linphoneCall, message);
         }
     }
 
@@ -290,5 +278,57 @@ public class LinphoneCATServerListener implements LinphoneCoreListener {
             Log.i("Cat_Server", "removed buddy" + friend.getAddress());
         }
         Log.i("Cat_Server", "--------------------------------");
+    }
+
+    private void incomingCall(LinphoneCall linphoneCall) {
+        // If an incoming call will be received from an user
+        try {
+            LinphoneCATClient.getInstance().setLinphoneCall(linphoneCall);
+
+            // Incoming call activity.
+            Bundle bundle = new Bundle();
+            bundle.putInt(CallActivity.KEY_FRAGMENT_ID, CallActivity.FRAGMENT_INCOMING_CALL);
+            ApplicationContext.runIntentWithParams(ApplicationContext.ACTIVITY_CALL, bundle);
+
+        } catch (LinphoneCoreException e) {
+            ApplicationContext.showToast(
+                    ApplicationContext.getStringFromRessources(R.string.unknown_error_message),
+                    Toast.LENGTH_SHORT);
+        }
+    }
+
+    private void callEnded(LinphoneCall linphoneCall, String message) {
+        if (message != null && linphoneCall.getErrorInfo().getReason() == Reason.Declined) {
+            ApplicationContext.showToast(
+                    ApplicationContext.getStringFromRessources(R.string.call_declined),
+                    Toast.LENGTH_SHORT);
+        } else {
+            ApplicationContext.showToast(
+                    message,
+                    Toast.LENGTH_SHORT);
+        }
+
+        // Call ends show contact activity.
+        ApplicationContext.runIntent(ApplicationContext.ACTIVITY_MAIN);
+    }
+
+    private void unknownCallError(LinphoneCall linphoneCall, String message) {
+        String errorMessage = null;
+
+        // If call contains an error or call will be declined or released.
+        if (message != null && linphoneCall.getErrorInfo().getReason() == Reason.NotFound) {
+            errorMessage = ApplicationContext.getStringFromRessources(R.string.user_not_found);
+        } else if (message != null && linphoneCall.getErrorInfo().getReason() == Reason.Media) {
+            errorMessage = ApplicationContext.getStringFromRessources(R.string.media_error);
+        } else {
+            errorMessage = message;
+        }
+
+        // Error occurred show contact activity.
+        if(errorMessage != null) {
+            ApplicationContext.showToast(errorMessage, Toast.LENGTH_LONG);
+        }
+
+        ApplicationContext.runIntent(ApplicationContext.ACTIVITY_MAIN);
     }
 }

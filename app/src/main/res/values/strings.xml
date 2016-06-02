@@ -28,4 +28,10 @@
     <string name="default_profile_image_description">Default Profile Image</string>
     <string name="video">Video</string>
     <string name="audio">Audio</string>
+
+    <!-- I18N messages english -->
+    <string name="unknown_error_message">Unknown error occurred</string>
+    <string name="call_declined">Call declined</string>
+    <string name="user_not_found">User not found</string>
+    <string name="media_error">Media error</string>
 </resources>

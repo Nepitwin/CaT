@@ -27,6 +27,7 @@ import android.os.Bundle;
 import android.support.annotation.LayoutRes;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
+import android.widget.Toast;
 
 import com.app.cat.R;
 import com.app.cat.client.CATException;
@@ -71,6 +72,9 @@ public class CallActivity extends AppCompatActivity implements CallFragmentListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_call);
 
+        // Set UI application context
+        ApplicationContext.setActivity(this);
+
         Bundle bundle = getIntent().getExtras();
         int fragment = bundle.getInt(KEY_FRAGMENT_ID);
 
@@ -84,9 +88,6 @@ public class CallActivity extends AppCompatActivity implements CallFragmentListe
             }
             fragmentTransaction.commit();
         }
-
-        // Set UI application context
-        ApplicationContext.setContext(this);
     }
 
     @Override
@@ -96,10 +97,13 @@ public class CallActivity extends AppCompatActivity implements CallFragmentListe
             fragmentTransaction = getSupportFragmentManager().beginTransaction().replace(R.id.callUIContainer, new CallFragment());
             fragmentTransaction.commit();
         } catch (LinphoneCoreException e) {
-            // ToDo := Error handling in Android UI... Everytime the same... Donuts...
-            e.printStackTrace();
+            ApplicationContext.showToast(
+                    ApplicationContext.getStringFromRessources(R.string.unknown_error_message),
+                    Toast.LENGTH_SHORT);
         } catch (CATException e) {
-            e.printStackTrace();
+            ApplicationContext.showToast(
+                    ApplicationContext.getStringFromRessources(R.string.unknown_error_message),
+                    Toast.LENGTH_SHORT);
         }
     }
 
@@ -108,14 +112,14 @@ public class CallActivity extends AppCompatActivity implements CallFragmentListe
         try {
             LinphoneCATClient.getInstance().declineCall();
         } catch (LinphoneCoreException e) {
-            // ToDo := Error handling in Android UI... Everytime the same... Donuts...
-            e.printStackTrace();
+            ApplicationContext.showToast(
+                    ApplicationContext.getStringFromRessources(R.string.unknown_error_message),
+                    Toast.LENGTH_SHORT);
         }
     }
 
     @Override
     public void onHangUp() {
         onDeclineCall();
-        ApplicationContext.runIntent(ApplicationContext.ACTIVITY_MAIN);
     }
 }

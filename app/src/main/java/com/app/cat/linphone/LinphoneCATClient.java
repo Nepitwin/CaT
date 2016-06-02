@@ -23,6 +23,7 @@
 
 package com.app.cat.linphone;
 
+import android.media.AudioManager;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -42,8 +43,8 @@ import org.linphone.core.LinphoneCoreException;
 import org.linphone.core.LinphoneCoreFactory;
 import org.linphone.core.LinphoneCoreListener;
 import org.linphone.core.LinphoneFriend;
-import org.linphone.core.LinphoneFriendList;
 import org.linphone.core.LinphoneProxyConfig;
+import org.linphone.core.PayloadType;
 import org.linphone.core.PresenceActivityType;
 import org.linphone.core.PresenceModel;
 
@@ -138,6 +139,23 @@ public class LinphoneCATClient implements CATClient {
 
         core = coreFactory.createLinphoneCore(catServerListener, null);
 
+
+        core.enableAdaptiveRateControl(false);
+        for(PayloadType type : core.getAudioCodecs()) {
+            core.enablePayloadType(type, false);
+            if (type.getMime().equals("GSM")) {
+                core.enablePayloadType(type, true);
+                core.setPayloadTypeBitrate(type, 100);
+            }
+        }
+
+        for(PayloadType type : core.getAudioCodecs()) {
+            Log.v("params", type.getMime());
+            Log.v("params", type.getRate() + "");
+            Log.v("is enabled", "" + core.isPayloadTypeEnabled(type));
+        }
+
+
         // Create an proxy configuration class from core.
         proxyConfig = core.createProxyConfig();
         proxyConfig.setExpires(REGISTRATION_EXPIRATION_TIME); // sets the registration expiration time
@@ -194,10 +212,8 @@ public class LinphoneCATClient implements CATClient {
                 core.setDefaultProxyConfig(proxyConfig);
 
                 // Wait until registration is finished.
-                while(proxyConfig.getState() != LinphoneCore.RegistrationState.RegistrationOk
-                        && proxyConfig.getState() != LinphoneCore.RegistrationState.RegistrationFailed) {
-                    // ToDO: overthink LinphoneCATVoIPService architecture (should be running in a separate thread)
-                    core.iterate();
+                while(!proxyConfig.isRegistered()) {
+                    updateServerInformation();
                 }
 
             } catch (LinphoneCoreException e) {
@@ -210,16 +226,13 @@ public class LinphoneCATClient implements CATClient {
 
     @Override
     public void unregister() {
-        Log.i("Clicked", "Logout motherfucker");
-
         // Unregistration
         proxyConfig.edit(); // Start editing proxy configuration
         proxyConfig.enableRegister(false); // De-activate registration for this proxy config
         proxyConfig.done(); // Initiate REGISTER with expire = 0
 
         // Wait until unregistration is finished.
-        while(proxyConfig.getState() != LinphoneCore.RegistrationState.RegistrationCleared
-                && proxyConfig.getState() != LinphoneCore.RegistrationState.RegistrationNone) {
+        while(proxyConfig.isRegistered()) {
             // ToDO: overthink LinphoneCATVoIPService architecture (should be running in a separate thread)
             updateServerInformation();
         }
@@ -295,7 +308,12 @@ public class LinphoneCATClient implements CATClient {
     @Override
     public void callFriend(CATFriend catFriend) throws CATException {
         try {
-            core.invite(coreFactory.createLinphoneAddress(catFriend.getSIPAccount()));
+            LinphoneCallParams params = core.createCallParams(null);
+            params.setVideoEnabled(false);
+            params.enableLowBandwidth(false);
+            //params.setAudioBandwidth(40);
+            setLinphoneCall(core.inviteAddressWithParams(coreFactory.createLinphoneAddress(catFriend.getSIPAccount()), params));
+            //setLinphoneCall(core.invite(coreFactory.createLinphoneAddress(catFriend.getSIPAccount())));
         } catch (LinphoneCoreException e) {
             throw new CATException(e.getMessage());
         }
@@ -304,22 +322,33 @@ public class LinphoneCATClient implements CATClient {
     @Override
     public void acceptCall() throws CATException {
         if(linphoneCall != null) {
+
             LinphoneCallParams params = core.createCallParams(linphoneCall);
 
             //boolean isLowBandwidthConnection = !LinphoneUtils.isHighBandwidthConnection(LinphoneService.instance().getApplicationContext());
 
             if(params != null)  {
-                //Log.i("PARAMS", params.getUsedAudioCodec().toString());
-                //Log.i("PARAMS", params.getUsedAudioCodec().toString());
-                //Log.i("PARAMS", params.getUsedAudioCodec().toString());
-                //Log.i("PARAMS", params.getUsedAudioCodec().toString());
                 params.enableLowBandwidth(false);
+                //params.enableAudioMulticast(true);
+                //params.setAudioBandwidth(40);
             } else {
                 Log.v("Call", "Params not working");
             }
 
+            if(params != null) {
+                Log.v("params", "PARAAMAMMMMMMMMMMMMMMMMMMMMMSSSSSSSSSSSSSSSS FOUNDDDDDDDDDD SCOTTTTYYYYYY");
+
+                Log.v("params", "media encryption: --> " + params.getMediaEncryption().toString());
+                Log.v("params", "audio codec: --> " + params.getUsedAudioCodec());
+
+            } else {
+                Log.v("params", "BLACKKKK HAWKKKKK DOWNNNNNNNNNNN I REPEAT BLACK HAWK DOWN");
+            }
+
+
             try {
-               core.acceptCallWithParams(linphoneCall, params);
+                Log.v("Call", "Volume : " + linphoneCall.getPlayVolume());
+                core.acceptCallWithParams(linphoneCall, params);
             } catch (LinphoneCoreException e) {
                 throw new CATException(e.getMessage());
             }
@@ -359,8 +388,5 @@ public class LinphoneCATClient implements CATClient {
      */
     public void setLinphoneCall(LinphoneCall call) {
         linphoneCall = call;
-        Bundle bundle = new Bundle();
-        bundle.putInt(CallActivity.KEY_FRAGMENT_ID, CallActivity.FRAGMENT_INCOMING_CALL);
-        ApplicationContext.runIntentWithParams(ApplicationContext.ACTIVITY_CALL, bundle);
     }
 }

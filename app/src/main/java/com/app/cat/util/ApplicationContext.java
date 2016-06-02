@@ -26,13 +26,14 @@ package com.app.cat.util;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
+import android.media.AudioManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.app.cat.ui.CallActivity;
 import com.app.cat.ui.MainActivity;
-
-import java.util.Map;
 
 /**
  * @author Andreas Sekulski
@@ -52,32 +53,22 @@ public class ApplicationContext {
     public static Class ACTIVITY_CALL = CallActivity.class;
 
     /**
-     * Activity which is currently active.
+     * Current activity which is running.
      */
-    private static Activity gContext;
+    private static Activity activity;
+
+    /**
+     * Activity context.
+     */
+    private static Context context;
 
     /**
      * Sets context from activity.
-     * @param activity Activitiy which is currently showing.
+     * @param gActivity Context which is currently showing.
      */
-    public static void setContext(Activity activity) {
-        gContext = activity;
-    }
-
-    /**
-     * Gets activity which is currently active.
-     * @return Activity which is open otherwise null if app is closed.
-     */
-    public static Activity getActivity() {
-        return gContext;
-    }
-
-    /**
-     * Get context from activity.
-     * @return Application context from activity if is open otherwise null if app is closed.
-     */
-    public static Context getContext() {
-        return gContext;
+    public static void setActivity(Activity gActivity) {
+        activity = gActivity;
+        context = activity.getApplicationContext();
     }
 
     /**
@@ -85,8 +76,10 @@ public class ApplicationContext {
      * @param aClass Class to shown from application context.
      */
     public static void runIntent(Class aClass) {
-        Intent i = new Intent(gContext.getApplicationContext(), aClass);
-        gContext.startActivity(i);
+        if(context != null) {
+            Intent i = new Intent(context, aClass);
+            activity.startActivity(i);
+        }
     }
 
     /**
@@ -95,17 +88,50 @@ public class ApplicationContext {
      * @param bundle Bundle to set init params.
      */
     public static void runIntentWithParams(Class aClass, Bundle bundle) {
-        Intent i = new Intent(gContext.getApplicationContext(), aClass);
-        i.putExtras(bundle);
-        gContext.startActivity(i);
+        if(context != null) {
+            Intent i = new Intent(context, aClass);
+            i.putExtras(bundle);
+            activity.startActivity(i);
+        }
     }
 
     /**
      * Shows an toast with an given message.
      * @param message Message to show in an toast.
+     * @param duration Visible duration from an toast.
      */
-    public static void showToast(String message) {
-        Toast toast = Toast.makeText(getContext(), message, Toast.LENGTH_LONG);
-        toast.show();
+    public static void showToast(String message, int duration) {
+        if(context != null) {
+            Toast toast = Toast.makeText(context, message, Toast.LENGTH_LONG);
+            toast.show();
+        }
+    }
+
+    /**
+     * Gets string from resource values.
+     * @param id Id to get string.
+     * @return Null if not exists otherwise an String.
+     */
+    public static String getStringFromRessources(int id) {
+        String message;
+        try {
+            message = context.getResources().getString(id);
+        } catch (Resources.NotFoundException ex) {
+            message = null;
+        }
+        return message;
+    }
+
+    public static void adjustVolumeMAX() {
+        AudioManager audioManager = (AudioManager) activity.getSystemService(Context.AUDIO_SERVICE);
+        Log.v("Sound Current", "" + audioManager.getStreamVolume(AudioManager.STREAM_VOICE_CALL));
+        Log.v("Sound Max", "" + audioManager.getStreamMaxVolume(AudioManager.STREAM_VOICE_CALL));
+
+        audioManager.setStreamVolume(
+                AudioManager.STREAM_VOICE_CALL,
+                audioManager.getStreamMaxVolume(AudioManager.STREAM_VOICE_CALL),
+                AudioManager.FLAG_VIBRATE);
+
+        Log.v("Sound Current", "" + audioManager.getStreamVolume(AudioManager.STREAM_VOICE_CALL));
     }
 }
