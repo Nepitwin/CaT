@@ -361,7 +361,6 @@ public class LinphoneCATClient implements CATClient {
             core.terminateCall(linphoneCall);
             linphoneCall = null;
         }
-        ApplicationContext.runIntent(ApplicationContext.ACTIVITY_MAIN);
     }
 
     @Override

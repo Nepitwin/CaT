@@ -308,8 +308,8 @@ public class LinphoneCATServerListener implements LinphoneCoreListener {
                     Toast.LENGTH_SHORT);
         }
 
-        // Call ends show contact activity.
-        ApplicationContext.runIntent(ApplicationContext.ACTIVITY_MAIN);
+        // Error occurred: close call activity.
+        ApplicationContext.closeCurrentActivity();
     }
 
     private void unknownCallError(LinphoneCall linphoneCall, String message) {
@@ -324,11 +324,11 @@ public class LinphoneCATServerListener implements LinphoneCoreListener {
             errorMessage = message;
         }
 
-        // Error occurred show contact activity.
         if(errorMessage != null) {
             ApplicationContext.showToast(errorMessage, Toast.LENGTH_LONG);
         }
 
-        ApplicationContext.runIntent(ApplicationContext.ACTIVITY_MAIN);
+        // Error occurred: close call activity.
+        ApplicationContext.closeCurrentActivity();
     }
 }

@@ -63,8 +63,8 @@ public class ApplicationContext {
     private static Context context;
 
     /**
-     * Sets context from activity.
-     * @param gActivity Context which is currently showing.
+     * Sets the context from given activity.
+     * @param gActivity Activity which will be set.
      */
     public static void setActivity(Activity gActivity) {
         activity = gActivity;
@@ -92,6 +92,16 @@ public class ApplicationContext {
             Intent i = new Intent(context, aClass);
             i.putExtras(bundle);
             activity.startActivity(i);
+        }
+    }
+
+    /**
+     * Closes current activity if it is not the MainActivity which should always be the last on
+     * on the stack.
+     */
+    public static void closeCurrentActivity() {
+        if (activity.getClass() != ACTIVITY_MAIN) {
+            activity.finish();
         }
     }
 
