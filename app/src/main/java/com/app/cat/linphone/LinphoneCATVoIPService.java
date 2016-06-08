@@ -102,16 +102,10 @@ public class LinphoneCATVoIPService implements Runnable, VoIPService {
      * Login user to sip server.
      */
     private void login() {
-        try {
-            client.unregister();
-            client.register();
-            // ToDo := Presence should wait until adding friends is done !!!
-            client.enablePresenceStatus();
-        } catch (CATException e) {
-            ApplicationContext.showToast(
-                    ApplicationContext.getStringFromRessources(R.string.unknown_error_message),
-                    Toast.LENGTH_SHORT);
-        }
+        client.unregister();
+        client.register();
+        // ToDo := Presence should wait until adding friends is done !!!
+        client.enablePresenceStatus();
     }
 
     /**
