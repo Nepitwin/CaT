@@ -72,7 +72,8 @@ public class LinphoneCATServerListener implements LinphoneCoreListener {
     }
 
     @Override
-    public void callStatsUpdated(LinphoneCore linphoneCore, LinphoneCall linphoneCall, LinphoneCallStats linphoneCallStats) {
+    public void callStatsUpdated(LinphoneCore linphoneCore, LinphoneCall linphoneCall,
+                                 LinphoneCallStats linphoneCallStats) {
         Log.i("Cat_Server", "--------------------------------");
         Log.i("Cat_Server", "callStatsUpdated");
         Log.i("download bandwidth", "" + linphoneCallStats.getDownloadBandwidth());
@@ -83,18 +84,24 @@ public class LinphoneCATServerListener implements LinphoneCoreListener {
     }
 
     @Override
-    public void newSubscriptionRequest(LinphoneCore linphoneCore, LinphoneFriend linphoneFriend, String s) {
+    public void newSubscriptionRequest(LinphoneCore linphoneCore, LinphoneFriend linphoneFriend,
+                                       String s) {
         Log.i("Cat_Server", "--------------------------------");
         Log.i("Cat_Server", "newSubscriptionRequest");
 
-        Log.i("Buddy status request", "[" + linphoneFriend.getAddress().getUserName() + "] wants to see your status, accepting...");
-        linphoneFriend.edit(); // start editing friend
-        linphoneFriend.setIncSubscribePolicy(LinphoneFriend.SubscribePolicy.SPAccept); // accept incoming subscription request for this friend
-        linphoneFriend.done(); // commit change
+        Log.i("Buddy status request", "[" + linphoneFriend.getAddress().getUserName()
+                + "] wants to see your status, accepting...");
+        // start editing friend
+        linphoneFriend.edit();
+        // accept incoming subscription request for this friend
+        linphoneFriend.setIncSubscribePolicy(LinphoneFriend.SubscribePolicy.SPAccept);
+        // commit change
+        linphoneFriend.done();
         try {
             linphoneCore.addFriend(linphoneFriend); // add this new friend to the buddy list
         } catch (LinphoneCoreException e) {
-            Log.i("ERROR", "Error while adding friend [" + linphoneFriend.getAddress().getUserName() + "] to linphone.");
+            Log.i("ERROR", "Error while adding friend [" + linphoneFriend.getAddress().getUserName()
+                    + "] to linphone.");
         }
         Log.i("Cat_Server", "--------------------------------");
     }
@@ -105,11 +112,15 @@ public class LinphoneCATServerListener implements LinphoneCoreListener {
         Log.i("Cat_Server", "notifyPresenceReceived");
 
         PresenceModel model = linphoneFriend.getPresenceModel();
-        Log.i("Buddy basic status", linphoneFriend.getAddress() + "  ==>  " + model.getBasicStatus().name());
-        Log.i("Buddy status", linphoneFriend.getAddress() + "  ==>  " + model.getActivity().getType().name());
-        Log.i("Buddy statustext", linphoneFriend.getAddress() + "  ==>  " + model.getActivity().getDescription());
+        Log.i("Buddy basic status", linphoneFriend.getAddress() + "  ==>  "
+                + model.getBasicStatus().name());
+        Log.i("Buddy status", linphoneFriend.getAddress() + "  ==>  "
+                + model.getActivity().getType().name());
+        Log.i("Buddy statustext", linphoneFriend.getAddress() + "  ==>  "
+                + model.getActivity().getDescription());
         if (model.getNote("en") != null) {
-            Log.i("Buddy note", linphoneFriend.getAddress() + "  ==>  " + model.getNote("en").getContent());
+            Log.i("Buddy note", linphoneFriend.getAddress() + "  ==>  "
+                    + model.getNote("en").getContent());
         }
         Log.i("Cat_Server", "--------------------------------");
     }
@@ -120,27 +131,32 @@ public class LinphoneCATServerListener implements LinphoneCoreListener {
     }
 
     @Override
-    public void notifyReceived(LinphoneCore linphoneCore, LinphoneCall linphoneCall, LinphoneAddress linphoneAddress, byte[] bytes) {
+    public void notifyReceived(LinphoneCore linphoneCore, LinphoneCall linphoneCall,
+                               LinphoneAddress linphoneAddress, byte[] bytes) {
         Log.i("Cat_Server", "notifyReceived");
     }
 
     @Override
-    public void transferState(LinphoneCore linphoneCore, LinphoneCall linphoneCall, LinphoneCall.State state) {
+    public void transferState(LinphoneCore linphoneCore, LinphoneCall linphoneCall,
+                              LinphoneCall.State state) {
         Log.i("Cat_Server", "transferState");
     }
 
     @Override
-    public void infoReceived(LinphoneCore linphoneCore, LinphoneCall linphoneCall, LinphoneInfoMessage linphoneInfoMessage) {
+    public void infoReceived(LinphoneCore linphoneCore, LinphoneCall linphoneCall,
+                             LinphoneInfoMessage linphoneInfoMessage) {
         Log.i("Cat_Server", "infoReceived");
     }
 
     @Override
-    public void subscriptionStateChanged(LinphoneCore linphoneCore, LinphoneEvent linphoneEvent, SubscriptionState subscriptionState) {
+    public void subscriptionStateChanged(LinphoneCore linphoneCore, LinphoneEvent linphoneEvent,
+                                         SubscriptionState subscriptionState) {
         Log.i("Cat_Server", "subscriptionStateChanged");
     }
 
     @Override
-    public void publishStateChanged(LinphoneCore linphoneCore, LinphoneEvent linphoneEvent, PublishState publishState) {
+    public void publishStateChanged(LinphoneCore linphoneCore, LinphoneEvent linphoneEvent,
+                                    PublishState publishState) {
         Log.i("Cat_Server", "--------------------------------");
         Log.i("Cat_Server", "publishStateChanged");
         Log.i("PublishStateChanged", linphoneEvent.getEventName());
@@ -172,27 +188,33 @@ public class LinphoneCATServerListener implements LinphoneCoreListener {
     }
 
     @Override
-    public void fileTransferProgressIndication(LinphoneCore linphoneCore, LinphoneChatMessage linphoneChatMessage, LinphoneContent linphoneContent, int i) {
+    public void fileTransferProgressIndication(LinphoneCore linphoneCore,
+                                               LinphoneChatMessage linphoneChatMessage,
+                                               LinphoneContent linphoneContent, int i) {
         Log.i("Cat_Server", "fileTransferProgressIndication");
     }
 
     @Override
-    public void fileTransferRecv(LinphoneCore linphoneCore, LinphoneChatMessage linphoneChatMessage, LinphoneContent linphoneContent, byte[] bytes, int i) {
+    public void fileTransferRecv(LinphoneCore linphoneCore, LinphoneChatMessage linphoneChatMessage,
+                                 LinphoneContent linphoneContent, byte[] bytes, int i) {
         Log.i("Cat_Server", "fileTransferRecv");
     }
 
     @Override
-    public int fileTransferSend(LinphoneCore linphoneCore, LinphoneChatMessage linphoneChatMessage, LinphoneContent linphoneContent, ByteBuffer byteBuffer, int i) {
+    public int fileTransferSend(LinphoneCore linphoneCore, LinphoneChatMessage linphoneChatMessage,
+                                LinphoneContent linphoneContent, ByteBuffer byteBuffer, int i) {
         return 0;
     }
 
     @Override
-    public void globalState(LinphoneCore linphoneCore, LinphoneCore.GlobalState globalState, String s) {
+    public void globalState(LinphoneCore linphoneCore, LinphoneCore.GlobalState globalState,
+                            String s) {
         Log.i("Cat_Server", "globalState");
     }
 
     @Override
-    public void registrationState(LinphoneCore linphoneCore, LinphoneProxyConfig linphoneProxyConfig, LinphoneCore.RegistrationState registrationState, String s) {
+    public void registrationState(LinphoneCore linphoneCore, LinphoneProxyConfig
+            linphoneProxyConfig, LinphoneCore.RegistrationState registrationState, String s) {
         Log.i("Cat_Server", "--------------------------------");
         Log.i("Cat_Server", "registrationState");
 
@@ -209,20 +231,23 @@ public class LinphoneCATServerListener implements LinphoneCoreListener {
     }
 
     @Override
-    public void configuringStatus(LinphoneCore linphoneCore, LinphoneCore.RemoteProvisioningState remoteProvisioningState, String s) {
+    public void configuringStatus(LinphoneCore linphoneCore, LinphoneCore.RemoteProvisioningState
+            remoteProvisioningState, String s) {
         Log.i("Cat_Server", "configuringStatus");
     }
 
     @Override
-    public void messageReceived(LinphoneCore linphoneCore, LinphoneChatRoom linphoneChatRoom, LinphoneChatMessage linphoneChatMessage) {
+    public void messageReceived(LinphoneCore linphoneCore, LinphoneChatRoom linphoneChatRoom,
+                                LinphoneChatMessage linphoneChatMessage) {
         Log.i("Cat_Server", "messageReceived");
     }
 
     @Override
-    public void callState(LinphoneCore linphoneCore, LinphoneCall linphoneCall, LinphoneCall.State state, String message) {
+    public void callState(LinphoneCore linphoneCore, LinphoneCall linphoneCall,
+                          LinphoneCall.State state, String message) {
         if (state == LinphoneCall.State.IncomingReceived) {
             incomingCall(linphoneCall);
-        } else if(state == LinphoneCall.State.CallEnd) {
+        } else if (state == LinphoneCall.State.CallEnd) {
             callEnded(linphoneCall, message);
         } else if (state == LinphoneCall.State.Error) {
             unknownCallError(linphoneCall, message);
@@ -230,12 +255,14 @@ public class LinphoneCATServerListener implements LinphoneCoreListener {
     }
 
     @Override
-    public void callEncryptionChanged(LinphoneCore linphoneCore, LinphoneCall linphoneCall, boolean b, String s) {
+    public void callEncryptionChanged(LinphoneCore linphoneCore, LinphoneCall linphoneCall,
+                                      boolean b, String s) {
         Log.i("Cat_Server", "callEncryptionChanged");
     }
 
     @Override
-    public void notifyReceived(LinphoneCore linphoneCore, LinphoneEvent linphoneEvent, String s, LinphoneContent linphoneContent) {
+    public void notifyReceived(LinphoneCore linphoneCore, LinphoneEvent linphoneEvent, String s,
+                               LinphoneContent linphoneContent) {
         Log.i("Cat_Server", "notifyReceived");
     }
 
@@ -245,7 +272,9 @@ public class LinphoneCATServerListener implements LinphoneCoreListener {
     }
 
     @Override
-    public void ecCalibrationStatus(LinphoneCore linphoneCore, LinphoneCore.EcCalibratorStatus ecCalibratorStatus, int i, Object o) {
+    public void ecCalibrationStatus(LinphoneCore linphoneCore,
+                                    LinphoneCore.EcCalibratorStatus ecCalibratorStatus, int i,
+                                    Object o) {
         Log.i("Cat_Server", "ecCalibrationStatus");
     }
 
@@ -255,12 +284,15 @@ public class LinphoneCATServerListener implements LinphoneCoreListener {
     }
 
     @Override
-    public void uploadStateChanged(LinphoneCore linphoneCore, LinphoneCore.LogCollectionUploadState logCollectionUploadState, String s) {
+    public void uploadStateChanged(LinphoneCore linphoneCore,
+                                   LinphoneCore.LogCollectionUploadState logCollectionUploadState,
+                                   String s) {
         Log.i("Cat_Server", "uploadStateChanged");
     }
 
     @Override
-    public void friendListCreated(LinphoneCore linphoneCore, LinphoneFriendList linphoneFriendList) {
+    public void friendListCreated(LinphoneCore linphoneCore,
+                                  LinphoneFriendList linphoneFriendList) {
         Log.i("Cat_Server", "--------------------------------");
         Log.i("Cat_Server", "friendListCreated");
         for (LinphoneFriend friend : linphoneFriendList.getFriendList()) {
@@ -270,7 +302,8 @@ public class LinphoneCATServerListener implements LinphoneCoreListener {
     }
 
     @Override
-    public void friendListRemoved(LinphoneCore linphoneCore, LinphoneFriendList linphoneFriendList) {
+    public void friendListRemoved(LinphoneCore linphoneCore,
+                                  LinphoneFriendList linphoneFriendList) {
         Log.i("Cat_Server", "friendListRemoved");
         Log.i("Cat_Server", "--------------------------------");
         Log.i("Cat_Server", "friendListRemoved");
@@ -281,11 +314,11 @@ public class LinphoneCATServerListener implements LinphoneCoreListener {
     }
 
     private void incomingCall(LinphoneCall linphoneCall) {
-        // If an incoming call will be received from an user
+        // Set a linphone call
         try {
             LinphoneCATClient.getInstance().setLinphoneCall(linphoneCall);
 
-            // Incoming call activity.
+            // Start the activity for an incoming call
             Bundle bundle = new Bundle();
             bundle.putInt(CallActivity.KEY_FRAGMENT_ID, CallActivity.FRAGMENT_INCOMING_CALL);
             ApplicationContext.runIntentWithParams(ApplicationContext.ACTIVITY_CALL, bundle);
@@ -324,7 +357,7 @@ public class LinphoneCATServerListener implements LinphoneCoreListener {
             errorMessage = message;
         }
 
-        if(errorMessage != null) {
+        if (errorMessage != null) {
             ApplicationContext.showToast(errorMessage, Toast.LENGTH_LONG);
         }
 

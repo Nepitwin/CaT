@@ -28,6 +28,7 @@ package com.app.cat.client;
  *
  * @author Andreas Sekulski
  */
+@Deprecated
 public class CATException extends Exception {
 
     /**

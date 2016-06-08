@@ -26,22 +26,22 @@ package com.app.cat.ui.adapter;
 import android.content.Context;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.app.cat.R;
 import com.app.cat.client.CATClient;
-import com.app.cat.client.CATException;
 import com.app.cat.linphone.LinphoneCATClient;
 import com.app.cat.model.CATFriend;
 import com.app.cat.ui.CallActivity;
 import com.app.cat.util.ApplicationContext;
 import com.app.cat.util.CatSettings;
+import com.app.cat.util.PermissionManager;
 
 import org.linphone.core.LinphoneCoreException;
 
@@ -83,31 +83,29 @@ public class TelephoneBookAdapter extends ArrayAdapter<CATFriend> {
         try {
             client = LinphoneCATClient.getInstance();
         } catch (LinphoneCoreException e) {
-            // ToDo := Error handling in Android UI... Everytime the same... Donuts...
-            Log.e("TelephoneBookAdapter", e.getMessage());
+            ApplicationContext.showToast(
+                    ApplicationContext.getStringFromRessources(R.string.unknown_error_message),
+                    Toast.LENGTH_SHORT);
         }
 
         final CATFriend catFriend = getItem(position);
 
-        // ToDo : Button interaction handling for audio and video calls
         Button audio = (Button) rowView.findViewById(R.id.buttonAudioCall);
 
         audio.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Try to call an cool friend!
-                try {
-                    client.callFriend(catFriend);
-                    Bundle bundle = new Bundle();
-                    bundle.putInt(CallActivity.KEY_FRAGMENT_ID, CallActivity.FRAGMENT_CALL);
-                    ApplicationContext.runIntentWithParams(ApplicationContext.ACTIVITY_CALL, bundle);
-                } catch (CATException e) {
-                    // ToDo := Error handling in Android UI... Everytime the same... Donuts...
-                    e.printStackTrace();
-                }
+                // Set catFriend that should be called
+                client.setFriendToCall(catFriend);
+
+                // Open Call Activity
+                Bundle bundle = new Bundle();
+                bundle.putInt(CallActivity.KEY_FRAGMENT_ID, CallActivity.FRAGMENT_CALL);
+                ApplicationContext.runIntentWithParams(ApplicationContext.ACTIVITY_CALL, bundle);
             }
         });
 
+        // ToDo : Button interaction handling for video calls
         Button video = (Button) rowView.findViewById(R.id.buttonVideoCall);
 
         audio.getBackground().setColorFilter(CatSettings.DEFAULT_BUTTON_COLOR, PorterDuff.Mode.MULTIPLY);
@@ -117,7 +115,6 @@ public class TelephoneBookAdapter extends ArrayAdapter<CATFriend> {
         TextView textview = (TextView) rowView.findViewById(R.id.textView);
         textview.setText(catFriend.getUsername());
 
-        // ToDo: Consider changing the list items to LinphoneFriends instead of CATAccounts (would make things easier)
         // ToDo: Implement notifyDataSetChanged, so this is redrawn on changes
         // Analyse presence status
    /*     if (user instanceof CATFriend) {

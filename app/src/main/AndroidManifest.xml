@@ -34,8 +34,17 @@
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.WAKE_LOCK"/>
-    <uses-permission android:name="android.permission.PROCESS_OUTGOING_CALLS"/>
-    <uses-permission android:name="android.permission.CALL_PHONE"/>
+
+    <!-- ToDo: Check necessity for the following permissions -->
+
+    <!-- PROCESS_OUTGOING_CALLS: Allows an application to see the number being dialed during an
+    outgoing call with the option to redirect the call to a different number or abort the call
+    altogether. -->
+    <!-- <uses-permission android:name="android.permission.PROCESS_OUTGOING_CALLS"/> -->
+
+    <!-- CALL_PHONE: Allows an application to initiate a phone call without going through the Dialer
+    user interface for the user to confirm the call. -->
+    <!-- <uses-permission android:name="android.permission.CALL_PHONE"/> -->
 
     <application
         android:allowBackup="true"

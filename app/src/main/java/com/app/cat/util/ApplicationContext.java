@@ -36,9 +36,9 @@ import com.app.cat.ui.CallActivity;
 import com.app.cat.ui.MainActivity;
 
 /**
- * @author Andreas Sekulski
+ * Static utility class to get context from active activity.
  *
- * Singleton utility class to get context from active activity.
+ * @author Andreas Sekulski, Dimitri Kotlovsky
  */
 public class ApplicationContext {
 
@@ -93,6 +93,14 @@ public class ApplicationContext {
             i.putExtras(bundle);
             activity.startActivity(i);
         }
+    }
+
+    /**
+     * Returns the current activity.
+     * @return current activity
+     */
+    public static Activity getCurrentActivity() {
+        return activity;
     }
 
     /**

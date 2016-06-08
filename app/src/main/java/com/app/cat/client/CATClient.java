@@ -49,9 +49,8 @@ public interface CATClient {
 
     /**
      * Register a given user to an SIP Server.
-     * @throws CATException
      */
-    void register() throws CATException;
+    void register();
 
     /**
      * Unregister an user on an registered SIP-Server
@@ -70,9 +69,8 @@ public interface CATClient {
     /**
      * Adds a friend with the given username and domain.
      * @param catFriend An friend to add.
-     * @throws CATException Throws an CATException if settings are invalid.
      */
-    void addFriend(CATFriend catFriend) throws CATException;
+    void addFriend(CATFriend catFriend);
 
     /**
      * Enables the presence status.
@@ -86,16 +84,19 @@ public interface CATClient {
 
     /**
      * Try to call an friend.
-     * @param catFriend Friend to call.
-     * @throws CATException If an error occurred an CATException with an given error message will be thrown.
      */
-    void callFriend(CATFriend catFriend) throws CATException;
+    void callFriend();
+
+    /**
+     * Sets the CATFriend to be called next.
+     * @param catFriend Friend to be called next.
+     */
+    void setFriendToCall(CATFriend catFriend);
 
     /**
      * Accepts an incoming call if exists.
-     * @throws CATException If call could not be accept from an unknown error.
      */
-    void acceptCall() throws CATException;
+    void acceptCall();
 
     /**
      * Decline an incoming call if exists.

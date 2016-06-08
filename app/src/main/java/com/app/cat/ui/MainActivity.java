@@ -148,15 +148,7 @@ public class MainActivity extends AppCompatActivity {
             service = new Intent(MainActivity.this, CATService.class);
             startService(service);
 
-        } catch (IOException io) {
-            ApplicationContext.showToast(
-                    ApplicationContext.getStringFromRessources(R.string.unknown_error_message),
-                    Toast.LENGTH_SHORT);
-        } catch (LinphoneCoreException e) {
-            ApplicationContext.showToast(
-                    ApplicationContext.getStringFromRessources(R.string.unknown_error_message),
-                    Toast.LENGTH_SHORT);
-        } catch (NoSuchAlgorithmException e) {
+        } catch (IOException | LinphoneCoreException | NoSuchAlgorithmException e) {
             ApplicationContext.showToast(
                     ApplicationContext.getStringFromRessources(R.string.unknown_error_message),
                     Toast.LENGTH_SHORT);

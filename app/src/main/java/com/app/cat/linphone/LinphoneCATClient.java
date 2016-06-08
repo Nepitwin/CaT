@@ -23,15 +23,14 @@
 
 package com.app.cat.linphone;
 
-import android.media.AudioManager;
-import android.os.Bundle;
 import android.util.Log;
+import android.widget.Toast;
 
+import com.app.cat.R;
 import com.app.cat.client.CATClient;
 import com.app.cat.client.CATException;
 import com.app.cat.model.CATFriend;
 import com.app.cat.model.CATUser;
-import com.app.cat.ui.CallActivity;
 import com.app.cat.util.ApplicationContext;
 
 import org.linphone.core.LinphoneAddress;
@@ -109,6 +108,11 @@ public class LinphoneCATClient implements CATClient {
     private CATUser catUser;
 
     /**
+     * CATFriend variable to indicate who is going to be called next.
+     */
+    private CATFriend catFriend;
+
+    /**
      * Static instance from LinphoneCATClient
      */
     private static LinphoneCATClient instance;
@@ -176,7 +180,7 @@ public class LinphoneCATClient implements CATClient {
     }
 
     @Override
-    public void register() throws CATException {
+    public void register() {
         Log.i("Clicked", "Login motherfucker");
 
         if(catUser != null) {
@@ -217,7 +221,9 @@ public class LinphoneCATClient implements CATClient {
                 }
 
             } catch (LinphoneCoreException e) {
-                throw new CATException(e.getMessage());
+                ApplicationContext.showToast(
+                        ApplicationContext.getStringFromRessources(R.string.unknown_error_message),
+                        Toast.LENGTH_SHORT);
             }
         } else {
             // ToDo: Error message if service not working :(
@@ -233,7 +239,6 @@ public class LinphoneCATClient implements CATClient {
 
         // Wait until unregistration is finished.
         while(proxyConfig.isRegistered()) {
-            // ToDO: overthink LinphoneCATVoIPService architecture (should be running in a separate thread)
             updateServerInformation();
         }
     }
@@ -249,7 +254,7 @@ public class LinphoneCATClient implements CATClient {
     }
 
     @Override
-    public void addFriend(CATFriend catFriend) throws CATException {
+    public void addFriend(CATFriend catFriend) {
 
         // Generate sip URL from username and domain.
         String friendSIP = catFriend.getSIPAccount();
@@ -280,7 +285,9 @@ public class LinphoneCATClient implements CATClient {
             //friendList.addFriend(friend);
 
         } catch (LinphoneCoreException e) {
-            throw new CATException(e.getMessage());
+            ApplicationContext.showToast(
+                    ApplicationContext.getStringFromRessources(R.string.unknown_error_message),
+                    Toast.LENGTH_SHORT);
         }
     }
 
@@ -306,21 +313,32 @@ public class LinphoneCATClient implements CATClient {
     }
 
     @Override
-    public void callFriend(CATFriend catFriend) throws CATException {
-        try {
+    public void callFriend() {
+        if(catFriend != null) {
             LinphoneCallParams params = core.createCallParams(null);
             params.setVideoEnabled(false);
             params.enableLowBandwidth(false);
             //params.setAudioBandwidth(40);
-            setLinphoneCall(core.inviteAddressWithParams(coreFactory.createLinphoneAddress(catFriend.getSIPAccount()), params));
-            //setLinphoneCall(core.invite(coreFactory.createLinphoneAddress(catFriend.getSIPAccount())));
-        } catch (LinphoneCoreException e) {
-            throw new CATException(e.getMessage());
+            try {
+                setLinphoneCall(core.inviteAddressWithParams(coreFactory.
+                        createLinphoneAddress(catFriend.getSIPAccount()), params));
+//                setLinphoneCall(core.invite(coreFactory.
+//                        createLinphoneAddress(catFriend.getSIPAccount())));
+            } catch (LinphoneCoreException e) {
+                ApplicationContext.showToast(
+                        ApplicationContext.getStringFromRessources(R.string.unknown_error_message),
+                        Toast.LENGTH_SHORT);
+            }
         }
     }
 
     @Override
-    public void acceptCall() throws CATException {
+    public void setFriendToCall(CATFriend catFriend) {
+        this.catFriend = catFriend;
+    }
+
+    @Override
+    public void acceptCall() {
         if(linphoneCall != null) {
 
             LinphoneCallParams params = core.createCallParams(linphoneCall);
@@ -350,7 +368,9 @@ public class LinphoneCATClient implements CATClient {
                 Log.v("Call", "Volume : " + linphoneCall.getPlayVolume());
                 core.acceptCallWithParams(linphoneCall, params);
             } catch (LinphoneCoreException e) {
-                throw new CATException(e.getMessage());
+                ApplicationContext.showToast(
+                        ApplicationContext.getStringFromRessources(R.string.unknown_error_message),
+                        Toast.LENGTH_SHORT);
             }
         }
     }
@@ -360,6 +380,10 @@ public class LinphoneCATClient implements CATClient {
         if(linphoneCall != null) {
             core.terminateCall(linphoneCall);
             linphoneCall = null;
+        }
+
+        if (catFriend != null) {
+            catFriend = null;
         }
     }
 
@@ -382,7 +406,7 @@ public class LinphoneCATClient implements CATClient {
     }
 
     /**
-     * Sets an linphone call.
+     * Sets a linphone call.
      * @param call Call to set.
      */
     public void setLinphoneCall(LinphoneCall call) {
