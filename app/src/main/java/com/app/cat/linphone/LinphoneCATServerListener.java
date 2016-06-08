@@ -179,12 +179,18 @@ public class LinphoneCATServerListener implements LinphoneCoreListener {
 
     @Override
     public void displayMessage(LinphoneCore linphoneCore, String s) {
+        Log.i("Cat_Server", "--------------------------------");
         Log.i("Cat_Server", "displayMessage");
+        Log.i("Cat_Server", s);
+        Log.i("Cat_Server", "--------------------------------");
     }
 
     @Override
     public void displayWarning(LinphoneCore linphoneCore, String s) {
+        Log.i("Cat_Server", "--------------------------------");
         Log.i("Cat_Server", "displayWarning");
+        Log.i("Cat_Server", s);
+        Log.i("Cat_Server", "--------------------------------");
     }
 
     @Override
@@ -209,7 +215,11 @@ public class LinphoneCATServerListener implements LinphoneCoreListener {
     @Override
     public void globalState(LinphoneCore linphoneCore, LinphoneCore.GlobalState globalState,
                             String s) {
+        Log.i("Cat_Server", "--------------------------------");
         Log.i("Cat_Server", "globalState");
+        Log.i("Cat_Server", globalState.toString());
+        Log.i("Cat_Server", s);
+        Log.i("Cat_Server", "--------------------------------");
     }
 
     @Override
@@ -233,7 +243,11 @@ public class LinphoneCATServerListener implements LinphoneCoreListener {
     @Override
     public void configuringStatus(LinphoneCore linphoneCore, LinphoneCore.RemoteProvisioningState
             remoteProvisioningState, String s) {
+        Log.i("Cat_Server", "--------------------------------");
         Log.i("Cat_Server", "configuringStatus");
+        Log.i("Cat_Server", remoteProvisioningState.toString());
+        Log.i("Cat_Server", "" + s);
+        Log.i("Cat_Server", "--------------------------------");
     }
 
     @Override

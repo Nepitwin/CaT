@@ -34,7 +34,6 @@ import android.widget.Toast;
 
 import com.app.cat.R;
 import com.app.cat.client.CATClient;
-import com.app.cat.client.CATException;
 import com.app.cat.linphone.LinphoneCATClient;
 import com.app.cat.ui.fragment.CallFragment;
 import com.app.cat.ui.fragment.IncomingCallFragment;

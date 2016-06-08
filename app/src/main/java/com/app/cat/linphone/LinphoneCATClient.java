@@ -28,9 +28,9 @@ import android.widget.Toast;
 
 import com.app.cat.R;
 import com.app.cat.client.CATClient;
-import com.app.cat.client.CATException;
 import com.app.cat.model.CATFriend;
 import com.app.cat.model.CATUser;
+import com.app.cat.service.VoIPService;
 import com.app.cat.util.ApplicationContext;
 
 import org.linphone.core.LinphoneAddress;
@@ -118,6 +118,11 @@ public class LinphoneCATClient implements CATClient {
     private static LinphoneCATClient instance;
 
     /**
+     * Registration service.
+     */
+    private VoIPService registrationService;
+
+    /**
      * Get instance method to create an singleton if nox already exists.
      *
      * @return Singleton LinphoneCATClient object.
@@ -163,6 +168,10 @@ public class LinphoneCATClient implements CATClient {
         // Create an proxy configuration class from core.
         proxyConfig = core.createProxyConfig();
         proxyConfig.setExpires(REGISTRATION_EXPIRATION_TIME); // sets the registration expiration time
+
+
+        // Starts the registration service
+        registrationService = new LinphoneCATRegistrationService(proxyConfig);
     }
 
     @Override
@@ -180,7 +189,7 @@ public class LinphoneCATClient implements CATClient {
     }
 
     @Override
-    public void register() {
+    public boolean register() {
         Log.i("Clicked", "Login motherfucker");
 
         if(catUser != null) {
@@ -215,8 +224,14 @@ public class LinphoneCATClient implements CATClient {
                 core.addProxyConfig(proxyConfig);
                 core.setDefaultProxyConfig(proxyConfig);
 
+
+                // ToDo: Registration Service is not creating a new thread properly
+                // Start registration service
+                //registrationService.start();
+
                 // Wait until registration is finished.
-                while(!proxyConfig.isRegistered()) {
+                //while(!proxyConfig.isRegistered() && registrationService.isRunning()) {
+                while(!proxyConfig.isRegistered() ) { //&& registrationService.isRunning()) {
                     updateServerInformation();
                 }
 
@@ -228,6 +243,9 @@ public class LinphoneCATClient implements CATClient {
         } else {
             // ToDo: Error message if service not working :(
         }
+
+        // Determine whether the registration process was successful or not
+        return proxyConfig.isRegistered();
     }
 
     @Override

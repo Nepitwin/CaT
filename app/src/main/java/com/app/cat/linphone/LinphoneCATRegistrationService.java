@@ -24,21 +24,26 @@
 package com.app.cat.linphone;
 
 import android.os.Handler;
+import android.widget.Toast;
 
-import com.app.cat.client.CATClient;
+import com.app.cat.R;
 import com.app.cat.service.VoIPService;
+import com.app.cat.util.ApplicationContext;
+
+import org.linphone.core.LinphoneProxyConfig;
 
 /**
- * Class to create an background service on an android device to update VoIPService calls.
+ * Class to create an background service on an android device to wait for the completion of the
+ * server registration.
  *
- * @author Andreas Sekulski
+ * @author Dimitri Kotlovsky, Andreas Sekulski
  */
-public class LinphoneCATVoIPService implements Runnable, VoIPService {
+public class LinphoneCATRegistrationService implements Runnable, VoIPService {
 
     /**
-     * Constant interval to call updates from an SIP server in ms.
+     * Constant interval to check registration status.
      */
-    private static final long NOTIFY_INTERVAL = 50;
+    private static final long NOTIFY_INTERVAL = 1000;
 
     /**
      * Handler to call this runnable periodically;
@@ -46,42 +51,57 @@ public class LinphoneCATVoIPService implements Runnable, VoIPService {
     private Handler handler;
 
     /**
-     * Corresponding client object to handle Client Server communication.
-     */
-    private CATClient client;
-
-    /**
      * Boolean indicator to loop.
      */
     private boolean isRunning;
 
     /**
-     * Returns <code>true</code> if the registration was successful.
+     * LinphoneProxyConfig to check registration status.
      */
-    private boolean isRegistrationSuccessful;
+    private LinphoneProxyConfig proxyConfig;
+
+    /**
+     * Counter for counting the seconds while trying to register.
+     */
+    private int counter;
 
     /**
      * Creates an Voice over IP event handler to update periodically an SIP server status.
      */
-    public LinphoneCATVoIPService(CATClient client) {
+    public LinphoneCATRegistrationService(LinphoneProxyConfig proxyConfig) {
         super();
         this.handler = new Handler();
-        this.client = client;
+        this.proxyConfig = proxyConfig;
+        this.counter = 0;
         this.isRunning = false;
     }
 
     @Override
     public void run() {
         if(isRunning) {
-            client.updateServerInformation();
-            // Call runnable again after a NOTIFY_INTERVAL
-            handler.postDelayed(this, NOTIFY_INTERVAL);
+            // Call runnable again after a NOTIFY_INTERVAL if registration didn't work
+            if (!proxyConfig.isRegistered()) {
+                counter++;
+                handler.postDelayed(this, NOTIFY_INTERVAL);
+
+                // Show a notification after 3 seconds of unsuccessful registration tries
+                if (counter == 3) {
+                    ApplicationContext.showToast(ApplicationContext.getStringFromRessources(
+                            R.string.wait_for_registration), Toast.LENGTH_LONG);
+
+                    // Show a special activity after 5 seconds and stop registration process
+                } else if (counter >= 5) {
+                    // ToDo: New activity with sad cat
+                    ApplicationContext.showToast("STOP", Toast.LENGTH_LONG);
+                    stop();
+                }
+            }
         }
     }
 
     @Override
     public void stop() {
-        logout();
+        counter = 0;
         isRunning = false;
     }
 
@@ -89,35 +109,13 @@ public class LinphoneCATVoIPService implements Runnable, VoIPService {
     public void start() {
         if(!isRunning()) {
             isRunning = true;
-            login();
-            if (isRegistrationSuccessful) {
-                run();
-            }
+            counter = 0;
+            run();
         }
     }
 
     @Override
     public boolean isRunning() {
         return isRunning;
-    }
-
-    /**
-     * Login user to sip server.
-     */
-    private void login() {
-        client.unregister();
-        isRegistrationSuccessful = client.register();
-        if (isRegistrationSuccessful) {
-            client.enablePresenceStatus();
-        }
-    }
-
-    /**
-     * Logout from sip server.
-     */
-    private void logout() {
-        client.disablePresenceStatus();
-        // ToDo := Unregister should wait until presence is done !!!
-        client.unregister();
     }
 }
