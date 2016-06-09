@@ -98,7 +98,7 @@ public class MainActivity extends AppCompatActivity
     private CATUser catUser;
 
     /**
-     * Mpckup cat friend.
+     * Mockup cat friend.
      */
     private CATFriend catFriend;
 

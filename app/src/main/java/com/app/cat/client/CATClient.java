@@ -51,7 +51,7 @@ public interface CATClient {
      * Register a given user to an SIP Server.
      * @return <code>true</code> if registration process was successful
      */
-    boolean register();
+    void register();
 
     /**
      * Unregister an user on an registered SIP-Server

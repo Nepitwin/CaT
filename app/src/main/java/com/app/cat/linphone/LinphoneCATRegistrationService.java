@@ -25,10 +25,7 @@ package com.app.cat.linphone;
 
 import android.app.ProgressDialog;
 import android.os.Handler;
-import android.util.Log;
-import android.widget.Toast;
 
-import com.app.cat.R;
 import com.app.cat.service.VoIPService;
 import com.app.cat.util.ApplicationContext;
 
@@ -93,26 +90,26 @@ public class LinphoneCATRegistrationService extends Handler implements Runnable,
 
                 if(isVisibleTBook) {
                     isVisibleTBook = false;
-                    ApplicationContext.sendResult(
-                            ApplicationContext.MAIN_ACTIVITY_CLASS,
-                            ApplicationContext.KEY_SHOW_ERROR_MESSAGE,
-                            "Registration not working check your internet connectivity.");
+                    ApplicationContext.sendResult(ApplicationContext.MAIN_ACTIVITY_CLASS,
+                            ApplicationContext.KEY_SHOW_ERROR_MESSAGE, "No internet connection.");
                 }
             }
         } else if(proxyConfig.isRegistered()) {
+
+            // Dismiss progress dialog
+            if (dialog.isShowing()) {
+                dialog.dismiss();
+            }
+
             if(!isVisibleTBook) {
-
-                ApplicationContext.showToast("We are in.", Toast.LENGTH_LONG);
-                ApplicationContext.sendResult(
-                        ApplicationContext.MAIN_ACTIVITY_CLASS,
-                        ApplicationContext.KEY_HIDE_ERROR_MESSAGE,
-                        "");
-
+                ApplicationContext.sendResult(ApplicationContext.MAIN_ACTIVITY_CLASS,
+                        ApplicationContext.KEY_HIDE_ERROR_MESSAGE, "");
                 isVisibleTBook = true;
                 counter = 0;
             }
         }
 
+        // Increase counter
         if(counter < MAX_TRIES) {
             counter++;
         }

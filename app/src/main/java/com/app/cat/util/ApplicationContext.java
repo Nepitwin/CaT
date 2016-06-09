@@ -28,11 +28,8 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
-import android.media.AudioManager;
 import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
-import android.util.Log;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.app.cat.ui.CallActivity;
@@ -145,9 +142,9 @@ public class ApplicationContext {
 
     /**
      * Shows an progress dialog if an activity context exists otherwise null.
-     * @param header Header title
-     * @param message Message to show
-     * @return Null if activity context not set otherwise an progress dialog.
+     * @param header header title
+     * @param message message to show
+     * @return <code>null</code> if activity context is not set otherwise a progress dialog
      */
     public static ProgressDialog showProgressDialog(String header, String message) {
         if(context != null) {

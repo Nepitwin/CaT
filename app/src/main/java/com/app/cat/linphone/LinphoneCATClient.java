@@ -190,9 +190,7 @@ public class LinphoneCATClient implements CATClient {
     }
 
     @Override
-    public boolean register() {
-        Log.i("Clicked", "Login motherfucker");
-
+    public void register() {
         if(catUser != null) {
             String username = catUser.getUsername();
             String domain = catUser.getDomain();
@@ -200,7 +198,6 @@ public class LinphoneCATClient implements CATClient {
             String sip = catUser.getSIPAccount();
 
             try {
-                // ToDo : Check if addAuthInfo and ProxyConfig must be deleted.
                 core.clearProxyConfigs();
                 core.clearAuthInfos();
                 core.enableKeepAlive(true);
@@ -244,11 +241,10 @@ public class LinphoneCATClient implements CATClient {
                 e.printStackTrace();
             }
         } else {
-            // ToDo: Error message if service not working :(
+            ApplicationContext.showToast(
+                    ApplicationContext.getStringFromRessources(R.string.unknown_error_message),
+                    Toast.LENGTH_SHORT);
         }
-
-        // Determine whether the registration process was successful or not
-        return proxyConfig.isRegistered();
     }
 
     @Override
@@ -258,9 +254,7 @@ public class LinphoneCATClient implements CATClient {
         proxyConfig.enableRegister(false); // De-activate registration for this proxy config
         proxyConfig.done(); // Initiate REGISTER with expire = 0
 
-        // No !!! this is not an clean solution because only voip service calls updates from an server !
         // Wait until unregistration is finished.
-        // System will be blocked if registration will be not successfully!
         //while(proxyConfig.isRegistered()) {
         //    updateServerInformation();
         //}
