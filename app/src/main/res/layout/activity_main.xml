@@ -37,12 +37,36 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:id="@+id/statusBar"
+            android:layout_marginBottom="5dp"
+            android:layout_marginTop="5dp"
+            android:background="#ff0000"
+            android:padding="10dp">
+
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="Medium Text"
+                android:id="@+id/textViewErrorMessage"
+                android:gravity="center"
+                android:visibility="visible"
+                android:textStyle="bold"
+                android:textColor="#ffffff" />
+        </LinearLayout>
+
         <TextView
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:text="Small Text"
-            android:id="@+id/testViewInfo" />
+            android:id="@+id/testViewInfo"
+            android:visibility="visible" />
 
         <ListView
             android:layout_width="match_parent"
@@ -50,4 +74,5 @@
             android:id="@+id/listViewTBook" />
 
     </LinearLayout>
+
 </RelativeLayout>

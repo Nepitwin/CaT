@@ -23,11 +23,17 @@
 
 package com.app.cat.ui;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.LayoutRes;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -72,6 +78,12 @@ public class MainActivity extends AppCompatActivity {
     @Bind(R.id.testViewInfo)
     public TextView info;
 
+    @Bind(R.id.statusBar)
+    public LinearLayout statusBarLayout;
+
+    @Bind(R.id.textViewErrorMessage)
+    public TextView statusBarText;
+
     /**
      * Adapter which handles telephone book ui with corresponding user models.
      */
@@ -102,6 +114,8 @@ public class MainActivity extends AppCompatActivity {
      */
     private CATClient client;
 
+    private BroadcastReceiver receiver;
+
     @Override
     public void setContentView(@LayoutRes int layoutResID) {
         super.setContentView(layoutResID);
@@ -120,6 +134,21 @@ public class MainActivity extends AppCompatActivity {
         List<CATFriend> catAccounts = new ArrayList<CATFriend>();
         telephoneBookAdapter = new TelephoneBookAdapter(this, catAccounts);
         listTBook.setAdapter(telephoneBookAdapter);
+
+        receiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if(intent.hasExtra(ApplicationContext.KEY_SHOW_ERROR_MESSAGE)) {
+                    statusBarText.setText(intent.getStringExtra(ApplicationContext.KEY_SHOW_ERROR_MESSAGE));
+                    statusBarLayout.setVisibility(View.VISIBLE);
+                    listTBook.setVisibility(View.GONE);
+                } else if(intent.hasExtra(ApplicationContext.KEY_HIDE_ERROR_MESSAGE)) {
+                    statusBarText.setText("");
+                    statusBarLayout.setVisibility(View.GONE);
+                    listTBook.setVisibility(View.VISIBLE);
+                }
+            }
+        };
 
         try {
             // Get singleton object.
@@ -159,6 +188,20 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+        LocalBroadcastManager.getInstance(this).registerReceiver((receiver),
+                new IntentFilter(ApplicationContext.MAIN_ACTIVITY_CLASS)
+        );
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(receiver);
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
 
@@ -171,4 +214,6 @@ public class MainActivity extends AppCompatActivity {
             service = null;
         }
     }
+
+
 }
