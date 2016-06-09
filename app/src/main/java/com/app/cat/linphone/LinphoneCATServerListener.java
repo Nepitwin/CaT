@@ -336,7 +336,7 @@ public class LinphoneCATServerListener implements LinphoneCoreListener {
         // Start the activity for an incoming call
         Activity activity = ApplicationContext.getCurrentActivity();
         if (activity instanceof CallActivity) {
-            ((CallActivity) ApplicationContext.getCurrentActivity()).switchFragments();
+            ((CallActivity) ApplicationContext.getCurrentActivity()).switchToCallFragment();
         }
     }
 

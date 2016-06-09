@@ -102,41 +102,28 @@ public class CallActivity extends AppCompatActivity implements CallFragmentListe
             e.printStackTrace();
         }
 
+        // Choose the right fragment
         Bundle bundle = getIntent().getExtras();
-        fragment = bundle.getInt(KEY_FRAGMENT_ID);
+        if (bundle != null) {
+            fragment = bundle.getInt(KEY_FRAGMENT_ID);
 
-        // Load the right fragment
-        if (savedInstanceState == null) {
-            if(fragment == FRAGMENT_CALL) {
-                fragmentTransaction = getSupportFragmentManager().beginTransaction().
-                        add(R.id.callUIContainer, new CallFragment());
-            } else if(fragment == FRAGMENT_INCOMING_CALL) {
-                fragmentTransaction = getSupportFragmentManager().beginTransaction().
-                        add(R.id.callUIContainer, new IncomingCallFragment());
-            } else if(fragment == FRAGMENT_OUTGOING_CALL) {
-                fragmentTransaction = getSupportFragmentManager().beginTransaction().
-                        add(R.id.callUIContainer, new OutgoingCallFragment());
-            } else {
-                ApplicationContext.showToast(
-                        ApplicationContext.getStringFromRessources(R.string.unknown_error_message),
-                        Toast.LENGTH_SHORT);
-            }
-            fragmentTransaction.commit();
-        }
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        // Try to call the chosen friend if the activity is opened with the CallFragment
-        if(fragment == FRAGMENT_OUTGOING_CALL) {
-            // Try to call a friend
-            if (!PermissionManager.hasPermission(PermissionManager.PERMISSION_RECORD_AUDIO)) {
-                PermissionManager.requestPermission(
-                        PermissionManager.PERMISSION_RECORD_AUDIO,
-                        PermissionManager.REQUEST_PERMISSIONS_OUTGOING_CALL);
-            } else {
-                client.callFriend();
+            // Load the right fragment
+            if (savedInstanceState == null) {
+                if (fragment == FRAGMENT_CALL) {
+                    fragmentTransaction = getSupportFragmentManager().beginTransaction().
+                            add(R.id.callUIContainer, new CallFragment());
+                } else if (fragment == FRAGMENT_INCOMING_CALL) {
+                    fragmentTransaction = getSupportFragmentManager().beginTransaction().
+                            add(R.id.callUIContainer, new IncomingCallFragment());
+                } else if (fragment == FRAGMENT_OUTGOING_CALL) {
+                    fragmentTransaction = getSupportFragmentManager().beginTransaction().
+                            add(R.id.callUIContainer, new OutgoingCallFragment());
+                } else {
+                    ApplicationContext.showToast(
+                            ApplicationContext.getStringFromRessources(R.string.unknown_error_message),
+                            Toast.LENGTH_SHORT);
+                }
+                fragmentTransaction.commit();
             }
         }
     }
@@ -144,14 +131,14 @@ public class CallActivity extends AppCompatActivity implements CallFragmentListe
     @Override
     public void onAcceptCall() {
         // Request permission to record audio before accepting the call
-        if (!PermissionManager.hasPermission(PermissionManager.PERMISSION_RECORD_AUDIO)) {
-            PermissionManager.requestPermission(
-                    PermissionManager.PERMISSION_RECORD_AUDIO,
+        if (!PermissionManager.havePermissions(PermissionManager.PERMISSIONS_AUDIO_CAMERA)) {
+            PermissionManager.requestPermissions(
+                    PermissionManager.PERMISSIONS_AUDIO_CAMERA,
                     PermissionManager.REQUEST_PERMISSIONS_INCOMING_CALL);
 
         // Permission is already granted - accept the call
         } else {
-            switchFragments();
+            switchToCallFragment();
             client.acceptCall();
         }
     }
@@ -167,10 +154,10 @@ public class CallActivity extends AppCompatActivity implements CallFragmentListe
     }
 
     /**
-     * Switches from {@link IncomingCallFragment} to {@link CallFragment} because user accepted the
-     * call.
+     * Switches from {@link IncomingCallFragment} or {@link OutgoingCallFragment} to
+     * {@link CallFragment} because user accepted the call.
      */
-    public void switchFragments() {
+    public void switchToCallFragment() {
         fragmentTransaction = getSupportFragmentManager().beginTransaction().
                 replace(R.id.callUIContainer, new CallFragment());
         fragmentTransaction.commit();
@@ -179,10 +166,9 @@ public class CallActivity extends AppCompatActivity implements CallFragmentListe
     @Override
     protected void onPostResume() {
         super.onPostResume();
-
         // Workaround for handling FragmentTransactions due to callbacks instead of user interaction
         if (grantedPermissions) {
-            switchFragments();
+            switchToCallFragment();
         } else {
             grantedPermissions = false;
         }
@@ -194,11 +180,16 @@ public class CallActivity extends AppCompatActivity implements CallFragmentListe
         // Process request results
         switch (requestCode) {
             case PermissionManager.REQUEST_PERMISSIONS_INCOMING_CALL: {
-                // If request is cancelled, the result arrays are empty.
-                if ((grantResults.length > 0)
-                    && (grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
+
+                // Check granted permissions
+                boolean permissionGranted = (grantResults.length > 0);
+                for (int i = 0; (i < grantResults.length) && permissionGranted; i++) {
+                    permissionGranted = (grantResults[i] == PackageManager.PERMISSION_GRANTED);
+                }
+
+                if (permissionGranted) {
                     grantedPermissions = true;
-                    client.acceptCall(); // ToDo: What happens, if meanwhile the call timed out?
+                    client.acceptCall();
                 } else {
                     onDeclineCall();
                     PermissionManager.firstPermissionRequest = false;
@@ -206,21 +197,7 @@ public class CallActivity extends AppCompatActivity implements CallFragmentListe
                             R.string.permission_denied),
                             Toast.LENGTH_LONG);
                 }
-                return;
-            }
-            case PermissionManager.REQUEST_PERMISSIONS_OUTGOING_CALL: {
-                // If request is cancelled, the result arrays are empty.
-                if ((grantResults.length > 0)
-                    && (grantResults[0] == PackageManager.PERMISSION_GRANTED)) {
-                    client.callFriend();
-                } else {
-                    client.setFriendToCall(null);
-                    finish(); // close activity //ToDo: final??
-                    PermissionManager.firstPermissionRequest = false;
-                    ApplicationContext.showToast(ApplicationContext.getStringFromRessources(
-                            R.string.permission_denied),
-                            Toast.LENGTH_LONG);
-                }
+
                 return;
             }
         }

@@ -99,15 +99,29 @@ public class TelephoneBookAdapter extends ArrayAdapter<CATFriend> {
                 // Set catFriend that should be called
                 client.setFriendToCall(catFriend);
 
-                // Open Call Activity
-                Bundle bundle = new Bundle();
-                bundle.putInt(CallActivity.KEY_FRAGMENT_ID, CallActivity.FRAGMENT_OUTGOING_CALL);
-                ApplicationContext.runIntentWithParams(ApplicationContext.ACTIVITY_CALL, bundle);
+                // Try to call a friend
+                if (!PermissionManager.havePermissions(PermissionManager.PERMISSIONS_AUDIO_CAMERA)) {
+                    PermissionManager.requestPermissions(
+                            PermissionManager.PERMISSIONS_AUDIO_CAMERA,
+                            PermissionManager.REQUEST_PERMISSIONS_OUTGOING_CALL);
+                } else {
+                    // Open Call Activity and call friend
+                    Bundle bundle = new Bundle();
+                    bundle.putInt(CallActivity.KEY_FRAGMENT_ID, CallActivity.FRAGMENT_OUTGOING_CALL);
+                    ApplicationContext.runIntentWithParams(ApplicationContext.ACTIVITY_CALL, bundle);
+                    client.callFriend();
+                }
             }
         });
 
-        // ToDo : Button interaction handling for video calls
         Button video = (Button) rowView.findViewById(R.id.buttonVideoCall);
+
+        video.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // ToDo : Button interaction handling for video calls
+            }
+        });
 
         audio.getBackground().setColorFilter(CatSettings.DEFAULT_BUTTON_COLOR, PorterDuff.Mode.MULTIPLY);
         video.getBackground().setColorFilter(CatSettings.DEFAULT_BUTTON_COLOR, PorterDuff.Mode.MULTIPLY);

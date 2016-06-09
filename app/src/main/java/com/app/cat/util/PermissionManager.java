@@ -31,6 +31,21 @@ public class PermissionManager {
     public static final String PERMISSION_CAMERA = Manifest.permission.CAMERA;
 
     /**
+     * Permissions constant for recording audio and accessing the camera.
+     */
+    public static final String[] PERMISSIONS_AUDIO_CAMERA = new String[]{
+            PermissionManager.PERMISSION_RECORD_AUDIO,
+            PermissionManager.PERMISSION_CAMERA};
+
+    /**
+     * Permissions constant for recording audio, accessing the camera and reading contacts.
+     */
+    public static final String[] PERMISSION_AUDIO_CAMERA_CONTACTS = new String[]{
+            PermissionManager.PERMISSION_RECORD_AUDIO,
+            PermissionManager.PERMISSION_READ_CONTACTS,
+            PermissionManager.PERMISSION_CAMERA};
+
+    /**
      * Result constant for requesting permissions for an incoming call.
      */
     public static final int REQUEST_PERMISSIONS_INCOMING_CALL = 4201;
@@ -51,26 +66,36 @@ public class PermissionManager {
     public static boolean firstPermissionRequest = true;
 
     /**
-     * Returns <code>true</code> if the given permission is granted for the application.
-     * @param permission permission to be checked
-     * @return <code>true</code> if the given permission is granted for the application
+     * Returns <code>true</code> if the given permissions are granted for the application.
+     * @param permissions permissions to be checked
+     * @return <code>true</code> if the given permissions are granted for the application
      */
-    public static boolean hasPermission(String permission) {
-        return ContextCompat.checkSelfPermission(ApplicationContext.getCurrentActivity(),
-                permission) == PackageManager.PERMISSION_GRANTED;
+    public static boolean havePermissions(String[] permissions) {
+        boolean havePermissions = true;
+        for(int i = 0; (i < permissions.length) && havePermissions; i++) {
+            havePermissions = ContextCompat.checkSelfPermission(ApplicationContext
+                    .getCurrentActivity(), permissions[i]) == PackageManager.PERMISSION_GRANTED;
+        }
+        return havePermissions;
     }
 
     /**
-     * Requests the given permission from the user. Callback is send to the current activity bind to
-     * the given result constant.
-     * @param permission permission to be requested
+     * Requests the given permissions from the user. Callback is send to the current activity
+     * bind to the given result constant.
+     * @param permissions permissions to be requested
      * @param resultConstant result constant to which the callback is bind
      */
-    public static void requestPermission(String permission, int resultConstant) {
-        // Should we show an explanation to the user?
-        if (ActivityCompat.shouldShowRequestPermissionRationale(
-                ApplicationContext.getCurrentActivity(), permission)) {
+    public static void requestPermissions(String[] permissions, int resultConstant) {
 
+        // Should we show an explanation to the user?
+        boolean shouldShowRequestPermissionRationale = false;
+        for(int i = 0; (i < permissions.length) && !shouldShowRequestPermissionRationale; i++) {
+            shouldShowRequestPermissionRationale = ActivityCompat
+                    .shouldShowRequestPermissionRationale(ApplicationContext
+                            .getCurrentActivity(), permissions[i]);
+        }
+
+        if (shouldShowRequestPermissionRationale) {
             /* ToDo: Show explanation dialog for permissions instead of a toast message
                Show an explanation to the user *asynchronously* -- don't block
                this thread waiting for the user's response! After the user
@@ -79,7 +104,7 @@ public class PermissionManager {
                     ApplicationContext.getStringFromRessources(R.string.permission_denied),
                     Toast.LENGTH_LONG);
             ActivityCompat.requestPermissions(ApplicationContext.getCurrentActivity(),
-                    new String[]{permission}, resultConstant);
+                    permissions, resultConstant);
 
         } else {
 
@@ -87,9 +112,9 @@ public class PermissionManager {
             if (firstPermissionRequest) {
                 // No explanation needed, we can request the permission.
                 ActivityCompat.requestPermissions(ApplicationContext.getCurrentActivity(),
-                        new String[]{permission}, resultConstant);
+                        permissions, resultConstant);
 
-            // The user has clicked "Never ask again" on the last permission dialog
+                // The user has clicked "Never ask again" on the last permission dialog
             } else {
 
                 // ToDo: This is a non functional workaround to show what is still to do here

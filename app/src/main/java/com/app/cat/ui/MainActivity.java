@@ -24,8 +24,11 @@
 package com.app.cat.ui;
 
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.LayoutRes;
+import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.ListView;
@@ -35,13 +38,12 @@ import android.widget.Toast;
 import com.app.cat.R;
 import com.app.cat.client.CATClient;
 import com.app.cat.linphone.LinphoneCATClient;
-import com.app.cat.linphone.LinphoneCATRegistrationService;
 import com.app.cat.model.CATFriend;
 import com.app.cat.model.CATUser;
 import com.app.cat.service.CATService;
-import com.app.cat.service.VoIPService;
 import com.app.cat.ui.adapter.TelephoneBookAdapter;
 import com.app.cat.util.ApplicationContext;
+import com.app.cat.util.PermissionManager;
 import com.app.cat.util.PropertiesLoader;
 
 import org.linphone.core.LinphoneCoreException;
@@ -61,7 +63,8 @@ import butterknife.ButterKnife;
  *
  * @author Andreas Sekulski, Dimitri Kotlovsky
  */
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity
+        implements ActivityCompat.OnRequestPermissionsResultCallback {
 
     /**
      * List view ui element for an telephone book.
@@ -169,6 +172,38 @@ public class MainActivity extends AppCompatActivity {
         if(service != null) {
             stopService(service);
             service = null;
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        // Process request results
+        switch (requestCode) {
+            case PermissionManager.REQUEST_PERMISSIONS_OUTGOING_CALL: {
+
+                // Check granted permissions
+                boolean permissionGranted = (grantResults.length > 0);
+                for (int i = 0; (i < grantResults.length) && permissionGranted; i++) {
+                    permissionGranted = (grantResults[i] == PackageManager.PERMISSION_GRANTED);
+                }
+
+                if (permissionGranted) {
+                    // Open Call Activity and call friend
+                    Bundle bundle = new Bundle();
+                    bundle.putInt(CallActivity.KEY_FRAGMENT_ID, CallActivity.FRAGMENT_OUTGOING_CALL);
+                    ApplicationContext.runIntentWithParams(ApplicationContext.ACTIVITY_CALL, bundle);
+                    client.callFriend();
+                } else {
+                    client.setFriendToCall(null);
+                    PermissionManager.firstPermissionRequest = false;
+                    ApplicationContext.showToast(ApplicationContext.getStringFromRessources(
+                            R.string.permission_denied),
+                            Toast.LENGTH_LONG);
+                }
+
+                return;
+            }
         }
     }
 }
