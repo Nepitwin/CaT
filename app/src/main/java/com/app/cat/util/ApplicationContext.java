@@ -24,12 +24,15 @@
 package com.app.cat.util;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.media.AudioManager;
 import android.os.Bundle;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.app.cat.ui.CallActivity;
@@ -51,6 +54,21 @@ public class ApplicationContext {
      * Call activity class.
      */
     public static Class ACTIVITY_CALL = CallActivity.class;
+
+    /**
+     * Main activity class package.
+     */
+    public static final String MAIN_ACTIVITY_CLASS = "com.app.cat.ui.CallActivity";
+
+    /**
+     * Key to show an error message on current activity. Specific broadcast receiver must be implement for activity.
+     */
+    public static final String KEY_SHOW_ERROR_MESSAGE = "ERROR_MESSAGE";
+
+    /**
+     * Hide error message from current activity. Specific broadcast receiver must be implement for activity.
+     */
+    public static final String KEY_HIDE_ERROR_MESSAGE = "HIDE_ERROR_MESSAGE";
 
     /**
      * Current activity which is running.
@@ -126,6 +144,19 @@ public class ApplicationContext {
     }
 
     /**
+     * Shows an progress dialog if an activity context exists otherwise null.
+     * @param header Header title
+     * @param message Message to show
+     * @return Null if activity context not set otherwise an progress dialog.
+     */
+    public static ProgressDialog showProgressDialog(String header, String message) {
+        if(context != null) {
+            return ProgressDialog.show(activity, header, message);
+        }
+        return null;
+    }
+
+    /**
      * Gets string from resource values.
      * @param id Id to get string.
      * @return Null if not exists otherwise an String.
@@ -140,16 +171,11 @@ public class ApplicationContext {
         return message;
     }
 
-    public static void adjustVolumeMAX() {
-        AudioManager audioManager = (AudioManager) activity.getSystemService(Context.AUDIO_SERVICE);
-        Log.v("Sound Current", "" + audioManager.getStreamVolume(AudioManager.STREAM_VOICE_CALL));
-        Log.v("Sound Max", "" + audioManager.getStreamMaxVolume(AudioManager.STREAM_VOICE_CALL));
-
-        audioManager.setStreamVolume(
-                AudioManager.STREAM_VOICE_CALL,
-                audioManager.getStreamMaxVolume(AudioManager.STREAM_VOICE_CALL),
-                AudioManager.FLAG_VIBRATE);
-
-        Log.v("Sound Current", "" + audioManager.getStreamVolume(AudioManager.STREAM_VOICE_CALL));
+    public static void sendResult(String packageClass, String key ,String message) {
+        if(context != null) {
+            Intent intent = new Intent(packageClass);
+            intent.putExtra(key, message);
+            LocalBroadcastManager.getInstance(context).sendBroadcast(intent);
+        }
     }
 }

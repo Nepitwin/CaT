@@ -23,6 +23,7 @@
 
 package com.app.cat.linphone;
 
+import android.app.ProgressDialog;
 import android.os.Handler;
 import android.util.Log;
 import android.widget.Toast;
@@ -62,6 +63,18 @@ public class LinphoneCATRegistrationService extends Handler implements Runnable,
     private int counter;
 
     /**
+     * Dialog to show an registration process.
+     */
+    private ProgressDialog dialog;
+
+    /**
+     * Maximum number of tries.
+     */
+    private static final int MAX_TRIES = 5;
+
+    private boolean isVisibleTBook;
+
+    /**
      * Creates an Voice over IP event handler to update periodically an SIP server status.
      */
     public LinphoneCATRegistrationService(LinphoneProxyConfig proxyConfig) {
@@ -69,24 +82,42 @@ public class LinphoneCATRegistrationService extends Handler implements Runnable,
         this.proxyConfig = proxyConfig;
         this.counter = 0;
         this.isRunning = false;
+        this.isVisibleTBook = true;
     }
 
     @Override
     public void run() {
-
         if(isRunning && !proxyConfig.isRegistered()) {
-            if (counter >= 5) {
-                // Show a special activity after 5 seconds and stop registration process
-                // ToDo: New activity with sad cat
-                ApplicationContext.showToast("Registration not working check your internet connectivity.", Toast.LENGTH_LONG);
-                stop();
-            } else {
-                counter++;
-                postDelayed(this, NOTIFY_INTERVAL);
+            if (counter == MAX_TRIES) {
+                dialog.dismiss();
+
+                if(isVisibleTBook) {
+                    isVisibleTBook = false;
+                    ApplicationContext.sendResult(
+                            ApplicationContext.MAIN_ACTIVITY_CLASS,
+                            ApplicationContext.KEY_SHOW_ERROR_MESSAGE,
+                            "Registration not working check your internet connectivity.");
+                }
             }
         } else if(proxyConfig.isRegistered()) {
-            ApplicationContext.showToast("We are in.", Toast.LENGTH_LONG);
+            if(!isVisibleTBook) {
+
+                ApplicationContext.showToast("We are in.", Toast.LENGTH_LONG);
+                ApplicationContext.sendResult(
+                        ApplicationContext.MAIN_ACTIVITY_CLASS,
+                        ApplicationContext.KEY_HIDE_ERROR_MESSAGE,
+                        "");
+
+                isVisibleTBook = true;
+                counter = 0;
+            }
         }
+
+        if(counter < MAX_TRIES) {
+            counter++;
+        }
+
+        postDelayed(this, NOTIFY_INTERVAL);
     }
 
     @Override
@@ -98,6 +129,11 @@ public class LinphoneCATRegistrationService extends Handler implements Runnable,
     @Override
     public void start() {
         if(!isRunning()) {
+            dialog = ApplicationContext.showProgressDialog("Login to Server", "Bla blub");
+            if(dialog != null) {
+                dialog.show();
+            }
+
             isRunning = true;
             counter = 0;
             post(this);
