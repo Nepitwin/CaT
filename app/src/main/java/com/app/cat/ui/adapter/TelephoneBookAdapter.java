@@ -86,6 +86,7 @@ public class TelephoneBookAdapter extends ArrayAdapter<CATFriend> {
             ApplicationContext.showToast(
                     ApplicationContext.getStringFromRessources(R.string.unknown_error_message),
                     Toast.LENGTH_SHORT);
+            e.printStackTrace();
         }
 
         final CATFriend catFriend = getItem(position);
@@ -100,7 +101,7 @@ public class TelephoneBookAdapter extends ArrayAdapter<CATFriend> {
 
                 // Open Call Activity
                 Bundle bundle = new Bundle();
-                bundle.putInt(CallActivity.KEY_FRAGMENT_ID, CallActivity.FRAGMENT_CALL);
+                bundle.putInt(CallActivity.KEY_FRAGMENT_ID, CallActivity.FRAGMENT_OUTGOING_CALL);
                 ApplicationContext.runIntentWithParams(ApplicationContext.ACTIVITY_CALL, bundle);
             }
         });

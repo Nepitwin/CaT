@@ -169,7 +169,6 @@ public class LinphoneCATClient implements CATClient {
         proxyConfig = core.createProxyConfig();
         proxyConfig.setExpires(REGISTRATION_EXPIRATION_TIME); // sets the registration expiration time
 
-
         // Starts the registration service
         registrationService = new LinphoneCATRegistrationService(proxyConfig);
     }
@@ -177,7 +176,7 @@ public class LinphoneCATClient implements CATClient {
     @Override
     public void addCATFriend(CATFriend catFriend) {
         if(friendList == null) {
-            friendList = new ArrayList<CATFriend>();
+            friendList = new ArrayList<>();
         }
 
         friendList.add(catFriend);
@@ -186,6 +185,8 @@ public class LinphoneCATClient implements CATClient {
     @Override
     public void setCATUser(CATUser catUser) {
         this.catUser = catUser;
+        Log.v("Constructor", "Try registration");
+        register();
     }
 
     @Override
@@ -224,6 +225,7 @@ public class LinphoneCATClient implements CATClient {
                 core.addProxyConfig(proxyConfig);
                 core.setDefaultProxyConfig(proxyConfig);
 
+                registrationService.start();
 
                 // ToDo: Registration Service is not creating a new thread properly
                 // Start registration service
@@ -231,14 +233,15 @@ public class LinphoneCATClient implements CATClient {
 
                 // Wait until registration is finished.
                 //while(!proxyConfig.isRegistered() && registrationService.isRunning()) {
-                while(!proxyConfig.isRegistered() ) { //&& registrationService.isRunning()) {
-                    updateServerInformation();
-                }
+               // while(!proxyConfig.isRegistered() ) { //&& registrationService.isRunning()) {
+               //     updateServerInformation();
+               // }
 
             } catch (LinphoneCoreException e) {
                 ApplicationContext.showToast(
                         ApplicationContext.getStringFromRessources(R.string.unknown_error_message),
                         Toast.LENGTH_SHORT);
+                e.printStackTrace();
             }
         } else {
             // ToDo: Error message if service not working :(
@@ -255,10 +258,12 @@ public class LinphoneCATClient implements CATClient {
         proxyConfig.enableRegister(false); // De-activate registration for this proxy config
         proxyConfig.done(); // Initiate REGISTER with expire = 0
 
+        // No !!! this is not an clean solution because only voip service calls updates from an server !
         // Wait until unregistration is finished.
-        while(proxyConfig.isRegistered()) {
-            updateServerInformation();
-        }
+        // System will be blocked if registration will be not successfully!
+        //while(proxyConfig.isRegistered()) {
+        //    updateServerInformation();
+        //}
     }
 
     @Override
@@ -306,6 +311,7 @@ public class LinphoneCATClient implements CATClient {
             ApplicationContext.showToast(
                     ApplicationContext.getStringFromRessources(R.string.unknown_error_message),
                     Toast.LENGTH_SHORT);
+            e.printStackTrace();
         }
     }
 
@@ -346,6 +352,7 @@ public class LinphoneCATClient implements CATClient {
                 ApplicationContext.showToast(
                         ApplicationContext.getStringFromRessources(R.string.unknown_error_message),
                         Toast.LENGTH_SHORT);
+                e.printStackTrace();
             }
         }
     }
@@ -389,6 +396,7 @@ public class LinphoneCATClient implements CATClient {
                 ApplicationContext.showToast(
                         ApplicationContext.getStringFromRessources(R.string.unknown_error_message),
                         Toast.LENGTH_SHORT);
+                e.printStackTrace();
             }
         }
     }
@@ -403,11 +411,6 @@ public class LinphoneCATClient implements CATClient {
         if (catFriend != null) {
             catFriend = null;
         }
-    }
-
-    @Override
-    public void updateServerInformation() {
-        core.iterate();
     }
 
     @Override

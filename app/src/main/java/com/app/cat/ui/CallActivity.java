@@ -37,8 +37,10 @@ import com.app.cat.client.CATClient;
 import com.app.cat.linphone.LinphoneCATClient;
 import com.app.cat.ui.fragment.CallFragment;
 import com.app.cat.ui.fragment.IncomingCallFragment;
+import com.app.cat.ui.fragment.OutgoingCallFragment;
 import com.app.cat.ui.listener.CallFragmentListener;
 import com.app.cat.ui.listener.IncomingCallFragmentListener;
+import com.app.cat.ui.listener.OutgoingCallFragmentListener;
 import com.app.cat.util.ApplicationContext;
 import com.app.cat.util.PermissionManager;
 
@@ -52,7 +54,8 @@ import butterknife.ButterKnife;
  * @author Andreas Sekulski, Dimitri Kotlovsky
  */
 public class CallActivity extends AppCompatActivity implements CallFragmentListener,
-        IncomingCallFragmentListener, ActivityCompat.OnRequestPermissionsResultCallback {
+        IncomingCallFragmentListener, OutgoingCallFragmentListener,
+        ActivityCompat.OnRequestPermissionsResultCallback {
 
     /**
      * The Fragment Transaction object supports the replacement of fragments.
@@ -62,6 +65,8 @@ public class CallActivity extends AppCompatActivity implements CallFragmentListe
     public static final int FRAGMENT_CALL = 1;
 
     public static final int FRAGMENT_INCOMING_CALL = 2;
+
+    public static final int FRAGMENT_OUTGOING_CALL = 3;
 
     public static final String KEY_FRAGMENT_ID = "FRAGMENT";
 
@@ -94,6 +99,7 @@ public class CallActivity extends AppCompatActivity implements CallFragmentListe
             ApplicationContext.showToast(
                     ApplicationContext.getStringFromRessources(R.string.unknown_error_message),
                     Toast.LENGTH_SHORT);
+            e.printStackTrace();
         }
 
         Bundle bundle = getIntent().getExtras();
@@ -107,6 +113,9 @@ public class CallActivity extends AppCompatActivity implements CallFragmentListe
             } else if(fragment == FRAGMENT_INCOMING_CALL) {
                 fragmentTransaction = getSupportFragmentManager().beginTransaction().
                         add(R.id.callUIContainer, new IncomingCallFragment());
+            } else if(fragment == FRAGMENT_OUTGOING_CALL) {
+                fragmentTransaction = getSupportFragmentManager().beginTransaction().
+                        add(R.id.callUIContainer, new OutgoingCallFragment());
             } else {
                 ApplicationContext.showToast(
                         ApplicationContext.getStringFromRessources(R.string.unknown_error_message),
@@ -120,7 +129,7 @@ public class CallActivity extends AppCompatActivity implements CallFragmentListe
     public void onStart() {
         super.onStart();
         // Try to call the chosen friend if the activity is opened with the CallFragment
-        if(fragment == FRAGMENT_CALL) {
+        if(fragment == FRAGMENT_OUTGOING_CALL) {
             // Try to call a friend
             if (!PermissionManager.hasPermission(PermissionManager.PERMISSION_RECORD_AUDIO)) {
                 PermissionManager.requestPermission(
@@ -161,7 +170,7 @@ public class CallActivity extends AppCompatActivity implements CallFragmentListe
      * Switches from {@link IncomingCallFragment} to {@link CallFragment} because user accepted the
      * call.
      */
-    private void switchFragments() {
+    public void switchFragments() {
         fragmentTransaction = getSupportFragmentManager().beginTransaction().
                 replace(R.id.callUIContainer, new CallFragment());
         fragmentTransaction.commit();

@@ -25,17 +25,16 @@ package com.app.cat.service;
 
 import android.app.Service;
 import android.content.Intent;
-import android.os.Binder;
-import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.IBinder;
-import android.os.Looper;
-import android.os.Message;
-import android.util.Log;
 import android.os.Process;
+import android.util.Log;
+import android.widget.Toast;
 
+import com.app.cat.R;
 import com.app.cat.linphone.LinphoneCATClient;
 import com.app.cat.linphone.LinphoneCATVoIPService;
+import com.app.cat.util.ApplicationContext;
 
 import org.linphone.core.LinphoneCoreException;
 
@@ -46,66 +45,20 @@ import org.linphone.core.LinphoneCoreException;
  */
 public class CATService extends Service {
 
-    private Looper looper;
-    private ServiceHandler mServiceHandler;
+    /**
+     * Thread id for an service which is running.
+     */
+    private int threadID;
 
     /**
      * Voice over IP service implementation for an client server communication.
      */
     private VoIPService voIPService;
 
-    // Handler that receives messages from the thread
-    private final class ServiceHandler extends Handler implements Runnable {
-
-        private int id;
-
-
-
-        public ServiceHandler(Looper looper) {
-            super(looper);
-        }
-
-        @Override
-        public void handleMessage(Message msg) {
-            id = msg.arg1;
-            run();
-        }
-
-        @Override
-        public void run() {
-            // Normally we would do some work here, like download a file.
-            // For our sample, we just sleep for 5 seconds.
-            try {
-                Thread.sleep(5000);
-                Log.v("CATService", "Call");
-                this.postDelayed(this, 1000);
-            } catch (InterruptedException e) {
-                // Restore interrupt status.
-                Thread.currentThread().interrupt();
-            }
-
-            // Stop the service using the startId, so that we don't stop
-            // the service in the middle of handling another job
-
-            // Not good ... is runnable in thread?!...
-            stopSelf(id);
-        }
-    }
-
- //   /**
-    //    * Inner local binder class implementation for an cat servcie.
-    //  *
-    //  * @author Andreas Sekulski
-    //  */
-  //  public class LocalBinder extends Binder {
-    ///**
-         //      * Gets service class from cat service.
-    //     * @return Returns service class implementation.
-    //    */
-/*        CATService getService() {
-            return CATService.this;
-        }
-    }*/
+    /**
+     * Default thread name from service. CAT communication system service
+     */
+    private static final String THREAD_NAME = "CATComService";
 
     @Override
     public IBinder onBind(Intent intent) {
@@ -120,44 +73,43 @@ public class CATService extends Service {
         // separate thread because the service normally runs in the process's
         // main thread, which we don't want to block.  We also make it
         // background priority so CPU-intensive work will not disrupt our UI.
-        HandlerThread thread = new HandlerThread("ServiceStartArguments", Process.THREAD_PRIORITY_BACKGROUND);
+        HandlerThread thread = new HandlerThread(THREAD_NAME, Process.THREAD_PRIORITY_BACKGROUND);
         thread.start();
 
-        // Get the HandlerThread's Looper and use it for our Handler
-        looper = thread.getLooper();
-        mServiceHandler = new ServiceHandler(looper);
-
-/*
         try {
-            voIPService = new LinphoneCATVoIPService(LinphoneCATClient.getInstance());
-            voIPService.start();
+            // Get the HandlerThread's Looper and use it for our Handler
+            voIPService = new LinphoneCATVoIPService(LinphoneCATClient.getInstance().getCore(), thread.getLooper());
         } catch (LinphoneCoreException e) {
-            // ToDo := Error handling in Android UI... Everytime the same... Donuts...
+            ApplicationContext.showToast(
+                    ApplicationContext.getStringFromRessources(R.string.unknown_error_message),
+                    Toast.LENGTH_SHORT);
             e.printStackTrace();
         }
-        */
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
 
-        /*
+        Log.d("CATService", "Service stopped");
+
+        // Stop service thread
         if(voIPService.isRunning()) {
             voIPService.stop();
-        }*/
+        }
+
+        stopSelf(threadID);
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.v("CATService", "Received start id " + startId + ": " + intent);
 
-        // For each start request, send a message to start a job and deliver the
-        // start ID so we know which request we're stopping when we finish the job
-        Message msg = mServiceHandler.obtainMessage();
-        msg.arg1 = startId;
-        mServiceHandler.sendMessage(msg);
+        // Set thread id
+        threadID = startId;
 
+        // Run service handler
+        voIPService.start();
 
         // If we get killed, after returning from here, restart
         return START_STICKY;

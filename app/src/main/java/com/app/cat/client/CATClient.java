@@ -105,11 +105,6 @@ public interface CATClient {
     void declineCall();
 
     /**
-     * Request to update server information.
-     */
-    void updateServerInformation();
-
-    /**
      * Returns the corresponding LinphoneFriend to the given CATFriend if he exists.
      * @param catFriend CATFriend
      * @return LinphoneFriend corresponding to the given CATFriend

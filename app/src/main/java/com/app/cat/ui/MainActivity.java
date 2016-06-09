@@ -27,6 +27,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.LayoutRes;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -34,9 +35,11 @@ import android.widget.Toast;
 import com.app.cat.R;
 import com.app.cat.client.CATClient;
 import com.app.cat.linphone.LinphoneCATClient;
+import com.app.cat.linphone.LinphoneCATRegistrationService;
 import com.app.cat.model.CATFriend;
 import com.app.cat.model.CATUser;
 import com.app.cat.service.CATService;
+import com.app.cat.service.VoIPService;
 import com.app.cat.ui.adapter.TelephoneBookAdapter;
 import com.app.cat.util.ApplicationContext;
 import com.app.cat.util.PropertiesLoader;
@@ -147,17 +150,20 @@ public class MainActivity extends AppCompatActivity {
             // Starts an service in background
             service = new Intent(MainActivity.this, CATService.class);
             startService(service);
-
         } catch (IOException | LinphoneCoreException | NoSuchAlgorithmException e) {
             ApplicationContext.showToast(
                     ApplicationContext.getStringFromRessources(R.string.unknown_error_message),
                     Toast.LENGTH_SHORT);
+            e.printStackTrace();
         }
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
+
+        Log.v("Main", "Call on destroy");
+
         // Activity stops... kill background server
         // In productive this service runs all the time as an sub process.
         if(service != null) {

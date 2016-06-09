@@ -23,6 +23,7 @@
 
 package com.app.cat.linphone;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
@@ -102,6 +103,7 @@ public class LinphoneCATServerListener implements LinphoneCoreListener {
         } catch (LinphoneCoreException e) {
             Log.i("ERROR", "Error while adding friend [" + linphoneFriend.getAddress().getUserName()
                     + "] to linphone.");
+            e.printStackTrace();
         }
         Log.i("Cat_Server", "--------------------------------");
     }
@@ -265,6 +267,9 @@ public class LinphoneCATServerListener implements LinphoneCoreListener {
             callEnded(linphoneCall, message);
         } else if (state == LinphoneCall.State.Error) {
             unknownCallError(linphoneCall, message);
+        } else if(state == LinphoneCall.State.Connected) {
+            outgoingCallAccepted();
+            Log.v("BYYYYYEEEEEEE", state.toString());
         }
     }
 
@@ -327,6 +332,14 @@ public class LinphoneCATServerListener implements LinphoneCoreListener {
         Log.i("Cat_Server", "--------------------------------");
     }
 
+    private void outgoingCallAccepted() {
+        // Start the activity for an incoming call
+        Activity activity = ApplicationContext.getCurrentActivity();
+        if (activity instanceof CallActivity) {
+            ((CallActivity) ApplicationContext.getCurrentActivity()).switchFragments();
+        }
+    }
+
     private void incomingCall(LinphoneCall linphoneCall) {
         // Set a linphone call
         try {
@@ -341,6 +354,7 @@ public class LinphoneCATServerListener implements LinphoneCoreListener {
             ApplicationContext.showToast(
                     ApplicationContext.getStringFromRessources(R.string.unknown_error_message),
                     Toast.LENGTH_SHORT);
+            e.printStackTrace();
         }
     }
 

@@ -24,16 +24,20 @@
 package com.app.cat.linphone;
 
 import android.os.Handler;
+import android.os.Looper;
+import android.util.Log;
 
 import com.app.cat.client.CATClient;
 import com.app.cat.service.VoIPService;
+
+import org.linphone.core.LinphoneCore;
 
 /**
  * Class to create an background service on an android device to update VoIPService calls.
  *
  * @author Andreas Sekulski
  */
-public class LinphoneCATVoIPService implements Runnable, VoIPService {
+public class LinphoneCATVoIPService extends Handler implements Runnable, VoIPService {
 
     /**
      * Constant interval to call updates from an SIP server in ms.
@@ -41,14 +45,9 @@ public class LinphoneCATVoIPService implements Runnable, VoIPService {
     private static final long NOTIFY_INTERVAL = 50;
 
     /**
-     * Handler to call this runnable periodically;
-     */
-    private Handler handler;
-
-    /**
      * Corresponding client object to handle Client Server communication.
      */
-    private CATClient client;
+    private LinphoneCore core;
 
     /**
      * Boolean indicator to loop.
@@ -56,68 +55,42 @@ public class LinphoneCATVoIPService implements Runnable, VoIPService {
     private boolean isRunning;
 
     /**
-     * Returns <code>true</code> if the registration was successful.
-     */
-    private boolean isRegistrationSuccessful;
-
-    /**
      * Creates an Voice over IP event handler to update periodically an SIP server status.
+     *
+     * @param core Core form cat client to update periodically.
+     * @param looper Run a message loop for a thread.
      */
-    public LinphoneCATVoIPService(CATClient client) {
-        super();
-        this.handler = new Handler();
-        this.client = client;
+    public LinphoneCATVoIPService(LinphoneCore core, Looper looper) {
+        super(looper);
+        this.core = core;
         this.isRunning = false;
     }
 
     @Override
     public void run() {
         if(isRunning) {
-            client.updateServerInformation();
+            core.iterate();
+
             // Call runnable again after a NOTIFY_INTERVAL
-            handler.postDelayed(this, NOTIFY_INTERVAL);
+            this.postDelayed(this, NOTIFY_INTERVAL);
         }
     }
 
     @Override
     public void stop() {
-        logout();
         isRunning = false;
     }
 
     @Override
     public void start() {
         if(!isRunning()) {
+            post(this);
             isRunning = true;
-            login();
-            if (isRegistrationSuccessful) {
-                run();
-            }
         }
     }
 
     @Override
     public boolean isRunning() {
         return isRunning;
-    }
-
-    /**
-     * Login user to sip server.
-     */
-    private void login() {
-        client.unregister();
-        isRegistrationSuccessful = client.register();
-        if (isRegistrationSuccessful) {
-            client.enablePresenceStatus();
-        }
-    }
-
-    /**
-     * Logout from sip server.
-     */
-    private void logout() {
-        client.disablePresenceStatus();
-        // ToDo := Unregister should wait until presence is done !!!
-        client.unregister();
     }
 }

@@ -24,6 +24,7 @@
 package com.app.cat.linphone;
 
 import android.os.Handler;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.app.cat.R;
@@ -38,17 +39,12 @@ import org.linphone.core.LinphoneProxyConfig;
  *
  * @author Dimitri Kotlovsky, Andreas Sekulski
  */
-public class LinphoneCATRegistrationService implements Runnable, VoIPService {
+public class LinphoneCATRegistrationService extends Handler implements Runnable, VoIPService {
 
     /**
      * Constant interval to check registration status.
      */
     private static final long NOTIFY_INTERVAL = 1000;
-
-    /**
-     * Handler to call this runnable periodically;
-     */
-    private Handler handler;
 
     /**
      * Boolean indicator to loop.
@@ -70,7 +66,6 @@ public class LinphoneCATRegistrationService implements Runnable, VoIPService {
      */
     public LinphoneCATRegistrationService(LinphoneProxyConfig proxyConfig) {
         super();
-        this.handler = new Handler();
         this.proxyConfig = proxyConfig;
         this.counter = 0;
         this.isRunning = false;
@@ -78,24 +73,19 @@ public class LinphoneCATRegistrationService implements Runnable, VoIPService {
 
     @Override
     public void run() {
-        if(isRunning) {
-            // Call runnable again after a NOTIFY_INTERVAL if registration didn't work
-            if (!proxyConfig.isRegistered()) {
+
+        if(isRunning && !proxyConfig.isRegistered()) {
+            if (counter >= 5) {
+                // Show a special activity after 5 seconds and stop registration process
+                // ToDo: New activity with sad cat
+                ApplicationContext.showToast("Registration not working check your internet connectivity.", Toast.LENGTH_LONG);
+                stop();
+            } else {
                 counter++;
-                handler.postDelayed(this, NOTIFY_INTERVAL);
-
-                // Show a notification after 3 seconds of unsuccessful registration tries
-                if (counter == 3) {
-                    ApplicationContext.showToast(ApplicationContext.getStringFromRessources(
-                            R.string.wait_for_registration), Toast.LENGTH_LONG);
-
-                    // Show a special activity after 5 seconds and stop registration process
-                } else if (counter >= 5) {
-                    // ToDo: New activity with sad cat
-                    ApplicationContext.showToast("STOP", Toast.LENGTH_LONG);
-                    stop();
-                }
+                postDelayed(this, NOTIFY_INTERVAL);
             }
+        } else if(proxyConfig.isRegistered()) {
+            ApplicationContext.showToast("We are in.", Toast.LENGTH_LONG);
         }
     }
 
@@ -110,7 +100,7 @@ public class LinphoneCATRegistrationService implements Runnable, VoIPService {
         if(!isRunning()) {
             isRunning = true;
             counter = 0;
-            run();
+            post(this);
         }
     }
 
