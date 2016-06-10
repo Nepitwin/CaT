@@ -37,7 +37,7 @@ public class CATUser extends CATAccount {
     /**
      * Stored password from client.
      */
-    private String password;
+    private String HA1Password;
 
     /**
      * Create an cat owner class model. Password will be stored as an ha1.
@@ -49,24 +49,23 @@ public class CATUser extends CATAccount {
      */
     public CATUser(String username, String password, String domain) throws NoSuchAlgorithmException {
         super(username, domain);
-        this.password = HashGenerator.ha1(username, domain, password);
-        HashGenerator.ha1b(username, domain, password);
+        this.HA1Password = HashGenerator.ha1(username, domain, password);
     }
 
     /**
      * Returns an ha1 password.
      * @return Ha1 password.
      */
-    public String getPassword() {
-        return password;
+    public String getHA1Password() {
+        return HA1Password;
     }
 
     /**
-     * Sets an password to this user and stores it as an ha1 hash.
+     * Sets an password to this user and stores it as an HA1 hash.
      * @param password Password to store.
      * @throws NoSuchAlgorithmException Throws an NoSuchAlgorithmException if password hash operation not supported.
      */
-    public void setPassword(String password) throws NoSuchAlgorithmException {
-        this.password = HashGenerator.ha1(getUsername(), getDomain(), password);
+    public void setHA1Password(String password) throws NoSuchAlgorithmException {
+        this.HA1Password = HashGenerator.ha1(getUsername(), getDomain(), password);
     }
 }

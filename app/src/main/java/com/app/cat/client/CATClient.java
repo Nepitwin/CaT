@@ -42,16 +42,10 @@ public interface CATClient {
     void addCATFriend(CATFriend catFriend);
 
     /**
-     * Sets mobile cat user to client.
-     * @param catUser User to set from device.
-     */
-    void setCATUser(CATUser catUser);
-
-    /**
      * Register a given user to an SIP Server.
-     * @return <code>true</code> if registration process was successful
+     * @param catUser User to try to register.
      */
-    void register();
+    void register(CATUser catUser);
 
     /**
      * Unregister an user on an registered SIP-Server
@@ -85,14 +79,11 @@ public interface CATClient {
 
     /**
      * Try to call an friend.
+     *
+     * @param isVideoCall Is call an video (true) or audio call (false).
+     * @param catFriend Friend to call.
      */
-    void callFriend();
-
-    /**
-     * Sets the CATFriend to be called next.
-     * @param catFriend Friend to be called next.
-     */
-    void setFriendToCall(CATFriend catFriend);
+    void callFriend(boolean isVideoCall, CATFriend catFriend);
 
     /**
      * Accepts an incoming call if exists.

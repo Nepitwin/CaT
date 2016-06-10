@@ -97,9 +97,6 @@ public class TelephoneBookAdapter extends ArrayAdapter<CATFriend> {
         audio.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Set catFriend that should be called
-                client.setFriendToCall(catFriend);
-
                 // Try to call a friend
                 if (!PermissionManager.havePermissions(PermissionManager.PERMISSIONS_AUDIO_CAMERA)) {
                     PermissionManager.requestPermissions(
@@ -110,7 +107,7 @@ public class TelephoneBookAdapter extends ArrayAdapter<CATFriend> {
                     Bundle bundle = new Bundle();
                     bundle.putInt(CallActivity.KEY_FRAGMENT_ID, CallActivity.FRAGMENT_OUTGOING_CALL);
                     ApplicationContext.runIntentWithParams(ApplicationContext.ACTIVITY_CALL, bundle);
-                    client.callFriend();
+                    client.callFriend(false, catFriend);
                 }
             }
         });

@@ -28,6 +28,7 @@ import android.widget.Toast;
 
 import com.app.cat.R;
 import com.app.cat.client.CATClient;
+import com.app.cat.client.Multimedia;
 import com.app.cat.model.CATFriend;
 import com.app.cat.model.CATUser;
 import com.app.cat.service.VoIPService;
@@ -36,7 +37,6 @@ import com.app.cat.util.ApplicationContext;
 import org.linphone.core.LinphoneAddress;
 import org.linphone.core.LinphoneAuthInfo;
 import org.linphone.core.LinphoneCall;
-import org.linphone.core.LinphoneCallParams;
 import org.linphone.core.LinphoneCore;
 import org.linphone.core.LinphoneCoreException;
 import org.linphone.core.LinphoneCoreFactory;
@@ -88,11 +88,6 @@ public class LinphoneCATClient implements CATClient {
     private LinphoneAuthInfo authInfo;
 
     /**
-     * LinphoneCall variable to indicate if an call is set.
-     */
-    private LinphoneCall linphoneCall;
-
-    /**
      * Cat server listener implementation to handle client server communication.
      */
     private LinphoneCoreListener catServerListener;
@@ -103,14 +98,9 @@ public class LinphoneCATClient implements CATClient {
     private List<CATFriend> friendList;
 
     /**
-     * Cat user from device.
+     * Multimedia object to create video or audio calls.
      */
-    private CATUser catUser;
-
-    /**
-     * CATFriend variable to indicate who is going to be called next.
-     */
-    private CATFriend catFriend;
+    private Multimedia multimedia;
 
     /**
      * Static instance from LinphoneCATClient
@@ -183,67 +173,54 @@ public class LinphoneCATClient implements CATClient {
     }
 
     @Override
-    public void setCATUser(CATUser catUser) {
-        this.catUser = catUser;
-        Log.v("Constructor", "Try registration");
-        register();
-    }
+    public void register(CATUser catUser) {
+        String username = catUser.getUsername();
+        String domain = catUser.getDomain();
+        String password = catUser.getHA1Password();
+        String sip = catUser.getSIPAccount();
 
-    @Override
-    public void register() {
-        if(catUser != null) {
-            String username = catUser.getUsername();
-            String domain = catUser.getDomain();
-            String password = catUser.getPassword();
-            String sip = catUser.getSIPAccount();
+        try {
+            core.clearProxyConfigs();
+            core.clearAuthInfos();
+            core.enableKeepAlive(true);
 
-            try {
-                core.clearProxyConfigs();
-                core.clearAuthInfos();
-                core.enableKeepAlive(true);
+            address = coreFactory.createLinphoneAddress(username, domain, password);
 
-                address = coreFactory.createLinphoneAddress(username, domain, password);
+            authInfo = coreFactory.createAuthInfo(
+                    username, // Username
+                    password,  // Password
+                    null, // Realm
+                    domain); // Domain
 
-                authInfo = coreFactory.createAuthInfo(
-                        username, // Username
-                        password,  // Password
-                        null, // Realm
-                        domain); // Domain
+            // Enable config to register.
+            proxyConfig = proxyConfig.enableRegister(true);
 
-                // Enable config to register.
-                proxyConfig = proxyConfig.enableRegister(true);
+            proxyConfig.setIdentity(sip);
+            proxyConfig.setAddress(address);
+            proxyConfig.setProxy(address.getDomain());
 
-                proxyConfig.setIdentity(sip);
-                proxyConfig.setAddress(address);
-                proxyConfig.setProxy(address.getDomain());
+            // Append CATUser information to core
+            core.addAuthInfo(authInfo);
+            core.addProxyConfig(proxyConfig);
+            core.setDefaultProxyConfig(proxyConfig);
 
-                // Append CATUser information to core
-                core.addAuthInfo(authInfo);
-                core.addProxyConfig(proxyConfig);
-                core.setDefaultProxyConfig(proxyConfig);
+            registrationService.start();
 
-                registrationService.start();
+            // ToDo: Registration Service is not creating a new thread properly
+            // Start registration service
+            //registrationService.start();
 
-                // ToDo: Registration Service is not creating a new thread properly
-                // Start registration service
-                //registrationService.start();
+            // Wait until registration is finished.
+            //while(!proxyConfig.isRegistered() && registrationService.isRunning()) {
+           // while(!proxyConfig.isRegistered() ) { //&& registrationService.isRunning()) {
+           //     updateServerInformation();
+           // }
 
-                // Wait until registration is finished.
-                //while(!proxyConfig.isRegistered() && registrationService.isRunning()) {
-               // while(!proxyConfig.isRegistered() ) { //&& registrationService.isRunning()) {
-               //     updateServerInformation();
-               // }
-
-            } catch (LinphoneCoreException e) {
-                ApplicationContext.showToast(
-                        ApplicationContext.getStringFromRessources(R.string.unknown_error_message),
-                        Toast.LENGTH_SHORT);
-                e.printStackTrace();
-            }
-        } else {
+        } catch (LinphoneCoreException e) {
             ApplicationContext.showToast(
                     ApplicationContext.getStringFromRessources(R.string.unknown_error_message),
                     Toast.LENGTH_SHORT);
+            e.printStackTrace();
         }
     }
 
@@ -331,79 +308,28 @@ public class LinphoneCATClient implements CATClient {
     }
 
     @Override
-    public void callFriend() {
-        if(catFriend != null) {
-            LinphoneCallParams params = core.createCallParams(null);
-            params.setVideoEnabled(false);
-            params.enableLowBandwidth(false);
-            //params.setAudioBandwidth(40);
-            try {
-                setLinphoneCall(core.inviteAddressWithParams(coreFactory.
-                        createLinphoneAddress(catFriend.getSIPAccount()), params));
-//                setLinphoneCall(core.invite(coreFactory.
-//                        createLinphoneAddress(catFriend.getSIPAccount())));
-            } catch (LinphoneCoreException e) {
-                ApplicationContext.showToast(
-                        ApplicationContext.getStringFromRessources(R.string.unknown_error_message),
-                        Toast.LENGTH_SHORT);
-                e.printStackTrace();
-            }
+    public void callFriend(boolean isVideoCall, CATFriend catFriend) {
+        if(isVideoCall) {
+            // ToDo Multimedia implementation for video call.
+        } else {
+            multimedia = new LinphoneCATAudio(core, coreFactory);
         }
-    }
 
-    @Override
-    public void setFriendToCall(CATFriend catFriend) {
-        this.catFriend = catFriend;
+        multimedia.callFriend(catFriend);
     }
 
     @Override
     public void acceptCall() {
-        if(linphoneCall != null) {
-
-            LinphoneCallParams params = core.createCallParams(linphoneCall);
-
-            //boolean isLowBandwidthConnection = !LinphoneUtils.isHighBandwidthConnection(LinphoneService.instance().getApplicationContext());
-
-            if(params != null)  {
-                params.enableLowBandwidth(false);
-                //params.enableAudioMulticast(true);
-                //params.setAudioBandwidth(40);
-            } else {
-                Log.v("Call", "Params not working");
-            }
-
-            if(params != null) {
-                Log.v("params", "PARAAMAMMMMMMMMMMMMMMMMMMMMMSSSSSSSSSSSSSSSS FOUNDDDDDDDDDD SCOTTTTYYYYYY");
-
-                Log.v("params", "media encryption: --> " + params.getMediaEncryption().toString());
-                Log.v("params", "audio codec: --> " + params.getUsedAudioCodec());
-
-            } else {
-                Log.v("params", "BLACKKKK HAWKKKKK DOWNNNNNNNNNNN I REPEAT BLACK HAWK DOWN");
-            }
-
-
-            try {
-                Log.v("Call", "Volume : " + linphoneCall.getPlayVolume());
-                core.acceptCallWithParams(linphoneCall, params);
-            } catch (LinphoneCoreException e) {
-                ApplicationContext.showToast(
-                        ApplicationContext.getStringFromRessources(R.string.unknown_error_message),
-                        Toast.LENGTH_SHORT);
-                e.printStackTrace();
-            }
+        if(multimedia != null) {
+            multimedia.acceptCall();
         }
     }
 
     @Override
     public void declineCall() {
-        if(linphoneCall != null) {
-            core.terminateCall(linphoneCall);
-            linphoneCall = null;
-        }
-
-        if (catFriend != null) {
-            catFriend = null;
+        if(multimedia != null) {
+            multimedia.declineCall();
+            multimedia = null;
         }
     }
 
@@ -413,18 +339,22 @@ public class LinphoneCATClient implements CATClient {
     }
 
     /**
+     * Sets an incoming call.
+     * @param call Call to set.
+     */
+    public void incomingCall(boolean isVideoCall ,LinphoneCall call) {
+        if(isVideoCall) {
+            // ToDo : Video call
+        } else {
+            multimedia = new LinphoneCATAudio(core, coreFactory, call);
+        }
+    }
+
+    /**
      * Gets core from linphone.
      * @return Null if core not initialized otherwise an linphone core will be returned.
      */
     public LinphoneCore getCore() {
         return core;
-    }
-
-    /**
-     * Sets a linphone call.
-     * @param call Call to set.
-     */
-    public void setLinphoneCall(LinphoneCall call) {
-        linphoneCall = call;
     }
 }

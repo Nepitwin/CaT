@@ -49,6 +49,7 @@ import com.app.cat.model.CATUser;
 import com.app.cat.service.CATService;
 import com.app.cat.ui.adapter.TelephoneBookAdapter;
 import com.app.cat.util.ApplicationContext;
+import com.app.cat.util.HashGenerator;
 import com.app.cat.util.PermissionManager;
 import com.app.cat.util.PropertiesLoader;
 
@@ -171,13 +172,16 @@ public class MainActivity extends AppCompatActivity
                     configuration.get("password"),
                     configuration.get("domain"));
 
+            Log.v("Password_HA1", HashGenerator.ha1(catUser.getUsername(), catUser.getDomain(), configuration.get("password")));
+            Log.v("Password_HA1B", HashGenerator.ha1b(catUser.getUsername(), catUser.getDomain(), configuration.get("password")));
+
             info.setText("User = " + configuration.get("username"));
 
             catFriend = new CATFriend(configuration.get("friendUsername"), configuration.get("domain"));
             catAccounts.add(catFriend);
 
             client.addCATFriend(catFriend);
-            client.setCATUser(catUser);
+            client.register(catUser);
 
             // Starts an service in background
             service = new Intent(MainActivity.this, CATService.class);
@@ -236,9 +240,13 @@ public class MainActivity extends AppCompatActivity
                     Bundle bundle = new Bundle();
                     bundle.putInt(CallActivity.KEY_FRAGMENT_ID, CallActivity.FRAGMENT_OUTGOING_CALL);
                     ApplicationContext.runIntentWithParams(ApplicationContext.ACTIVITY_CALL, bundle);
-                    client.callFriend();
+
+                    // ToDo := Why? You can store friends or objects in bundle... ToDo...!
+                    // client.callFriend();
                 } else {
-                    client.setFriendToCall(null);
+                    // ToDo := Why? No more necessary!
+                    // client.setFriendToCall(null);
+
                     PermissionManager.firstPermissionRequest = false;
                     ApplicationContext.showToast(ApplicationContext.getStringFromRessources(
                             R.string.permission_denied),

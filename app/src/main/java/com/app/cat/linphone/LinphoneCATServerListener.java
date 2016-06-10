@@ -29,6 +29,7 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.app.cat.R;
+import com.app.cat.client.Multimedia;
 import com.app.cat.ui.CallActivity;
 import com.app.cat.util.ApplicationContext;
 
@@ -63,6 +64,11 @@ public class LinphoneCATServerListener implements LinphoneCoreListener {
 
     @Override
     public void authInfoRequested(LinphoneCore linphoneCore, String s, String s1, String s2) {
+        if(!linphoneCore.getDefaultProxyConfig().isRegistered()) {
+            ApplicationContext.sendResult(ApplicationContext.MAIN_ACTIVITY_CLASS,
+                    ApplicationContext.KEY_SHOW_ERROR_MESSAGE, "Login failed");
+        }
+
         Log.i("Cat_Server", "--------------------------------");
         Log.i("Cat_Server", "authInfoRequested");
         Log.i("Cat_Server", s);
@@ -341,10 +347,10 @@ public class LinphoneCATServerListener implements LinphoneCoreListener {
     }
 
     private void incomingCall(LinphoneCall linphoneCall) {
-        // Set a linphone call
         try {
-            LinphoneCATClient.getInstance().setLinphoneCall(linphoneCall);
 
+            // ToDo := Check if video or audio call... currently only audio
+            LinphoneCATClient.getInstance().incomingCall(false ,linphoneCall);
             // Start the activity for an incoming call
             Bundle bundle = new Bundle();
             bundle.putInt(CallActivity.KEY_FRAGMENT_ID, CallActivity.FRAGMENT_INCOMING_CALL);
