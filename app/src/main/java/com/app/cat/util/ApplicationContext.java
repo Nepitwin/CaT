@@ -34,6 +34,7 @@ import android.widget.Toast;
 
 import com.app.cat.ui.CallActivity;
 import com.app.cat.ui.PhoneBookActivity;
+import com.app.cat.ui.VideocallActivity;
 
 /**
  * Static utility class to get context from active activity.
@@ -51,6 +52,11 @@ public class ApplicationContext {
      * Call activity class.
      */
     public static Class ACTIVITY_CALL = CallActivity.class;
+
+    /**
+     * Call activity class.
+     */
+    public static Class ACTIVITY_VIDEOCALL = VideocallActivity.class;
 
     /**
      * Main activity class package.

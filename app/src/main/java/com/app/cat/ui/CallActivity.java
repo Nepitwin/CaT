@@ -161,6 +161,12 @@ public class CallActivity extends AppCompatActivity implements CallFragmentListe
         fragmentTransaction = getSupportFragmentManager().beginTransaction().
                 replace(R.id.callUIContainer, new CallFragment());
         fragmentTransaction.commit();
+
+        // ToDo:  Check this new transaction solution
+//        try {
+//            transaction.commitAllowingStateLoss();
+//        } catch (Exception e) {
+//        }
     }
 
     @Override

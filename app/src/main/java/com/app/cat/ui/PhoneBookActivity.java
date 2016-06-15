@@ -253,7 +253,7 @@ public class PhoneBookActivity extends AppCompatActivity
                     bundle.putInt(CallActivity.KEY_FRAGMENT_ID, CallActivity.FRAGMENT_OUTGOING_CALL);
                     ApplicationContext.runIntentWithParams(ApplicationContext.ACTIVITY_CALL, bundle);
 
-                    client.callFriend(false, telephoneBookAdapter.getCatFriend());
+                    client.callFriend(telephoneBookAdapter.isVideoCall(), telephoneBookAdapter.getCatFriend());
 
                 } else {
                     PermissionManager.firstPermissionRequest = false;

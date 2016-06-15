@@ -218,7 +218,7 @@ public class LinphoneCATClient implements CATClient {
     @Override
     public void callFriend(boolean isVideoCall, CATFriend catFriend) {
         if(isVideoCall) {
-            // ToDo Multimedia implementation for video call.
+            multimedia = new LinphoneCATVideo(core, coreFactory);
         } else {
             multimedia = new LinphoneCATAudio(core, coreFactory);
         }
@@ -256,7 +256,7 @@ public class LinphoneCATClient implements CATClient {
      */
     public void incomingCall(boolean isVideoCall, LinphoneCall call) {
         if(isVideoCall) {
-            // ToDo : Video call
+            multimedia = new LinphoneCATVideo(core, coreFactory, call);
         } else {
             multimedia = new LinphoneCATAudio(core, coreFactory, call);
         }

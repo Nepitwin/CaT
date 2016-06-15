@@ -1,5 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!--
+<?xml version="1.0" encoding="utf-8"?><!--
   ~ This program is an Voice over IP client for Android devices.
   ~ Copyright (C) 2016 Andreas Sekulski, Dimitri Kotlovsky
   ~
@@ -26,4 +25,6 @@
     <color name="colorPrimary">#666666</color>
     <color name="colorPrimaryDark">#404040</color>
     <color name="colorAccent">#E2FFD3</color>
+
+    <color name="black_overlay">#66000000</color>
 </resources>

@@ -29,7 +29,7 @@ android {
 
     defaultConfig {
         applicationId "com.app.cat"
-        minSdkVersion 15
+        minSdkVersion 18
         targetSdkVersion 23
         versionCode 1
         versionName "1.0"
@@ -60,9 +60,9 @@ repositories {
 
 dependencies {
     testCompile 'junit:junit:4.12'
+    compile files('lib/liblinphone.jar')
     compile 'com.android.support:appcompat-v7:23.4.0'
     compile 'com.jakewharton:butterknife:7.0.1'
     compile 'com.android.support:support-v4:23.4.0'
     compile 'Counter:widget:1.0@aar'
-    compile files('lib/liblinphone.jar')
 }

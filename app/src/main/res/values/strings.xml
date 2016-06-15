@@ -38,4 +38,10 @@
         You have to grant those permissions in order to use this app.
     </string>
     <string name="wait_for_registration">Waiting for registration ...</string>
+
+    <string name="title_activity_videocall">VideocallActivity</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
+
+    <string name="title_activity_fullscreen">FullscreenActivity</string>
 </resources>

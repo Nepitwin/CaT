@@ -38,6 +38,7 @@ import com.app.cat.client.CATClient;
 import com.app.cat.linphone.LinphoneCATClient;
 import com.app.cat.model.CATFriend;
 import com.app.cat.ui.listener.AudioCallListener;
+import com.app.cat.ui.listener.VideoCallListener;
 import com.app.cat.util.ApplicationContext;
 import com.app.cat.util.CatSettings;
 
@@ -66,6 +67,11 @@ public class TelephoneBookAdapter extends ArrayAdapter<CATFriend> {
      * Cat friend to call.
      */
     private CATFriend catFriend;
+
+    /**
+     * Determines whether the outgoing call is a video or audio call.
+     */
+    private boolean isVideoCall;
 
     /**
      * Constructor to create an list key adapter.
@@ -98,12 +104,7 @@ public class TelephoneBookAdapter extends ArrayAdapter<CATFriend> {
         audio.setOnClickListener(new AudioCallListener(position, this, client));
 
         Button video = (Button) rowView.findViewById(R.id.buttonVideoCall);
-        video.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // ToDo : Button interaction handling for video calls
-            }
-        });
+        video.setOnClickListener(new VideoCallListener(position, this, client));
 
         audio.getBackground().setColorFilter(CatSettings.DEFAULT_BUTTON_COLOR, PorterDuff.Mode.MULTIPLY);
         video.getBackground().setColorFilter(CatSettings.DEFAULT_BUTTON_COLOR, PorterDuff.Mode.MULTIPLY);
@@ -115,11 +116,35 @@ public class TelephoneBookAdapter extends ArrayAdapter<CATFriend> {
         return rowView;
     }
 
+    /**
+     * Sets the CATFriend to be called.
+     * @param catFriend CATFriend to be called
+     */
     public void setCatFriend(CATFriend catFriend) {
         this.catFriend = catFriend;
     }
 
+    /**
+     * Returns the CATFriend that is being called.
+     * @return CATFriend that is being called
+     */
     public CATFriend getCatFriend() {
         return catFriend;
+    }
+
+    /**
+     * Sets whether the outgoing call is a video call or not.
+     * @param isVideoCall <code>true</code> if the outgoing call is a video call
+     */
+    public void setVideoCall(boolean isVideoCall) {
+        this.isVideoCall = isVideoCall;
+    }
+
+    /**
+     * Returns whether the outgoing call is a video call or not.
+     * @return <code>true</code> if the outgoing call is a video call
+     */
+    public boolean isVideoCall() {
+        return this.isVideoCall;
     }
 }

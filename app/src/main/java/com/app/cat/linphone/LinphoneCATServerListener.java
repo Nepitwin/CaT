@@ -267,8 +267,10 @@ public class LinphoneCATServerListener implements LinphoneCoreListener {
     @Override
     public void callState(LinphoneCore linphoneCore, LinphoneCall linphoneCall,
                           LinphoneCall.State state, String message) {
-
-        Log.e("STATE", state.toString());
+        Log.i("Cat_Server", "--------------------------------");
+        Log.i("Cat_Server", "callState");
+        Log.i("Cat_Server", state.toString());
+        Log.i("Cat_Server", "--------------------------------");
 
         if (state == LinphoneCall.State.IncomingReceived) {
             incomingCall(linphoneCall);
@@ -278,6 +280,9 @@ public class LinphoneCATServerListener implements LinphoneCoreListener {
             unknownCallError(linphoneCall, message);
         } else if(state == LinphoneCall.State.Connected) {
             outgoingCallAccepted();
+
+            // ToDo: Debugging / Testing video calls
+            ApplicationContext.runIntent(ApplicationContext.ACTIVITY_VIDEOCALL);
         }
     }
 
@@ -365,8 +370,11 @@ public class LinphoneCATServerListener implements LinphoneCoreListener {
     private void incomingCall(LinphoneCall linphoneCall) {
         try {
 
-            // ToDo := Check if video or audio call... currently only audio
-            LinphoneCATClient.getInstance().incomingCall(false ,linphoneCall);
+            // Delegate incoming (audio or video) call to client
+            LinphoneCATClient.getInstance().incomingCall(
+                    linphoneCall.getCurrentParamsCopy().getVideoEnabled(),
+                    linphoneCall);
+
             // Start the activity for an incoming call
             Bundle bundle = new Bundle();
             bundle.putInt(CallActivity.KEY_FRAGMENT_ID, CallActivity.FRAGMENT_INCOMING_CALL);
