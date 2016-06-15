@@ -25,9 +25,7 @@ package com.app.cat.linphone;
 
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
 
-import com.app.cat.client.CATClient;
 import com.app.cat.service.VoIPService;
 
 import org.linphone.core.LinphoneCore;

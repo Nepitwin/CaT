@@ -41,11 +41,8 @@ import org.linphone.core.LinphoneCore;
 import org.linphone.core.LinphoneCoreException;
 import org.linphone.core.LinphoneCoreFactory;
 import org.linphone.core.LinphoneCoreListener;
-import org.linphone.core.LinphoneFriend;
 import org.linphone.core.LinphoneProxyConfig;
 import org.linphone.core.PayloadType;
-import org.linphone.core.PresenceActivityType;
-import org.linphone.core.PresenceModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -76,21 +73,6 @@ public class LinphoneCATClient implements CATClient {
      * Proxy configuration from an SIP Server.
      */
     private LinphoneProxyConfig proxyConfig;
-
-    /**
-     * User address Information.
-     */
-    private LinphoneAddress address;
-
-    /**
-     * CATUser information from user which contains registered SIP username, ha1 etc.
-     */
-    private LinphoneAuthInfo authInfo;
-
-    /**
-     * Cat server listener implementation to handle client server communication.
-     */
-    private LinphoneCoreListener catServerListener;
 
     /**
      * List from all friends to call.
@@ -134,8 +116,8 @@ public class LinphoneCATClient implements CATClient {
 
         // Create an factory instance
         coreFactory = LinphoneCoreFactory.instance();
-        catServerListener = new LinphoneCATServerListener();
 
+        LinphoneCoreListener catServerListener = new LinphoneCATServerListener();
         core = coreFactory.createLinphoneCore(catServerListener, null);
 
 
@@ -184,13 +166,13 @@ public class LinphoneCATClient implements CATClient {
             core.clearAuthInfos();
             core.enableKeepAlive(true);
 
-            address = coreFactory.createLinphoneAddress(username, domain, password);
+            LinphoneAddress address = coreFactory.createLinphoneAddress(username, domain, password);
 
-            authInfo = coreFactory.createAuthInfo(
+            LinphoneAuthInfo authInfo = coreFactory.createAuthInfo(
                     username, // Username
                     password,  // Password
                     null, // Realm
-                    domain); // Domain
+                    domain);
 
             // Enable config to register.
             proxyConfig = proxyConfig.enableRegister(true);
@@ -204,17 +186,8 @@ public class LinphoneCATClient implements CATClient {
             core.addProxyConfig(proxyConfig);
             core.setDefaultProxyConfig(proxyConfig);
 
-            registrationService.start();
-
-            // ToDo: Registration Service is not creating a new thread properly
             // Start registration service
-            //registrationService.start();
-
-            // Wait until registration is finished.
-            //while(!proxyConfig.isRegistered() && registrationService.isRunning()) {
-           // while(!proxyConfig.isRegistered() ) { //&& registrationService.isRunning()) {
-           //     updateServerInformation();
-           // }
+            registrationService.start();
 
         } catch (LinphoneCoreException e) {
             ApplicationContext.showToast(
@@ -230,11 +203,6 @@ public class LinphoneCATClient implements CATClient {
         proxyConfig.edit(); // Start editing proxy configuration
         proxyConfig.enableRegister(false); // De-activate registration for this proxy config
         proxyConfig.done(); // Initiate REGISTER with expire = 0
-
-        // Wait until unregistration is finished.
-        //while(proxyConfig.isRegistered()) {
-        //    updateServerInformation();
-        //}
     }
 
     @Override
@@ -245,66 +213,6 @@ public class LinphoneCATClient implements CATClient {
         transports.udp = udp;
         transports.tcp = tcp;
         core.setSignalingTransportPorts(transports);
-    }
-
-    @Override
-    public void addFriend(CATFriend catFriend) {
-
-        // Generate sip URL from username and domain.
-        String friendSIP = catFriend.getSIPAccount();
-
-        try {
-
-            // Debug-mode: clearing all friends
-            for (LinphoneFriend friend : core.getFriendList()) {
-                friend.edit(); // start editing friend
-                friend.enableSubscribes(false); // disable subscription for this friend
-                friend.done(); // commit changes triggering an UNSUBSCRIBE message
-                core.removeFriend(friend);
-                Log.i("Clear friends", "Friend is deleted ==> " + friend.getName());
-            }/*
-            for (LinphoneFriendList list : core.getFriendLists()) {
-                Log.i("Clear friend lists", "List is deleted ==> " + list.toString());
-                core.removeFriendList(list);
-            }*/
-
-            // Buddy list
-            LinphoneFriend friend = coreFactory.createLinphoneFriend(friendSIP); /* creates friend object for buddy joe */
-            friend.enableSubscribes(true); /* configure this friend to emit SUBSCRIBE message after being added to LinphoneCore */
-            friend.setIncSubscribePolicy(LinphoneFriend.SubscribePolicy.SPAccept); /* accept Incoming subscription request for this friend */
-            core.addFriend(friend); /* add my friend to the buddy list, initiate SUBSCRIBE message */
-
-            // ToDo : Check what "LinphoneFriendList" is doing exactly. Probably saving a buddy list on the server.
-            //LinphoneFriendList friendList = core.createLinphoneFriendList();
-            //friendList.addFriend(friend);
-
-        } catch (LinphoneCoreException e) {
-            ApplicationContext.showToast(
-                    ApplicationContext.getStringFromRessources(R.string.unknown_error_message),
-                    Toast.LENGTH_SHORT);
-            e.printStackTrace();
-        }
-    }
-
-    @Override
-    public void enablePresenceStatus() {
-        PresenceModel model = coreFactory.createPresenceModel();
-        //model.setBasicStatus(PresenceBasicStatus.Open); // doesn't fuckig work ??!!!?
-        model.setActivity(PresenceActivityType.Online, "I'm busy asshole."); // Zoiper doesn't understand activities !!!
-        model.addNote("Away", "en"); // But Zoiper is able to read notes ;)
-        core.setPresenceModel(model);
-        proxyConfig.edit();
-        proxyConfig.enablePublish(true);
-        proxyConfig.done();
-    }
-
-    @Override
-    public void disablePresenceStatus() {
-        PresenceModel model = core.getPresenceModel();
-        model.clearNotes();
-        model.clearActivities();
-        model.setActivity(PresenceActivityType.Offline, "offline");
-        core.setPresenceModel(model);
     }
 
     @Override
@@ -334,15 +242,19 @@ public class LinphoneCATClient implements CATClient {
     }
 
     @Override
-    public LinphoneFriend getLinphoneFriend(CATFriend catFriend) {
-        return core.findFriendByAddress(catFriend.getSIPAccount());
+    public Boolean isIncomingCall() {
+        if (multimedia != null) {
+            return multimedia.isIncomingCall();
+        }
+
+        return null;
     }
 
     /**
      * Sets an incoming call.
      * @param call Call to set.
      */
-    public void incomingCall(boolean isVideoCall ,LinphoneCall call) {
+    public void incomingCall(boolean isVideoCall, LinphoneCall call) {
         if(isVideoCall) {
             // ToDo : Video call
         } else {

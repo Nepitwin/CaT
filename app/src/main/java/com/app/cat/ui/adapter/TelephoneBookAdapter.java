@@ -25,8 +25,6 @@ package com.app.cat.ui.adapter;
 
 import android.content.Context;
 import android.graphics.PorterDuff;
-import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,10 +37,9 @@ import com.app.cat.R;
 import com.app.cat.client.CATClient;
 import com.app.cat.linphone.LinphoneCATClient;
 import com.app.cat.model.CATFriend;
-import com.app.cat.ui.CallActivity;
+import com.app.cat.ui.listener.AudioCallListener;
 import com.app.cat.util.ApplicationContext;
 import com.app.cat.util.CatSettings;
-import com.app.cat.util.PermissionManager;
 
 import org.linphone.core.LinphoneCoreException;
 
@@ -64,6 +61,11 @@ public class TelephoneBookAdapter extends ArrayAdapter<CATFriend> {
      * Cat client instance.
      */
     private CATClient client;
+
+    /**
+     * Cat friend to call.
+     */
+    private CATFriend catFriend;
 
     /**
      * Constructor to create an list key adapter.
@@ -90,30 +92,12 @@ public class TelephoneBookAdapter extends ArrayAdapter<CATFriend> {
             e.printStackTrace();
         }
 
-        final CATFriend catFriend = getItem(position);
+        final CATFriend friend = getItem(position);
 
         Button audio = (Button) rowView.findViewById(R.id.buttonAudioCall);
-
-        audio.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Try to call a friend
-                if (!PermissionManager.havePermissions(PermissionManager.PERMISSIONS_AUDIO_CAMERA)) {
-                    PermissionManager.requestPermissions(
-                            PermissionManager.PERMISSIONS_AUDIO_CAMERA,
-                            PermissionManager.REQUEST_PERMISSIONS_OUTGOING_CALL);
-                } else {
-                    // Open Call Activity and call friend
-                    Bundle bundle = new Bundle();
-                    bundle.putInt(CallActivity.KEY_FRAGMENT_ID, CallActivity.FRAGMENT_OUTGOING_CALL);
-                    ApplicationContext.runIntentWithParams(ApplicationContext.ACTIVITY_CALL, bundle);
-                    client.callFriend(false, catFriend);
-                }
-            }
-        });
+        audio.setOnClickListener(new AudioCallListener(position, this, client));
 
         Button video = (Button) rowView.findViewById(R.id.buttonVideoCall);
-
         video.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -126,26 +110,16 @@ public class TelephoneBookAdapter extends ArrayAdapter<CATFriend> {
 
         // Set name of the user
         TextView textview = (TextView) rowView.findViewById(R.id.textView);
-        textview.setText(catFriend.getUsername());
-
-        // ToDo: Implement notifyDataSetChanged, so this is redrawn on changes
-        // Analyse presence status
-   /*     if (user instanceof CATFriend) {
-            try {
-                client = LinphoneCATClient.getInstance();
-                LinphoneFriend linphoneFriend = client.getLinphoneFriend((CATFriend) user);
-
-                // Display status
-                if (linphoneFriend != null) {
-                    PresenceModel model = linphoneFriend.getPresenceModel();
-                    textview.setText(user.getUsername() + " [" + model.getActivity().getType().name() + "]");
-                }
-            } catch (LinphoneCoreException e) {
-                // ToDo := Error handling in Android UI... Everytime the same... Donuts...
-                Log.e("TelephoneBookAdapter", e.getMessage());
-            }
-        }*/
+        textview.setText(friend.getUsername());
 
         return rowView;
+    }
+
+    public void setCatFriend(CATFriend catFriend) {
+        this.catFriend = catFriend;
+    }
+
+    public CATFriend getCatFriend() {
+        return catFriend;
     }
 }

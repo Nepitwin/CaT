@@ -26,8 +26,6 @@ package com.app.cat.client;
 import com.app.cat.model.CATFriend;
 import com.app.cat.model.CATUser;
 
-import org.linphone.core.LinphoneFriend;
-
 /**
  * Voice over IP CAT client interface, to handle all supported features like an audio or video call.
  *
@@ -62,22 +60,6 @@ public interface CATClient {
     void setTransportType(int udp, int tcp, int tls);
 
     /**
-     * Adds a friend with the given username and domain.
-     * @param catFriend An friend to add.
-     */
-    void addFriend(CATFriend catFriend);
-
-    /**
-     * Enables the presence status.
-     */
-    void enablePresenceStatus();
-
-    /**
-     * Disables the presence status.
-     */
-    void disablePresenceStatus();
-
-    /**
      * Try to call an friend.
      *
      * @param isVideoCall Is call an video (true) or audio call (false).
@@ -96,9 +78,8 @@ public interface CATClient {
     void declineCall();
 
     /**
-     * Returns the corresponding LinphoneFriend to the given CATFriend if he exists.
-     * @param catFriend CATFriend
-     * @return LinphoneFriend corresponding to the given CATFriend
+     * Returns <code>true</code> if the current call is an incoming call.
+     * @return <code>true</code> if the current call is an incoming call
      */
-    LinphoneFriend getLinphoneFriend(CATFriend catFriend);
+    Boolean isIncomingCall();
 }

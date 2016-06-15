@@ -99,18 +99,18 @@ public class LinphoneCATServerListener implements LinphoneCoreListener {
         Log.i("Buddy status request", "[" + linphoneFriend.getAddress().getUserName()
                 + "] wants to see your status, accepting...");
         // start editing friend
-        linphoneFriend.edit();
-        // accept incoming subscription request for this friend
-        linphoneFriend.setIncSubscribePolicy(LinphoneFriend.SubscribePolicy.SPAccept);
-        // commit change
-        linphoneFriend.done();
-        try {
-            linphoneCore.addFriend(linphoneFriend); // add this new friend to the buddy list
-        } catch (LinphoneCoreException e) {
-            Log.i("ERROR", "Error while adding friend [" + linphoneFriend.getAddress().getUserName()
-                    + "] to linphone.");
-            e.printStackTrace();
-        }
+//        linphoneFriend.edit();
+//        // accept incoming subscription request for this friend
+//        linphoneFriend.setIncSubscribePolicy(LinphoneFriend.SubscribePolicy.SPAccept);
+//        // commit change
+//        linphoneFriend.done();
+//        try {
+//            linphoneCore.addFriend(linphoneFriend); // add this new friend to the buddy list
+//        } catch (LinphoneCoreException e) {
+//            Log.i("ERROR", "Error while adding friend [" + linphoneFriend.getAddress().getUserName()
+//                    + "] to linphone.");
+//            e.printStackTrace();
+//        }
         Log.i("Cat_Server", "--------------------------------");
     }
 
@@ -267,6 +267,9 @@ public class LinphoneCATServerListener implements LinphoneCoreListener {
     @Override
     public void callState(LinphoneCore linphoneCore, LinphoneCall linphoneCall,
                           LinphoneCall.State state, String message) {
+
+        Log.e("STATE", state.toString());
+
         if (state == LinphoneCall.State.IncomingReceived) {
             incomingCall(linphoneCall);
         } else if (state == LinphoneCall.State.CallEnd) {
@@ -275,7 +278,6 @@ public class LinphoneCATServerListener implements LinphoneCoreListener {
             unknownCallError(linphoneCall, message);
         } else if(state == LinphoneCall.State.Connected) {
             outgoingCallAccepted();
-            Log.v("BYYYYYEEEEEEE", state.toString());
         }
     }
 
@@ -339,10 +341,24 @@ public class LinphoneCATServerListener implements LinphoneCoreListener {
     }
 
     private void outgoingCallAccepted() {
-        // Start the activity for an incoming call
-        Activity activity = ApplicationContext.getCurrentActivity();
-        if (activity instanceof CallActivity) {
-            ((CallActivity) ApplicationContext.getCurrentActivity()).switchToCallFragment();
+        try {
+
+            LinphoneCATClient client = LinphoneCATClient.getInstance();
+            Boolean isIncomingCall = client.isIncomingCall();
+
+            // Switch to Call Fragment if outgoing call was accepted
+            if ((isIncomingCall != null) && !isIncomingCall) {
+                Activity activity = ApplicationContext.getCurrentActivity();
+                if (activity instanceof CallActivity) {
+                    ((CallActivity) ApplicationContext.getCurrentActivity()).switchToCallFragment();
+                }
+            }
+
+        } catch (LinphoneCoreException e) {
+            ApplicationContext.showToast(
+                    ApplicationContext.getStringFromRessources(R.string.unknown_error_message),
+                    Toast.LENGTH_SHORT);
+            e.printStackTrace();
         }
     }
 

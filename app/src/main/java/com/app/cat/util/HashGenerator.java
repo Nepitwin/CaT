@@ -33,6 +33,9 @@ import java.security.NoSuchAlgorithmException;
  */
 public class HashGenerator {
 
+    /**
+     * MD5 hash.
+     */
     private static final String MD5 = "MD5";
 
     /**

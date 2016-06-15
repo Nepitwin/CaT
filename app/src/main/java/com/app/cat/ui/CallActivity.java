@@ -70,7 +70,7 @@ public class CallActivity extends AppCompatActivity implements CallFragmentListe
 
     public static final String KEY_FRAGMENT_ID = "FRAGMENT";
 
-    private boolean grantedPermissions = false;
+    private boolean switchToCallFragment = false;
 
     int fragment;
 
@@ -167,10 +167,9 @@ public class CallActivity extends AppCompatActivity implements CallFragmentListe
     protected void onPostResume() {
         super.onPostResume();
         // Workaround for handling FragmentTransactions due to callbacks instead of user interaction
-        if (grantedPermissions) {
+        if (switchToCallFragment) {
+            switchToCallFragment = false;
             switchToCallFragment();
-        } else {
-            grantedPermissions = false;
         }
     }
 
@@ -188,7 +187,7 @@ public class CallActivity extends AppCompatActivity implements CallFragmentListe
                 }
 
                 if (permissionGranted) {
-                    grantedPermissions = true;
+                    switchToCallFragment = true;
                     client.acceptCall();
                 } else {
                     onDeclineCall();
@@ -201,5 +200,9 @@ public class CallActivity extends AppCompatActivity implements CallFragmentListe
                 return;
             }
         }
+    }
+
+    public void grandPermissions() {
+        this.switchToCallFragment = true;
     }
 }

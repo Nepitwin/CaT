@@ -60,6 +60,11 @@ public class LinphoneCATAudio implements Multimedia {
     private LinphoneCall call;
 
     /**
+     * Determines whether this call is an incoming or outgoing call.
+     */
+    private boolean isIncomingCall;
+
+    /**
      * Linphone CAT audio call constructor.
      * @param core LinphoneCore
      * @param coreFactory Factory from linphone core.
@@ -67,6 +72,7 @@ public class LinphoneCATAudio implements Multimedia {
     public LinphoneCATAudio(LinphoneCore core, LinphoneCoreFactory coreFactory) {
         this.core = core;
         this.coreFactory = coreFactory;
+        this.isIncomingCall = false;
     }
 
     /**
@@ -79,6 +85,7 @@ public class LinphoneCATAudio implements Multimedia {
         this.core = core;
         this.coreFactory = coreFactory;
         this.call = call;
+        this.isIncomingCall = true;
     }
 
     @Override
@@ -90,7 +97,7 @@ public class LinphoneCATAudio implements Multimedia {
 
         try {
             call = core.inviteAddressWithParams(
-                    coreFactory. createLinphoneAddress(catFriend.getSIPAccount()), params);
+                    coreFactory.createLinphoneAddress(catFriend.getSIPAccount()), params);
 
         } catch (LinphoneCoreException e) {
             ApplicationContext.showToast(
@@ -140,5 +147,10 @@ public class LinphoneCATAudio implements Multimedia {
             core.terminateCall(call);
             call = null;
         }
+    }
+
+    @Override
+    public boolean isIncomingCall() {
+        return this.isIncomingCall;
     }
 }

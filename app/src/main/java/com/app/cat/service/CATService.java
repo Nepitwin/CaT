@@ -28,7 +28,6 @@ import android.content.Intent;
 import android.os.HandlerThread;
 import android.os.IBinder;
 import android.os.Process;
-import android.util.Log;
 import android.widget.Toast;
 
 import com.app.cat.R;
@@ -91,8 +90,6 @@ public class CATService extends Service {
     public void onDestroy() {
         super.onDestroy();
 
-        Log.d("CATService", "Service stopped");
-
         // Stop service thread
         if(voIPService.isRunning()) {
             voIPService.stop();
@@ -103,8 +100,6 @@ public class CATService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        Log.v("CATService", "Received start id " + startId + ": " + intent);
-
         // Set thread id
         threadID = startId;
 

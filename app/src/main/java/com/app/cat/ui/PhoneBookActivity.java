@@ -70,7 +70,7 @@ import butterknife.ButterKnife;
  *
  * @author Andreas Sekulski, Dimitri Kotlovsky
  */
-public class MainActivity extends AppCompatActivity
+public class PhoneBookActivity extends AppCompatActivity
         implements ActivityCompat.OnRequestPermissionsResultCallback {
 
     /**
@@ -79,12 +79,21 @@ public class MainActivity extends AppCompatActivity
     @Bind(R.id.listViewTBook)
     public ListView listTBook;
 
+    /**
+     * Information view which user is loged in.
+     */
     @Bind(R.id.testViewInfo)
     public TextView info;
 
+    /**
+     * Status bar view to show error messages.
+     */
     @Bind(R.id.statusBar)
     public LinearLayout statusBarLayout;
 
+    /**
+     * Error text view.
+     */
     @Bind(R.id.textViewErrorMessage)
     public TextView statusBarText;
 
@@ -118,6 +127,9 @@ public class MainActivity extends AppCompatActivity
      */
     private CATClient client;
 
+    /**
+     * Broadcast receiver to handle incoming intent calls.
+     */
     private BroadcastReceiver receiver;
 
     @Override
@@ -179,12 +191,13 @@ public class MainActivity extends AppCompatActivity
 
             catFriend = new CATFriend(configuration.get("friendUsername"), configuration.get("domain"));
             catAccounts.add(catFriend);
+            catAccounts.add(new CATFriend("Mockup", "192.168.117.102"));
 
             client.addCATFriend(catFriend);
             client.register(catUser);
 
             // Starts an service in background
-            service = new Intent(MainActivity.this, CATService.class);
+            service = new Intent(PhoneBookActivity.this, CATService.class);
             startService(service);
         } catch (IOException | LinphoneCoreException | NoSuchAlgorithmException e) {
             ApplicationContext.showToast(
@@ -212,8 +225,7 @@ public class MainActivity extends AppCompatActivity
     protected void onDestroy() {
         super.onDestroy();
 
-        Log.v("Main", "Call on destroy");
-
+        // ToDo: Productive this service don't die! FOREVER YOUNG!
         // Activity stops... kill background server
         // In productive this service runs all the time as an sub process.
         if(service != null) {
@@ -241,12 +253,9 @@ public class MainActivity extends AppCompatActivity
                     bundle.putInt(CallActivity.KEY_FRAGMENT_ID, CallActivity.FRAGMENT_OUTGOING_CALL);
                     ApplicationContext.runIntentWithParams(ApplicationContext.ACTIVITY_CALL, bundle);
 
-                    // ToDo := Why? You can store friends or objects in bundle... ToDo...!
-                    // client.callFriend();
-                } else {
-                    // ToDo := Why? No more necessary!
-                    // client.setFriendToCall(null);
+                    client.callFriend(false, telephoneBookAdapter.getCatFriend());
 
+                } else {
                     PermissionManager.firstPermissionRequest = false;
                     ApplicationContext.showToast(ApplicationContext.getStringFromRessources(
                             R.string.permission_denied),

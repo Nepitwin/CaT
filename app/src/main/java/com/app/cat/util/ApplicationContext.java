@@ -33,7 +33,7 @@ import android.support.v4.content.LocalBroadcastManager;
 import android.widget.Toast;
 
 import com.app.cat.ui.CallActivity;
-import com.app.cat.ui.MainActivity;
+import com.app.cat.ui.PhoneBookActivity;
 
 /**
  * Static utility class to get context from active activity.
@@ -45,7 +45,7 @@ public class ApplicationContext {
     /**
      * Main activity class.
      */
-    public static Class ACTIVITY_MAIN = MainActivity.class;
+    public static Class ACTIVITY_MAIN = PhoneBookActivity.class;
 
     /**
      * Call activity class.
@@ -168,6 +168,12 @@ public class ApplicationContext {
         return message;
     }
 
+    /**
+     * Sends an local broadcast to an given inten.
+     * @param packageClass Package path and intent to call.
+     * @param key Key identifier to store message.
+     * @param message Message to store.
+     */
     public static void sendResult(String packageClass, String key ,String message) {
         if(context != null) {
             Intent intent = new Intent(packageClass);

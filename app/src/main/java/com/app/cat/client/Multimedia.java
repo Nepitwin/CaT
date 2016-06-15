@@ -36,15 +36,21 @@ public interface Multimedia {
      * Try to call an given friend.
      * @param catFriend Friend to call.
      */
-    public void callFriend(CATFriend catFriend);
+    void callFriend(CATFriend catFriend);
 
     /**
      * Accepts an call if exists.
      */
-    public void acceptCall();
+    void acceptCall();
 
     /**
      * Decline an call if exists.
      */
-    public void declineCall();
+    void declineCall();
+
+    /**
+     * Returns <code>true</code> if the current call is an incoming call.
+     * @return <code>true</code> if the current call is an incoming call
+     */
+    boolean isIncomingCall();
 }
