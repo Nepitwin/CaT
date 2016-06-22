@@ -5,7 +5,7 @@
 Liblinphone is a high level library integrating all the SIP video calls feature into a single easy to use API. Usually telecommunications is made of two things: media (transport of voice or video, encoding and decoding...), and signaling (routing calls, ringing, accepting a call etc...).
 
 ```
-Used Version : liblinphone-android-sdk-2.5.1-564-g0977e41 (Build from GitHub)
+Used Version : liblinphone-android-sdk-2.5.1-567-gdaa7f64 (Build from GitHub)
 License : GNU GPLv2 license (open source) / Commercial license
 GitHub : https://github.com/BelledonneCommunications/linphone-android
 Homepage : https://www.linphone.org/technical-corner/liblinphone/overview
