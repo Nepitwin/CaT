@@ -391,7 +391,7 @@ public class LinphoneCATServerListener implements LinphoneCoreListener {
 
             // Delegate incoming (audio or video) call to client
             LinphoneCATClient.getInstance().incomingCall(
-                    linphoneCall.getCurrentParamsCopy().getVideoEnabled(),
+                    linphoneCall.getRemoteParams().getVideoEnabled(),
                     linphoneCall);
 
             // Start the activity for an incoming call
