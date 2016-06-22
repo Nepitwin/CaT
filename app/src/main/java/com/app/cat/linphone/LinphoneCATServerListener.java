@@ -272,6 +272,25 @@ public class LinphoneCATServerListener implements LinphoneCoreListener {
         Log.i("Cat_Server", state.toString());
         Log.i("Cat_Server", "--------------------------------");
 
+        // Params to check for Video call...
+        if(linphoneCall.getRemoteParams() != null) {
+            Log.e("CALL_PARAMS_REMOTE", linphoneCall.getRemoteParams().toString());
+            if(linphoneCall.getRemoteParams().getVideoEnabled()) {
+                Log.e("CALL_PARAMS_REMOTE", "Video sooooo true");
+            } else {
+                Log.e("CALL_PARAMS_REMOTE", "Video not sooooo true");
+            }
+        }
+
+        if(linphoneCall.getCurrentParamsCopy() != null) {
+            Log.e("CALL_PARAMS_LOCAL", linphoneCall.getCurrentParamsCopy().toString());
+            if(linphoneCall.getCurrentParamsCopy().getVideoEnabled()) {
+                Log.e("CALL_PARAMS_LOCAL", "Video sooooo true");
+            } else {
+                Log.e("CALL_PARAMS_LOCAL", "Video not sooooo true");
+            }
+        }
+
         if (state == LinphoneCall.State.IncomingReceived) {
             incomingCall(linphoneCall);
         } else if (state == LinphoneCall.State.CallEnd) {
