@@ -91,13 +91,23 @@ public class LinphoneCATVideo implements Multimedia {
     @Override
     public void callFriend(CATFriend catFriend) {
 
+        // Set connection parameters
         LinphoneCallParams params = core.createCallParams(null);
         params.setVideoEnabled(true);
+        //params.setAudioBandwidth(0); // disable limitation
         params.enableLowBandwidth(false);
+        //params.enableRealTimeText(true);
 
         try {
-            call = core.inviteAddressWithParams(
-                    coreFactory.createLinphoneAddress(catFriend.getSIPAccount()), params);
+            call = core.inviteAddressWithParams(coreFactory.createLinphoneAddress(
+                    catFriend.getSIPAccount()), params);
+
+            call.enableCamera(true);
+            LinphoneCallParams params2 = call.getCurrentParamsCopy();
+            Log.v("params", "video enabled: --> " + params2.getVideoEnabled());
+            Log.v("params", "low bandwidth: --> " + params2.isLowBandwidthEnabled());
+            Log.v("params", "real time text: --> " + params2.realTimeTextEnabled());
+            Log.v("params", "video codec: --> " + params2.getUsedVideoCodec());
 
         } catch (LinphoneCoreException e) {
             ApplicationContext.showToast(
@@ -114,21 +124,19 @@ public class LinphoneCATVideo implements Multimedia {
 
         //boolean isLowBandwidthConnection = !LinphoneUtils.isHighBandwidthConnection(LinphoneService.instance().getApplicationContext());
 
-        if(params != null)  {
+        if (params != null)  {
             params.enableLowBandwidth(false);
-            if (!params.getVideoEnabled()) {
-                Log.e("VIDEO ENABLED?", params.getVideoEnabled() + "");
-                params.setVideoEnabled(true);
-            }
+            params.setVideoEnabled(true);
             //params.enableAudioMulticast(true);
             //params.setAudioBandwidth(40);
         } else {
             Log.v("Call", "Params not working");
         }
 
-        if(params != null) {
+        if (params != null) {
             Log.v("params", "PARAAMAMMMMMMMMMMMMMMMMMMMMMSSSSSSSSSSSSSSSS FOUNDDDDDDDDDD SCOTTTTYYYYYY");
-            Log.v("params", "media encryption: --> " + params.getMediaEncryption().toString());
+            Log.v("params", "low bandwidth: --> " + params.isLowBandwidthEnabled());
+            Log.v("params", "video enabled: --> " + params.getVideoEnabled());
             Log.v("params", "audio codec: --> " + params.getUsedAudioCodec());
         } else {
             Log.v("params", "BLACKKKK HAWKKKKK DOWNNNNNNNNNNN I REPEAT BLACK HAWK DOWN");
@@ -137,6 +145,7 @@ public class LinphoneCATVideo implements Multimedia {
         try {
             Log.v("Call", "Volume : " + call.getPlayVolume());
             core.acceptCallWithParams(call, params);
+            call.enableCamera(true);
         } catch (LinphoneCoreException e) {
             ApplicationContext.showToast(
                     ApplicationContext.getStringFromRessources(R.string.unknown_error_message),

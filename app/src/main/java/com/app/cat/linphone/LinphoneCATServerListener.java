@@ -29,13 +29,13 @@ import android.util.Log;
 import android.widget.Toast;
 
 import com.app.cat.R;
-import com.app.cat.client.Multimedia;
 import com.app.cat.ui.CallActivity;
 import com.app.cat.util.ApplicationContext;
 
 import org.linphone.core.LinphoneAddress;
 import org.linphone.core.LinphoneAuthInfo;
 import org.linphone.core.LinphoneCall;
+import org.linphone.core.LinphoneCallParams;
 import org.linphone.core.LinphoneCallStats;
 import org.linphone.core.LinphoneChatMessage;
 import org.linphone.core.LinphoneChatRoom;
@@ -272,25 +272,6 @@ public class LinphoneCATServerListener implements LinphoneCoreListener {
         Log.i("Cat_Server", state.toString());
         Log.i("Cat_Server", "--------------------------------");
 
-        // Params to check for Video call...
-        if(linphoneCall.getRemoteParams() != null) {
-            Log.e("CALL_PARAMS_REMOTE", linphoneCall.getRemoteParams().toString());
-            if(linphoneCall.getRemoteParams().getVideoEnabled()) {
-                Log.e("CALL_PARAMS_REMOTE", "Video sooooo true");
-            } else {
-                Log.e("CALL_PARAMS_REMOTE", "Video not sooooo true");
-            }
-        }
-
-        if(linphoneCall.getCurrentParamsCopy() != null) {
-            Log.e("CALL_PARAMS_LOCAL", linphoneCall.getCurrentParamsCopy().toString());
-            if(linphoneCall.getCurrentParamsCopy().getVideoEnabled()) {
-                Log.e("CALL_PARAMS_LOCAL", "Video sooooo true");
-            } else {
-                Log.e("CALL_PARAMS_LOCAL", "Video not sooooo true");
-            }
-        }
-
         if (state == LinphoneCall.State.IncomingReceived) {
             incomingCall(linphoneCall);
         } else if (state == LinphoneCall.State.CallEnd) {
@@ -298,10 +279,21 @@ public class LinphoneCATServerListener implements LinphoneCoreListener {
         } else if (state == LinphoneCall.State.Error) {
             unknownCallError(linphoneCall, message);
         } else if(state == LinphoneCall.State.Connected) {
-            outgoingCallAccepted();
+            try {
+                LinphoneCATClient client = LinphoneCATClient.getInstance();
+                Boolean isIncomingCall = client.isIncomingCall();
 
-            // ToDo: Debugging / Testing video calls
-            ApplicationContext.runIntent(ApplicationContext.ACTIVITY_VIDEOCALL);
+                // Only handle an outgoing call on the "calling" device
+                if ((isIncomingCall != null) && !isIncomingCall) {
+                    outgoingCallAccepted(client);
+                }
+
+            } catch (LinphoneCoreException e) {
+                ApplicationContext.showToast(
+                        ApplicationContext.getStringFromRessources(R.string.unknown_error_message),
+                        Toast.LENGTH_SHORT);
+                e.printStackTrace();
+            }
         }
     }
 
@@ -364,35 +356,32 @@ public class LinphoneCATServerListener implements LinphoneCoreListener {
         Log.i("Cat_Server", "--------------------------------");
     }
 
-    private void outgoingCallAccepted() {
-        try {
-
-            LinphoneCATClient client = LinphoneCATClient.getInstance();
-            Boolean isIncomingCall = client.isIncomingCall();
-
-            // Switch to Call Fragment if outgoing call was accepted
-            if ((isIncomingCall != null) && !isIncomingCall) {
-                Activity activity = ApplicationContext.getCurrentActivity();
-                if (activity instanceof CallActivity) {
-                    ((CallActivity) ApplicationContext.getCurrentActivity()).switchToCallFragment();
-                }
+    private void outgoingCallAccepted(LinphoneCATClient client) {
+        Activity activity = ApplicationContext.getCurrentActivity();
+        if (activity instanceof CallActivity) {
+            if ((client.isVideoCall() != null) && client.isVideoCall()) {
+                // Video call
+                ApplicationContext.closeCurrentActivity();
+                ApplicationContext.runIntent(ApplicationContext.ACTIVITY_VIDEOCALL);
+            } else if (client.isVideoCall() != null) {
+                // Audio call
+                ((CallActivity) ApplicationContext.getCurrentActivity()).switchToCallFragment();
             }
-
-        } catch (LinphoneCoreException e) {
-            ApplicationContext.showToast(
-                    ApplicationContext.getStringFromRessources(R.string.unknown_error_message),
-                    Toast.LENGTH_SHORT);
-            e.printStackTrace();
         }
     }
 
     private void incomingCall(LinphoneCall linphoneCall) {
         try {
+            LinphoneCallParams params = linphoneCall.getRemoteParams();
+            Log.v("params", "PARAAMAMMMMMMMMMMMMMMMMMMMMMSSSSSSSSSSSSSSSS FOUNDDDDDDDDDD SCOTTTTYYYYYY");
+            Log.v("params", "low bandwidth: --> " + params.isLowBandwidthEnabled());
+            Log.v("params", "video enabled: --> " + params.getVideoEnabled());
+            Log.v("params", "audio codec: --> " + params.getUsedAudioCodec());
+            Log.v("params", "video codec: --> " + params.getUsedVideoCodec());
 
             // Delegate incoming (audio or video) call to client
             LinphoneCATClient.getInstance().incomingCall(
-                    linphoneCall.getRemoteParams().getVideoEnabled(),
-                    linphoneCall);
+                    linphoneCall.getRemoteParams().getVideoEnabled(), linphoneCall);
 
             // Start the activity for an incoming call
             Bundle bundle = new Bundle();
@@ -413,9 +402,7 @@ public class LinphoneCATServerListener implements LinphoneCoreListener {
                     ApplicationContext.getStringFromRessources(R.string.call_declined),
                     Toast.LENGTH_SHORT);
         } else {
-            ApplicationContext.showToast(
-                    message,
-                    Toast.LENGTH_SHORT);
+            ApplicationContext.showToast(message, Toast.LENGTH_SHORT);
         }
 
         // Error occurred: close call activity.

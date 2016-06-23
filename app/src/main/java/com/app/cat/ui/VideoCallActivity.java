@@ -24,48 +24,65 @@
 package com.app.cat.ui;
 
 import android.annotation.SuppressLint;
-import android.graphics.Bitmap;
-import android.opengl.GLSurfaceView;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
+import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.os.Handler;
-import android.view.GestureDetector;
-import android.view.LayoutInflater;
+import android.support.annotation.LayoutRes;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
 import android.view.MotionEvent;
-import android.view.Surface;
-import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
-import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.app.cat.R;
-import com.app.cat.client.CATClient;
 import com.app.cat.linphone.LinphoneCATClient;
 import com.app.cat.util.ApplicationContext;
+import com.app.cat.util.CatSettings;
 
 import org.linphone.core.LinphoneCoreException;
 import org.linphone.mediastream.video.AndroidVideoWindowImpl;
+
+import butterknife.Bind;
+import butterknife.ButterKnife;
 
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
  * status bar and navigation/system bar) with user interaction.
  */
-public class VideocallActivity extends AppCompatActivity {
+public class VideoCallActivity extends AppCompatActivity {
 
-    private SurfaceView mVideoView;
-    private SurfaceView mCaptureView;
+    /**
+     * View for the phone video of the call partner.
+     */
+    @Bind(R.id.videoSurface)
+    SurfaceView mVideoView;
+
+    /**
+     * View for the captured video of the own phone camera.
+     */
+    @Bind(R.id.videoCaptureSurface)
+    SurfaceView mCaptureView;
+
+    /**
+     * Hang Up button.
+     */
+    @Bind(R.id.buttonHangUp)
+    Button hangUpButton;
+
+    /**
+     * View for the controls that are hidden on fullscreen.
+     */
+    @Bind(R.id.fullscreen_content_controls)
+    View mControlsView;
+
     private AndroidVideoWindowImpl androidVideoWindowImpl;
-    private GestureDetector mGestureDetector;
-    private float mZoomFactor = 1.0f;
-    private float mZoomCenterX;
-    private float mZoomCenterY;
 
     /**
      * Cat client instance.
      */
-    private LinphoneCATClient client;
+    LinphoneCATClient client;
 
     /**
      * Whether or not the system UI should be auto-hidden after
@@ -84,7 +101,9 @@ public class VideocallActivity extends AppCompatActivity {
      * and a change of the status and navigation bar.
      */
     private static final int UI_ANIMATION_DELAY = 300;
+
     private final Handler mHideHandler = new Handler();
+
     private final Runnable mHidePart2Runnable = new Runnable() {
         @SuppressLint("InlinedApi")
         @Override
@@ -102,7 +121,7 @@ public class VideocallActivity extends AppCompatActivity {
                     | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION);
         }
     };
-    private View mControlsView;
+
     private final Runnable mShowPart2Runnable = new Runnable() {
         @Override
         public void run() {
@@ -114,13 +133,16 @@ public class VideocallActivity extends AppCompatActivity {
             mControlsView.setVisibility(View.VISIBLE);
         }
     };
+
     private boolean mVisible;
+
     private final Runnable mHideRunnable = new Runnable() {
         @Override
         public void run() {
             hide();
         }
     };
+
     /**
      * Touch listener to use for in-layout UI controls to delay hiding the
      * system UI. This is to prevent the jarring behavior of controls going away
@@ -137,14 +159,31 @@ public class VideocallActivity extends AppCompatActivity {
     };
 
     @Override
+    public void setContentView(@LayoutRes int layoutResID) {
+        super.setContentView(layoutResID);
+        ButterKnife.bind(this);
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_videocall);
 
+        // Set UI application context
+        ApplicationContext.setActivity(this);
+
+        // Get linphone client
+        try {
+            client = LinphoneCATClient.getInstance();
+        } catch (LinphoneCoreException e) {
+            ApplicationContext.showToast(
+                    ApplicationContext.getStringFromRessources(R.string.unknown_error_message),
+                    Toast.LENGTH_SHORT);
+            e.printStackTrace();
+        }
+
+        // Fullscreen view handling
         mVisible = true;
-        mControlsView = findViewById(R.id.fullscreen_content_controls);
-        mVideoView = (SurfaceView) findViewById(R.id.videoSurface);
 
         // Set up the user interaction to manually show or hide the system UI.
         mVideoView.setOnClickListener(new View.OnClickListener() {
@@ -157,55 +196,74 @@ public class VideocallActivity extends AppCompatActivity {
         // Upon interacting with UI controls, delay any scheduled hide()
         // operations to prevent the jarring behavior of controls going away
         // while interacting with the UI.
-        findViewById(R.id.dummy_button).setOnTouchListener(mDelayHideTouchListener);
+        hangUpButton.setOnTouchListener(mDelayHideTouchListener);
 
+        // Set Button background color
+        hangUpButton.getBackground().setColorFilter(CatSettings.HANGUP_BUTTON_COLOR,
+                PorterDuff.Mode.MULTIPLY);
 
-        // Decline Call if Dummy button is clicked
-        findViewById(R.id.dummy_button).setOnClickListener(new View.OnClickListener() {
+        // Decline Call if hang up button is clicked
+        hangUpButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 client.declineCall();
             }
         });
 
-        try {
-            client = LinphoneCATClient.getInstance();
-        } catch (LinphoneCoreException e) {
-            ApplicationContext.showToast(
-                    ApplicationContext.getStringFromRessources(R.string.unknown_error_message),
-                    Toast.LENGTH_SHORT);
-            e.printStackTrace();
-        }
-
-        //
-        // IMPLEMENTATION VIDEO CALL :
-        //
-        mCaptureView = (SurfaceView) findViewById(R.id.videoCaptureSurface);
-        mCaptureView.getHolder().setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
-
+        // Fix z order of the two video views
         fixZOrder(mVideoView, mCaptureView);
 
+        // Bind the video views to the linphone video window implementation
         androidVideoWindowImpl = new AndroidVideoWindowImpl(mVideoView, mCaptureView,
                 new AndroidVideoWindowImpl.VideoWindowListener() {
-            public void onVideoRenderingSurfaceReady(AndroidVideoWindowImpl vw,
-                                                     SurfaceView surface) {
-                mVideoView = surface;
+
+            public void onVideoRenderingSurfaceReady(AndroidVideoWindowImpl vw, SurfaceView surf) {
+                mVideoView = surf;
                 client.getCore().setVideoWindow(vw);
             }
 
-            public void onVideoRenderingSurfaceDestroyed(AndroidVideoWindowImpl vw) {
-
-            }
-
-            public void onVideoPreviewSurfaceReady(AndroidVideoWindowImpl vw, SurfaceView surface) {
-                mCaptureView = surface;
+            public void onVideoPreviewSurfaceReady(AndroidVideoWindowImpl vw, SurfaceView surf) {
+                mCaptureView = surf;
                 client.getCore().setPreviewWindow(mCaptureView);
             }
 
-            public void onVideoPreviewSurfaceDestroyed(AndroidVideoWindowImpl vw) {
-
-            }
+            public void onVideoRenderingSurfaceDestroyed(AndroidVideoWindowImpl vw) {}
+            public void onVideoPreviewSurfaceDestroyed(AndroidVideoWindowImpl vw) {}
         });
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (androidVideoWindowImpl != null) {
+            synchronized (androidVideoWindowImpl) {
+                client.getCore().setVideoWindow(androidVideoWindowImpl);
+            }
+        }
+    }
+
+    @Override
+    public void onPause() {
+        if (androidVideoWindowImpl != null) {
+            synchronized (androidVideoWindowImpl) {
+				/*
+				 * this call will destroy native opengl renderer which is used by
+				 * androidVideoWindowImpl
+				 */
+                client.getCore().setVideoWindow(null);
+            }
+        }
+        super.onPause();
+    }
+
+    @Override
+    public void onDestroy() {
+        if (androidVideoWindowImpl != null) {
+            // Prevent linphone from crashing if correspondent hang up while you are rotating
+            androidVideoWindowImpl.release();
+            androidVideoWindowImpl = null;
+        }
+        super.onDestroy();
     }
 
     @Override

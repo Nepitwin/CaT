@@ -40,12 +40,12 @@ import org.linphone.core.LinphoneCoreFactory;
 /**
  * Audio call implementation class.
  *
- * @author Andreas Sekulski
+ * @author Andreas Sekulski, Dimitri Kotlovsky
  */
 public class LinphoneCATAudio implements Multimedia {
 
     /**
-     * Linphone core implementation.
+     * Linphone core.
      */
     private LinphoneCore core;
 
@@ -91,8 +91,10 @@ public class LinphoneCATAudio implements Multimedia {
     @Override
     public void callFriend(CATFriend catFriend) {
 
+        // Set connection parameters
         LinphoneCallParams params = core.createCallParams(null);
         params.setVideoEnabled(false);
+        //params.setAudioBandwidth(0); // disable limitation
         params.enableLowBandwidth(false);
 
         try {
@@ -116,6 +118,7 @@ public class LinphoneCATAudio implements Multimedia {
 
         if(params != null)  {
             params.enableLowBandwidth(false);
+            params.setVideoEnabled(false);
             //params.enableAudioMulticast(true);
             //params.setAudioBandwidth(40);
         } else {
@@ -124,6 +127,8 @@ public class LinphoneCATAudio implements Multimedia {
 
         if(params != null) {
             Log.v("params", "PARAAMAMMMMMMMMMMMMMMMMMMMMMSSSSSSSSSSSSSSSS FOUNDDDDDDDDDD SCOTTTTYYYYYY");
+            Log.v("params", "low bandwidth: --> " + params.isLowBandwidthEnabled());
+            Log.v("params", "video enabled: --> " + params.getVideoEnabled());
             Log.v("params", "media encryption: --> " + params.getMediaEncryption().toString());
             Log.v("params", "audio codec: --> " + params.getUsedAudioCodec());
         } else {

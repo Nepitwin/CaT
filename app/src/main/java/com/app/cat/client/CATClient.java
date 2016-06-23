@@ -78,8 +78,15 @@ public interface CATClient {
     void declineCall();
 
     /**
-     * Returns <code>true</code> if the current call is an incoming call.
+     * Indicates whether the current call is is an incoming call or not (that is an outgoing call).
      * @return <code>true</code> if the current call is an incoming call
      */
     Boolean isIncomingCall();
+
+    /**
+     * Indicates whether the current call is a video call oder not (that is an audio call).
+     * @return <code>true</code> if the current call is a video call and <code>false</code> if it is
+     *         an audio call
+     */
+    Boolean isVideoCall();
 }

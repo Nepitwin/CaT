@@ -26,16 +26,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#0099cc"
-    tools:context="com.app.cat.ui.VideocallActivity">
+    tools:context=".ui.VideoCallActivity">
 
-    <!-- The primary full-screen view. This can be replaced with whatever view
-         is needed to present your content, e.g. VideoView, SurfaceView,
-         TextureView, etc. -->
     <org.linphone.mediastream.video.display.GL2JNIView
+        android:id="@+id/videoSurface"
         android:visibility="visible"
         android:layout_height="match_parent"
-        android:layout_width="match_parent"
-        android:id="@+id/videoSurface" />
+        android:layout_width="match_parent" />
 
     <SurfaceView
         android:id="@+id/videoCaptureSurface"
@@ -62,12 +59,12 @@
             tools:ignore="UselessParent">
 
             <Button
-                android:id="@+id/dummy_button"
+                android:id="@+id/buttonHangUp"
                 style="?metaButtonBarButtonStyle"
                 android:layout_width="0dp"
                 android:layout_height="45dp"
                 android:layout_weight="1"
-                android:text="@string/dummy_button" />
+                android:text="Hang up" />
 
         </LinearLayout>
     </FrameLayout>

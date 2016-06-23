@@ -81,7 +81,9 @@ public class VideoCallListener implements View.OnClickListener {
             adapter.setVideoCall(true);
         } else {
             // Open Call Activity and call friend
-            ApplicationContext.runIntent(ApplicationContext.ACTIVITY_VIDEOCALL);
+            Bundle bundle = new Bundle();
+            bundle.putInt(CallActivity.KEY_FRAGMENT_ID, CallActivity.FRAGMENT_OUTGOING_CALL);
+            ApplicationContext.runIntentWithParams(ApplicationContext.ACTIVITY_CALL, bundle);
             client.callFriend(true, friend);
         }
     }

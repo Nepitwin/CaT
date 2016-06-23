@@ -36,7 +36,7 @@ import com.app.cat.util.PermissionManager;
 /**
  * Audio call listener implementation for an audio call click event.
  *
- * @author Andreas Sekulski
+ * @author Andreas Sekulski, Dimitri Kotlovsky
  */
 public class AudioCallListener implements View.OnClickListener {
 

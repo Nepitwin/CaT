@@ -86,7 +86,8 @@ public class TelephoneBookAdapter extends ArrayAdapter<CATFriend> {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
 
-        LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(
+                Context.LAYOUT_INFLATER_SERVICE);
         View rowView = inflater.inflate(LAYOUT, parent, false);
 
         try {
@@ -100,14 +101,17 @@ public class TelephoneBookAdapter extends ArrayAdapter<CATFriend> {
 
         final CATFriend friend = getItem(position);
 
+        // Audio call button
         Button audio = (Button) rowView.findViewById(R.id.buttonAudioCall);
         audio.setOnClickListener(new AudioCallListener(position, this, client));
+        audio.getBackground().setColorFilter(CatSettings.DEFAULT_BUTTON_COLOR,
+                PorterDuff.Mode.MULTIPLY);
 
+        // Video call button
         Button video = (Button) rowView.findViewById(R.id.buttonVideoCall);
         video.setOnClickListener(new VideoCallListener(position, this, client));
-
-        audio.getBackground().setColorFilter(CatSettings.DEFAULT_BUTTON_COLOR, PorterDuff.Mode.MULTIPLY);
-        video.getBackground().setColorFilter(CatSettings.DEFAULT_BUTTON_COLOR, PorterDuff.Mode.MULTIPLY);
+        video.getBackground().setColorFilter(CatSettings.DEFAULT_BUTTON_COLOR,
+                PorterDuff.Mode.MULTIPLY);
 
         // Set name of the user
         TextView textview = (TextView) rowView.findViewById(R.id.textView);

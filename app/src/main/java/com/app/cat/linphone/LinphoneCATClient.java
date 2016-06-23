@@ -43,6 +43,7 @@ import org.linphone.core.LinphoneCoreFactory;
 import org.linphone.core.LinphoneCoreListener;
 import org.linphone.core.LinphoneProxyConfig;
 import org.linphone.core.PayloadType;
+import org.linphone.mediastream.video.capture.hwconf.AndroidCameraConfiguration;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -58,6 +59,11 @@ public class LinphoneCATClient implements CATClient {
      * Registration expiration time.
      */
     private static final int REGISTRATION_EXPIRATION_TIME = 2000;
+
+    /**
+     * Maximum number of calls that are allowed at a time.
+     */
+    private static final int MAX_CALLS = 1;
 
     /**
      * Linphone core implementation.
@@ -116,17 +122,39 @@ public class LinphoneCATClient implements CATClient {
 
         // Create an factory instance
         coreFactory = LinphoneCoreFactory.instance();
+        //coreFactory.setDebugMode(true, ApplicationContext.getStringFromRessources(R.string.app_name));
 
         LinphoneCoreListener catServerListener = new LinphoneCATServerListener();
         core = coreFactory.createLinphoneCore(catServerListener, null);
 
+        // Set maximum number of allowed calls at a time
+        core.setMaxCalls(MAX_CALLS);
 
-        core.enableAdaptiveRateControl(false);
+        // Set camera device
+        int camId = 0;
+        AndroidCameraConfiguration.AndroidCamera[] cameras = AndroidCameraConfiguration.retrieveCameras();
+        for (AndroidCameraConfiguration.AndroidCamera androidCamera : cameras) {
+            if (androidCamera.frontFacing) {
+                camId = androidCamera.id;
+            }
+        }
+        core.setVideoDevice(camId);
+
+        // Set available cpu cores
+        int availableCores = Runtime.getRuntime().availableProcessors();
+        core.setCpuCount(availableCores);
+
+        // ToDo: Whatever this is ...
+        int migrationResult = core.migrateToMultiTransport();
+        Log.v("CORE", "Migration to multi transport result = " + migrationResult);
+
+        // ToDo: Codec handling
+        //core.enableAdaptiveRateControl(false);
         for(PayloadType type : core.getAudioCodecs()) {
-            core.enablePayloadType(type, false);
+            //core.enablePayloadType(type, false);
             if (type.getMime().equals("GSM")) {
                 core.enablePayloadType(type, true);
-                core.setPayloadTypeBitrate(type, 100);
+                //core.setPayloadTypeBitrate(type, 100); //Cannot set an explicit bitrate for codec GSM/8000, because it is not VBR.
             }
         }
 
@@ -136,6 +164,21 @@ public class LinphoneCATClient implements CATClient {
             Log.v("is enabled", "" + core.isPayloadTypeEnabled(type));
         }
 
+        for(PayloadType type : core.getVideoCodecs()) {
+            Log.v("params", type.getMime());
+            Log.v("params", type.getRate() + "");
+            Log.v("is enabled", "" + core.isPayloadTypeEnabled(type));
+        }
+
+        // ToDo: video prefs handling
+        core.enableVideo(true, true);
+        core.setVideoPolicy(true, true);
+
+        // Video presets
+        String preset = core.getVideoPreset();
+        if (preset == null) preset = "default";
+        Log.e("PRESET", preset);
+        Log.e("VIDEO_SIZE", core.getConfig().getString("video", "size", "qvga"));
 
         // Create an proxy configuration class from core.
         proxyConfig = core.createProxyConfig();
@@ -150,7 +193,6 @@ public class LinphoneCATClient implements CATClient {
         if(friendList == null) {
             friendList = new ArrayList<>();
         }
-
         friendList.add(catFriend);
     }
 
@@ -251,6 +293,19 @@ public class LinphoneCATClient implements CATClient {
     }
 
     /**
+     * Indicates whether the current call is a video call oder not (that is an audio call).
+     * @return <code>true</code> if the current call is a video call and <code>false</code> if it is
+     *         an audio call
+     */
+    @Override
+    public Boolean isVideoCall() {
+        if (multimedia != null) {
+            return multimedia instanceof LinphoneCATVideo;
+        }
+        return null;
+    }
+
+    /**
      * Sets an incoming call.
      * @param call Call to set.
      */
@@ -263,7 +318,7 @@ public class LinphoneCATClient implements CATClient {
     }
 
     /**
-     * Gets core from linphone.
+     * Returns core from linphone.
      * @return Null if core not initialized otherwise an linphone core will be returned.
      */
     public LinphoneCore getCore() {

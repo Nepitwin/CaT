@@ -167,11 +167,12 @@ public class PhoneBookActivity extends AppCompatActivity
         };
 
         try {
-            // Get singleton object.
+            // ToDo: Check transport choosing in linphone implementation: {@link LinphonePreferenes}
             int udp = 0;
             int tcp = 5060;
             int tls = 0;
 
+            // Get singleton object.
             client = LinphoneCATClient.getInstance();
             client.setTransportType(udp, tcp, tls);
 
@@ -247,14 +248,12 @@ public class PhoneBookActivity extends AppCompatActivity
                     permissionGranted = (grantResults[i] == PackageManager.PERMISSION_GRANTED);
                 }
 
+                // Open Call Activity and call friend
                 if (permissionGranted) {
-                    // Open Call Activity and call friend
                     Bundle bundle = new Bundle();
                     bundle.putInt(CallActivity.KEY_FRAGMENT_ID, CallActivity.FRAGMENT_OUTGOING_CALL);
                     ApplicationContext.runIntentWithParams(ApplicationContext.ACTIVITY_CALL, bundle);
-
                     client.callFriend(telephoneBookAdapter.isVideoCall(), telephoneBookAdapter.getCatFriend());
-
                 } else {
                     PermissionManager.firstPermissionRequest = false;
                     ApplicationContext.showToast(ApplicationContext.getStringFromRessources(

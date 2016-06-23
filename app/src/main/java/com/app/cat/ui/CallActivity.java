@@ -135,10 +135,18 @@ public class CallActivity extends AppCompatActivity implements CallFragmentListe
             PermissionManager.requestPermissions(
                     PermissionManager.PERMISSIONS_AUDIO_CAMERA,
                     PermissionManager.REQUEST_PERMISSIONS_INCOMING_CALL);
-
-        // Permission is already granted - accept the call
         } else {
-            switchToCallFragment();
+            // Permission is already granted - accept the call
+
+            // Choose between audio or video call handling
+            if ((client.isVideoCall() != null) && client.isVideoCall()) {
+                ApplicationContext.closeCurrentActivity();
+                ApplicationContext.runIntent(ApplicationContext.ACTIVITY_VIDEOCALL);
+            } else {
+                switchToCallFragment();
+            }
+
+            // Accept call
             client.acceptCall();
         }
     }
@@ -193,8 +201,18 @@ public class CallActivity extends AppCompatActivity implements CallFragmentListe
                 }
 
                 if (permissionGranted) {
-                    switchToCallFragment = true;
+
+                    // Choose between audio or video call handling
+                    if ((client.isVideoCall() != null) && client.isVideoCall()) {
+                        ApplicationContext.closeCurrentActivity();
+                        ApplicationContext.runIntent(ApplicationContext.ACTIVITY_VIDEOCALL);
+                    } else {
+                        switchToCallFragment = true;
+                    }
+
+                    // Accept call
                     client.acceptCall();
+
                 } else {
                     onDeclineCall();
                     PermissionManager.firstPermissionRequest = false;
@@ -206,9 +224,5 @@ public class CallActivity extends AppCompatActivity implements CallFragmentListe
                 return;
             }
         }
-    }
-
-    public void grandPermissions() {
-        this.switchToCallFragment = true;
     }
 }
