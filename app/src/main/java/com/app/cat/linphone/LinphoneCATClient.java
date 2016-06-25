@@ -23,6 +23,7 @@
 
 package com.app.cat.linphone;
 
+import android.content.Context;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -43,6 +44,7 @@ import org.linphone.core.LinphoneCoreFactory;
 import org.linphone.core.LinphoneCoreListener;
 import org.linphone.core.LinphoneProxyConfig;
 import org.linphone.core.PayloadType;
+import org.linphone.mediastream.MediastreamerAndroidContext;
 import org.linphone.mediastream.video.capture.hwconf.AndroidCameraConfiguration;
 
 import java.util.ArrayList;
@@ -101,7 +103,7 @@ public class LinphoneCATClient implements CATClient {
     private VoIPService registrationService;
 
     /**
-     * Get instance method to create an singleton if nox already exists.
+     * Singleton method to create an linphone core.
      *
      * @return Singleton LinphoneCATClient object.
      * @throws LinphoneCoreException Throws an LinphoneCoreException if instance creation failed.
@@ -117,6 +119,7 @@ public class LinphoneCATClient implements CATClient {
 
     /**
      * Default constructor to create an LinphoneCATClient singleton.
+     * @throws LinphoneCoreException
      */
     private LinphoneCATClient() throws LinphoneCoreException {
 
@@ -125,6 +128,7 @@ public class LinphoneCATClient implements CATClient {
         //coreFactory.setDebugMode(true, ApplicationContext.getStringFromRessources(R.string.app_name));
 
         LinphoneCoreListener catServerListener = new LinphoneCATServerListener();
+
         core = coreFactory.createLinphoneCore(catServerListener, null);
 
         // Set maximum number of allowed calls at a time
@@ -281,6 +285,11 @@ public class LinphoneCATClient implements CATClient {
             multimedia.declineCall();
             multimedia = null;
         }
+    }
+
+    @Override
+    public void setContext(Context context) {
+        MediastreamerAndroidContext.setContext(context);
     }
 
     @Override
