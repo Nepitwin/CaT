@@ -30,6 +30,7 @@ import android.os.Handler;
 import android.support.annotation.LayoutRes;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceView;
 import android.view.View;
@@ -218,8 +219,10 @@ public class VideoCallActivity extends AppCompatActivity {
                 new AndroidVideoWindowImpl.VideoWindowListener() {
 
             public void onVideoRenderingSurfaceReady(AndroidVideoWindowImpl vw, SurfaceView surf) {
+                Log.e("FU", "VOR Setzen von RenderingSurface");
                 mVideoView = surf;
                 client.getCore().setVideoWindow(vw);
+                Log.e("FU", "NACH Setzen von RenderingSurface");
             }
 
             public void onVideoPreviewSurfaceReady(AndroidVideoWindowImpl vw, SurfaceView surf) {
