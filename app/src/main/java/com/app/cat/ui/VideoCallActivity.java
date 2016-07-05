@@ -176,12 +176,6 @@ public class VideoCallActivity extends AppCompatActivity {
         // Get linphone client
         try {
             client = LinphoneCATClient.getInstance();
-            if(client.getCore().hasCrappyOpenGL()) {
-                Log.e("OPENGL_CRAPPY", "TRUUUUUEEEEE FUCKING");
-            } else {
-                Log.e("OPENGL_CRAPPY", "FALSSSEEEEE FUCKING");
-            }
-
         } catch (LinphoneCoreException e) {
             ApplicationContext.showToast(
                     ApplicationContext.getStringFromRessources(R.string.unknown_error_message),

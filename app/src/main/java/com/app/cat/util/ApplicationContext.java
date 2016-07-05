@@ -32,12 +32,9 @@ import android.os.Bundle;
 import android.support.v4.content.LocalBroadcastManager;
 import android.widget.Toast;
 
-import com.app.cat.linphone.LinphoneCATClient;
 import com.app.cat.ui.CallActivity;
 import com.app.cat.ui.PhoneBookActivity;
 import com.app.cat.ui.VideoCallActivity;
-
-import org.linphone.core.LinphoneCoreException;
 
 /**
  * Static utility class to get context from active activity.
@@ -93,11 +90,6 @@ public class ApplicationContext {
     public static void setActivity(Activity gActivity) {
         activity = gActivity;
         context = activity.getApplicationContext();
-        try {
-            LinphoneCATClient.getInstance().setContext(activity);
-        } catch (LinphoneCoreException e) {
-            e.printStackTrace();
-        }
     }
 
     /**
