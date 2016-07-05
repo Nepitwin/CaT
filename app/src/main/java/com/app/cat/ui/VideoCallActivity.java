@@ -176,6 +176,12 @@ public class VideoCallActivity extends AppCompatActivity {
         // Get linphone client
         try {
             client = LinphoneCATClient.getInstance();
+            if(client.getCore().hasCrappyOpenGL()) {
+                Log.e("OPENGL_CRAPPY", "TRUUUUUEEEEE FUCKING");
+            } else {
+                Log.e("OPENGL_CRAPPY", "FALSSSEEEEE FUCKING");
+            }
+
         } catch (LinphoneCoreException e) {
             ApplicationContext.showToast(
                     ApplicationContext.getStringFromRessources(R.string.unknown_error_message),
@@ -238,6 +244,7 @@ public class VideoCallActivity extends AppCompatActivity {
     @Override
     public void onResume() {
         super.onResume();
+
         if (androidVideoWindowImpl != null) {
             synchronized (androidVideoWindowImpl) {
                 client.getCore().setVideoWindow(androidVideoWindowImpl);
@@ -247,6 +254,8 @@ public class VideoCallActivity extends AppCompatActivity {
 
     @Override
     public void onPause() {
+        super.onPause();
+
         if (androidVideoWindowImpl != null) {
             synchronized (androidVideoWindowImpl) {
 				/*
@@ -256,17 +265,17 @@ public class VideoCallActivity extends AppCompatActivity {
                 client.getCore().setVideoWindow(null);
             }
         }
-        super.onPause();
     }
 
     @Override
     public void onDestroy() {
+        super.onDestroy();
+
         if (androidVideoWindowImpl != null) {
             // Prevent linphone from crashing if correspondent hang up while you are rotating
             androidVideoWindowImpl.release();
             androidVideoWindowImpl = null;
         }
-        super.onDestroy();
     }
 
     @Override

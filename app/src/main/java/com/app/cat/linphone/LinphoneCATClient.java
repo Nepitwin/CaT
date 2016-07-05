@@ -101,7 +101,7 @@ public class LinphoneCATClient implements CATClient {
     private VoIPService registrationService;
 
     /**
-     * Get instance method to create an singleton if nox already exists.
+     * Singleton method to create an linphone core.
      *
      * @return Singleton LinphoneCATClient object.
      * @throws LinphoneCoreException Throws an LinphoneCoreException if instance creation failed.
@@ -117,6 +117,7 @@ public class LinphoneCATClient implements CATClient {
 
     /**
      * Default constructor to create an LinphoneCATClient singleton.
+     * @throws LinphoneCoreException
      */
     private LinphoneCATClient() throws LinphoneCoreException {
 

@@ -23,6 +23,8 @@
 
 package com.app.cat.client;
 
+import android.content.Context;
+
 import com.app.cat.model.CATFriend;
 import com.app.cat.model.CATUser;
 
@@ -76,6 +78,12 @@ public interface CATClient {
      * Decline an incoming call if exists.
      */
     void declineCall();
+
+    /**
+     * Sets an application context.
+     * @param context Application context to set.
+     */
+    void setContext(Context context);
 
     /**
      * Indicates whether the current call is is an incoming call or not (that is an outgoing call).
