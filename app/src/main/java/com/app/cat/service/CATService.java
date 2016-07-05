@@ -35,6 +35,7 @@ import com.app.cat.linphone.LinphoneCATClient;
 import com.app.cat.linphone.LinphoneCATVoIPService;
 import com.app.cat.util.ApplicationContext;
 
+import org.linphone.core.LinphoneCore;
 import org.linphone.core.LinphoneCoreException;
 
 /**
@@ -77,7 +78,8 @@ public class CATService extends Service {
 
         try {
             // Get the HandlerThread's Looper and use it for our Handler
-            voIPService = new LinphoneCATVoIPService(LinphoneCATClient.getInstance().getCore(), thread.getLooper());
+            LinphoneCore core = LinphoneCATClient.getInstance().getCore();
+            voIPService = new LinphoneCATVoIPService(core, thread.getLooper());
         } catch (LinphoneCoreException e) {
             ApplicationContext.showToast(
                     ApplicationContext.getStringFromRessources(R.string.unknown_error_message),

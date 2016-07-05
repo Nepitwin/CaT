@@ -125,7 +125,8 @@ public class LinphoneCATClient implements CATClient {
         //coreFactory.setDebugMode(true, ApplicationContext.getStringFromRessources(R.string.app_name));
 
         LinphoneCoreListener catServerListener = new LinphoneCATServerListener();
-        core = coreFactory.createLinphoneCore(catServerListener, null);
+        core = coreFactory.createLinphoneCore(catServerListener,
+                ApplicationContext.getCurrentActivity());
 
         // Set maximum number of allowed calls at a time
         core.setMaxCalls(MAX_CALLS);
