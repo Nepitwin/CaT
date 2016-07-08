@@ -62,7 +62,7 @@ public class OutgoingCallFragment extends Fragment {
     @Bind(R.id.buttonHangUp)
     Button hangUp;
 
-    @Bind(R.id.textViewOutgoingCallName)
+    @Bind(R.id.textViewOutgoingCallInfo)
     TextView textViewName;
 
     /**
@@ -105,7 +105,8 @@ public class OutgoingCallFragment extends Fragment {
             }
         });
 
-        textViewName.setText("Irgendwas muss hier rein... mhmm donuts...");
+        // ToDo := Name from Call
+        // textViewName.setText("ToDo");
 
         return view;
     }

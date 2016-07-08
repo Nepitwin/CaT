@@ -49,7 +49,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="Talk"
+            android:text="Outgoing call"
             android:gravity="fill_vertical"
             android:textColor="#ffffff"
             android:textStyle="bold" />
@@ -80,10 +80,10 @@
         <TextView
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:text="Your are calling..."
+            android:text="Ring ring ring..."
             android:textStyle="bold"
             android:textColor="#ffffff"
-            android:id="@+id/textViewOutgoingCallName" />
+            android:id="@+id/textViewOutgoingCallInfo" />
 
     </LinearLayout>
 

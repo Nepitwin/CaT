@@ -373,7 +373,6 @@ public class LinphoneCATServerListener implements LinphoneCoreListener {
     private void incomingCall(LinphoneCall linphoneCall) {
         try {
             LinphoneCallParams params = linphoneCall.getRemoteParams();
-            Log.v("params", "PARAAMAMMMMMMMMMMMMMMMMMMMMMSSSSSSSSSSSSSSSS FOUNDDDDDDDDDD SCOTTTTYYYYYY");
             Log.v("params", "low bandwidth: --> " + params.isLowBandwidthEnabled());
             Log.v("params", "video enabled: --> " + params.getVideoEnabled());
             Log.v("params", "audio codec: --> " + params.getUsedAudioCodec());

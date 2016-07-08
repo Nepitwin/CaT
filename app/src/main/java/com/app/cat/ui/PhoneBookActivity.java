@@ -80,7 +80,7 @@ public class PhoneBookActivity extends AppCompatActivity
     public ListView listTBook;
 
     /**
-     * Information view which user is loged in.
+     * Information from user which is used.
      */
     @Bind(R.id.testViewInfo)
     public TextView info;
@@ -192,7 +192,6 @@ public class PhoneBookActivity extends AppCompatActivity
 
             catFriend = new CATFriend(configuration.get("friendUsername"), configuration.get("domain"));
             catAccounts.add(catFriend);
-            catAccounts.add(new CATFriend("Mockup", "192.168.117.102"));
 
             client.addCATFriend(catFriend);
             client.register(catUser);
@@ -200,11 +199,13 @@ public class PhoneBookActivity extends AppCompatActivity
             // Starts an service in background
             service = new Intent(PhoneBookActivity.this, CATService.class);
             startService(service);
-        } catch (IOException | LinphoneCoreException | NoSuchAlgorithmException e) {
+        } catch (LinphoneCoreException | NoSuchAlgorithmException e) {
             ApplicationContext.showToast(
                     ApplicationContext.getStringFromRessources(R.string.unknown_error_message),
                     Toast.LENGTH_SHORT);
             e.printStackTrace();
+        } catch (IOException e) {
+            info.setText("No mockup data set");
         }
     }
 
