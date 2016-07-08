@@ -126,7 +126,6 @@ public class LinphoneCATAudio implements Multimedia {
         }
 
         if(params != null) {
-            Log.v("params", "PARAAMAMMMMMMMMMMMMMMMMMMMMMSSSSSSSSSSSSSSSS FOUNDDDDDDDDDD SCOTTTTYYYYYY");
             Log.v("params", "low bandwidth: --> " + params.isLowBandwidthEnabled());
             Log.v("params", "video enabled: --> " + params.getVideoEnabled());
             Log.v("params", "media encryption: --> " + params.getMediaEncryption().toString());

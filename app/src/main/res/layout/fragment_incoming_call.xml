@@ -49,7 +49,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="Call"
+            android:text="Incoming call"
             android:gravity="fill_vertical"
             android:textColor="#ffffff"
             android:textStyle="bold" />
@@ -78,7 +78,7 @@
         <TextView
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:text="Your friend Cat is calling you..."
+            android:text="Incoming call..."
             android:textStyle="bold"
             android:textColor="#ffffff" />
     </LinearLayout>

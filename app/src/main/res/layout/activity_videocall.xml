@@ -29,8 +29,7 @@
     tools:context=".ui.VideoCallActivity">
 
     <!-- <SurfaceView -->
-    <!-- <org.linphone.mediastream.video.display.GL2JNIView -->
-    <com.app.cat.util.GL2JNIView
+    <org.linphone.mediastream.video.display.GL2JNIView
         android:id="@+id/videoSurface"
         android:visibility="visible"
         android:layout_height="match_parent"

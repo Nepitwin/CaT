@@ -134,7 +134,6 @@ public class LinphoneCATVideo implements Multimedia {
         }
 
         if (params != null) {
-            Log.v("params", "PARAAMAMMMMMMMMMMMMMMMMMMMMMSSSSSSSSSSSSSSSS FOUNDDDDDDDDDD SCOTTTTYYYYYY");
             Log.v("params", "low bandwidth: --> " + params.isLowBandwidthEnabled());
             Log.v("params", "video enabled: --> " + params.getVideoEnabled());
             Log.v("params", "audio codec: --> " + params.getUsedAudioCodec());
